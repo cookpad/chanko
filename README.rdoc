@@ -8,7 +8,7 @@ Rails 3.0.10 ~
 
 == Install
 Add your Gemfile.
-  gem 'chanko', :git => 'git@github.com:cookpad/Chanko.git'
+  gem 'chanko', :git => 'git://github.com/cookpad/chanko.git'
 Run install.
   rails generate chanko:install
 Add this code to ApplicationHelper.
