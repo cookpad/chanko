@@ -1,0 +1,2 @@
+module ChankoDummy
+end
