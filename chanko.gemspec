@@ -27,7 +27,7 @@ Gem::Specification.new do |s|
     s.add_development_dependency 'ruby-debug', ['>= 0']
   end
 
-  s.add_development_dependency 'rcov'
+  s.add_development_dependency 'rcov' if RUBY_VERSION < '1.8'
   s.add_development_dependency 'capybara'
   s.add_development_dependency 'factory_girl', ['>2.0.0']
   s.add_development_dependency 'database_cleaner', ['>= 0']
