@@ -31,6 +31,7 @@ module Chanko
               return false unless file_updated?(absolute_path)
               save_timestamp(absolute_path)
               result = nil
+              clear_defined_classes(absolute_path)
               newly_defined_paths = new_constants_in(Object) do
                  Kernel.load absolute_path
               end
