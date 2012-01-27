@@ -196,7 +196,11 @@ module Chanko
           end
           path ||= _path
 
-          scope.view_paths.unshift(path)
+          if Chanko.config.view_resolver
+            scope.view_paths.unshift(Chanko.config.view_resolver.new(path))
+          else
+            scope.view_paths.unshift(path)
+          end
         end
       end
       private :attach_view_paths

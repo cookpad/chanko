@@ -15,6 +15,7 @@ module Chanko
     config_accessor :cache_classes
     config_accessor :default_active_if
     config_accessor :default_view_type
+    config_accessor :view_resolver
   end
 
   configure do |config|
@@ -23,6 +24,7 @@ module Chanko
     config.cache_classes = Rails.application.config.cache_classes
     config.default_active_if = lambda { false }
     config.default_view_type = :block
+    config.view_resolver = nil
   end
 end
 
