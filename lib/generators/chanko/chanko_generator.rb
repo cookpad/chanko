@@ -31,8 +31,8 @@ class ChankoGenerator < Rails::Generators::NamedBase
 
   def create_js_files
     if options.js? && !options.coffee?
-      template 'chanko.js', File.join("app", base_directory, file_name, "javascripts", "#{file_name}.js")
       create_symlink('javascripts')
+      template 'chanko.js', File.join("app", base_directory, file_name, "javascripts", "#{file_name}.js")
     end
   end
 
@@ -50,16 +50,23 @@ class ChankoGenerator < Rails::Generators::NamedBase
     end
   end
 
+  #this is for 'rails destroy chanko xxx' command
+  def create_chanko_directory
+    empty_directory File.join('app', base_directory, file_name), :verbose => false
+  end
+
   private
   def create_symlink(path, option = {})
     if (defined? Sprockets) || option[:asset]
       FileUtils.mkdir_p("app/assets/#{path}/#{base_directory}/")
-      target = "app/assets/#{path}/#{base_directory}/#{file_name}"
-      FileUtils.ln_s("../../../#{base_directory}/#{file_name}/#{path}", target) unless File.exist?(target)
+      destination = "app/assets/#{path}/#{base_directory}/#{file_name}"
+      source = "../../../#{base_directory}/#{file_name}/#{path}"
+      create_link destination, source, :symbolic => true
     else
       FileUtils.mkdir_p("public/#{path}/#{base_directory}/")
-      target = "public/#{path}/#{base_directory}/#{file_name}"
-      FileUtils.ln_s("../../../app/#{base_directory}/#{file_name}/#{path}", target) unless File.exist?(target)
+      destination = "public/#{path}/#{base_directory}/#{file_name}"
+      source = "../../../app/#{base_directory}/#{file_name}/#{path}"
+      create_link destination, source, :symbolic => true
     end
   end
 
