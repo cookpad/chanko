@@ -157,7 +157,7 @@ A callback is scoped, and its scope is a restriction for the callback. The callb
   end
 
 "invoke()" can receive a block as a default process. The block is executed if active_if block return false or the callback raises an error.
-  callback(:controller_show) do
+  invoke(:sample, :controller_show) do
      default_behaviour
   end
 
