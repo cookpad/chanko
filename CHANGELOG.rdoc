@@ -1,0 +1,9 @@
+== 1.0.1, released 2012-02-01
+* Fixed 'rails destroy chanko xxx' command.
+* Update incorrect document.
+* Add 'view_resolver' config for changing view resolver.
+* Reload updated extended model methods.
+* Add CHANGELOG
+
+== 1.0.0
+First release
