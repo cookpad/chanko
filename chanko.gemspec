@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.6.2}
   s.summary = %q{extension framework}
 
-  s.add_dependency 'rails', ['>= 3.0.0']
+  s.add_dependency 'rails', ['>= 3.2.0']
   s.add_development_dependency 'sqlite3', ['>= 0']
   s.add_development_dependency 'rspec', ['>= 0']
   s.add_development_dependency 'rspec-rails', ['>= 0']

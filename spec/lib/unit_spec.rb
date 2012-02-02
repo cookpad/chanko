@@ -55,11 +55,19 @@ describe Chanko do
       it 'should attach view_paths' do
         ViewPathTest.attach(controller) do
           ViewPathTest.view_paths.each do |path|
-            controller.view_paths.map(&:to_path).should be_include(path)
+            if Rails::VERSION::MINOR >= 2
+              controller.view_paths.map(&:to_s).should be_include(path)
+            else
+              controller.view_paths.map(&:to_path).should be_include(path)
+            end
           end
         end
         ViewPathTest.view_paths.each do |path|
-          controller.view_paths.map(&:to_path).should_not be_include(path)
+          if Rails::VERSION::MINOR >= 2
+            controller.view_paths.map(&:to_s).should_not be_include(path)
+          else
+            controller.view_paths.map(&:to_path).should_not be_include(path)
+          end
         end
       end
 
@@ -69,7 +77,11 @@ describe Chanko do
         }.to raise_error(RuntimeError)
 
         ViewPathTest.view_paths.each do |path|
-          controller.view_paths.map(&:to_path).should_not be_include(path)
+          if Rails::VERSION::MINOR >= 2
+            controller.view_paths.map(&:to_s).should_not be_include(path)
+          else
+            controller.view_paths.map(&:to_path).should_not be_include(path)
+          end
         end
       end
     end

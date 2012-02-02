@@ -196,8 +196,14 @@ module Chanko
           end
           path ||= _path
 
-          if Chanko.config.view_resolver
-            scope.view_paths.unshift(Chanko.config.view_resolver.new(path))
+          resolver = if Chanko.config.view_resolver
+            Chanko.config.view_resolver.new(path)
+          else
+            path
+          end
+
+          if Rails::VERSION::MINOR >= 2
+            scope.view_paths.paths.unshift(path)
           else
             scope.view_paths.unshift(path)
           end
@@ -208,7 +214,11 @@ module Chanko
       def detach_view_paths(scope)
         return unless scope.respond_to?("view_paths")
         absolute_view_paths.size.times do |path|
-          shifted_path  = scope.view_paths.shift
+          if Rails::VERSION::MINOR >= 2
+            shifted_path  = scope.view_paths.paths.shift
+          else
+            shifted_path  = scope.view_paths.shift
+          end
           Chanko::Unit.__eager_paths[shifted_path] = shifted_path
           #NOTE does it need to check?
           #return scope.view_paths.unshift(shifted_path) unless absolute_view_paths.include?(shifted_path.to_path)
