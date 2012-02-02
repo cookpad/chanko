@@ -1,3 +1,6 @@
+== 1.0.2, released 2012-02-02
+* Fixed updating load tried to remove previous defined constants by mistake.
+
 == 1.0.1, released 2012-02-01
 * Fixed 'rails destroy chanko xxx' command.
 * Update incorrect document.
