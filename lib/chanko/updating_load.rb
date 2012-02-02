@@ -45,6 +45,7 @@ module Chanko
               @@defined_classes[absolute_path].each do |klass|
                 Object.send(:remove_const, klass)
               end
+              @@defined_classes[absolute_path] = []
             end
             private :clear_defined_classes
 
