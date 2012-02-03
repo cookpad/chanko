@@ -7,6 +7,7 @@ module Chanko
 
         mattr_accessor :defined_blocks
         attr_accessor :attached_extension_classes
+        attr_accessor :__current_callback
 
         define_once(:method_missing_with_shared_method) do
           def method_missing_with_shared_method(method_symbol, *args)
