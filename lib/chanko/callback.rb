@@ -28,6 +28,7 @@ module Chanko
     def invoke!(scope, options={})
       begin
         Chanko::Loader.push_scope(ext.underscore)
+        scope.__current_callback = self
         result = nil
         self.ext.attach(scope) do
           if self.ext.default? && scope.view? && options[:capture]
@@ -48,6 +49,7 @@ module Chanko
         return Chanko::Aborted
       ensure
         Chanko::Loader.pop_scope
+        scope.__current_callback = nil
       end
     end
 

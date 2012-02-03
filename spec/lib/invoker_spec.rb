@@ -194,6 +194,15 @@ describe Chanko do
       invoker.invoke(:symbol_active_if_test, :hello)
       invoker.instance_eval { @hello.should == "hello" }
     end
+
+
+    it 'should set current callback' do
+      ext_mock("CurrentCallbackTest", Chanko::Test::Invoker, { :set_current_callback => {:value => Proc.new { @current_callback = __current_callback}  }})
+      invoker.invoke(:current_callback_test, :set_current_callback)
+      invoker.instance_eval { @current_callback.ext.name.should == "CurrentCallbackTest"}
+      invoker.instance_eval { @current_callback.label.should == :set_current_callback}
+      invoker.__current_callback.should be_nil
+    end
   end
 
   context 'with cache_classes' do
