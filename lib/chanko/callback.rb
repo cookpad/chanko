@@ -1,5 +1,8 @@
 module Chanko
   class Callback
+    include Chanko::Callbacks
+    define_callbacks :invoke
+
     autoload :ActionView, 'action_view'
 
     class TagHelper
@@ -27,22 +30,24 @@ module Chanko
 
     def invoke!(scope, options={})
       begin
-        Chanko::Loader.push_scope(ext.underscore)
-        scope.__current_callback = self
-        result = nil
-        self.ext.attach(scope) do
-          if self.ext.default? && scope.view? && options[:capture]
-            result = scope.capture(&block)
-          else
-            result = scope.instance_eval(&block)
-          end
+        run_callbacks :invoke do
+          Chanko::Loader.push_scope(ext.underscore)
+          scope.__current_callback = self
+          result = nil
+          self.ext.attach(scope) do
+            if self.ext.default? && scope.view? && options[:capture]
+              result = scope.capture(&block)
+            else
+              result = scope.instance_eval(&block)
+            end
 
-          result = result.first if result.kind_of?(Array)
-          if scope.view? && !result.blank?
-            result = view_result(result, options[:type])
+            result = result.first if result.kind_of?(Array)
+            if scope.view? && !result.blank?
+              result = view_result(result, options[:type])
+            end
           end
+          result
         end
-        result
       rescue ::Exception => e
         Chanko::ExceptionNotifier.notify("raise exception #{ext.name}##{@label} => #{e.message}", self.ext.default?,
                                 :exception => e, :backtrace =>  e.backtrace[0..20], :key => "#{ext.name}_exception", :context => scope)
