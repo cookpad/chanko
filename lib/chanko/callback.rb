@@ -11,6 +11,7 @@ module Chanko
 
     attr_reader :label, :block, :options, :ext
     attr_accessor :called_from # for debug
+    attr_accessor :__current_scope
 
     def self.default(&block)
       return nil unless block_given?
@@ -30,9 +31,10 @@ module Chanko
 
     def invoke!(scope, options={})
       begin
+        self.__current_scope = scope
+        scope.__current_callback = self
         run_callbacks :invoke do
           Chanko::Loader.push_scope(ext.underscore)
-          scope.__current_callback = self
           result = nil
           self.ext.attach(scope) do
             if self.ext.default? && scope.view? && options[:capture]
@@ -54,6 +56,7 @@ module Chanko
         return Chanko::Aborted
       ensure
         Chanko::Loader.pop_scope
+        self.__current_scope = nil
         scope.__current_callback = nil
       end
     end
