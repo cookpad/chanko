@@ -1,16 +1,17 @@
 = Chanko
 == What is Chanko
-Chanko is a simple way to rapidly and safely add prototype features to your
-production site, and expose these prototypes to segments of your user base.
-Chanko was extracted from cookpad.com where it is in daily use on Japan's
-biggest Rails site.
+Chanko provides a simple framework for rapidly and safely prototyping new
+features in your production Rails app, and exposing these prototypes to
+specified segments of your user base.
 
 With Chanko, you can release many concurrent features and independently manage
 which users see them. If there are errors with any chanko, it will be
 automatially removed, without impacting your site.
 
-Please take a look at https://github.com/cookpad/chanko_sample for example
-usage.
+Please take a look at https://github.com/cookpad/chanko_sample which is a
+simple example app using chanko.
+
+Chanko is currently released as a beta.
 
 == Supported versions
 Ruby 1.8.7, 1.9.2
