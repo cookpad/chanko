@@ -31,8 +31,8 @@ class ChankoGenerator < Rails::Generators::NamedBase
 
   def create_js_files
     if options.js? && !options.coffee?
-      create_symlink('javascripts')
       template 'chanko.js', File.join("app", base_directory, file_name, "javascripts", "#{file_name}.js")
+      create_symlink('javascripts')
     end
   end
 

@@ -21,8 +21,6 @@ Chanko::ActiveIf.files = active_if_files
 
       def create_symbolic_link
         inside(Rails.root) do
-          run("ln -ns ../../#{base_directory} app/assets/stylesheets/#{base_directory}")
-          run("ln -ns ../../#{base_directory} app/assets/javascripts/#{base_directory}")
           run("ln -ns ../app/#{base_directory} spec/#{base_directory}") if File.exists?(Rails.root.join("spec"))
           run("ln -ns ../app/#{base_directory} test/#{base_directory}") if File.exists?(Rails.root.join("test"))
         end
@@ -32,7 +30,7 @@ Chanko::ActiveIf.files = active_if_files
         directory "active_if", "lib/chanko/active_if"
       end
 
-      private 
+      private
       def base_directory
         ENV['CHANKOS_DIRECTORY'] || options[:directory].pluralize
       end
