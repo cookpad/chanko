@@ -1,6 +1,16 @@
 = Chanko
 == What is Chanko
-"Chanko" is a library that attaches functional unit programming. Primarily, this is for prototyping and currently released as beta.
+Chanko is a simple way to rapidly and safely add prototype features to your
+production site, and expose these prototypes to segments of your user base.
+Chanko was extracted from cookpad.com where it is in daily use on Japan's
+biggest Rails site.
+
+With Chanko, you can release many concurrent features and independently manage
+which users see them. If there are errors with any chanko, it will be
+automatially removed, without impacting your site.
+
+Please take a look at https://github.com/cookpad/chanko_sample for example
+usage.
 
 == Supported versions
 Ruby 1.8.7, 1.9.2
@@ -27,21 +37,24 @@ Generate chanko.
         create  app/chankos/sample/specs/helpers/sample_helper_spec.rb
 
 === app/chankos/sample/sample.rb
-Main file. You write your functionality in this file.
+Main file. You write your model and controller logic in this file.
 
 === app/chankos/sample/views
 The view files for your chanko. Each chanko refers to its own views directory.
 
 === app/chankos/sample/stylesheets/tutorial.scss
-Write styles for your chanko in this file. These files will be merged during startup or first access.
+Write styles for your chanko in this file. These files will be merged during
+startup or first access.
 
 === app/chankos/sample/images/logo.png
 The image files for this chanko.
-if you manually created this directory, you should create a symbolic link from app/chankos/sample/images to  (public or assets)/images/chankos/#{ext_name} with attention to use the relative path.
+if you manually created this directory, you should create a symbolic link from
+app/chankos/sample/images to  (public or assets)/images/chankos/#{ext_name}
+with attention to use the relative path.
 If you used generator, the symbolic link is automaticlly generated.
 
 === app/chankos/sample/specs/
-Write your tests code for the chanko here.
+Tests for this chanko go here.
 
 == Syntax
   module Sample
@@ -96,7 +109,8 @@ Write your tests code for the chanko here.
   end
 
 == active_if
-"active_if()" decides if the chanko is enabled or not. active_if receives an arg of the invoked context, such as controller.
+"active_if()" decides if the chanko is enabled or not. active_if receives an
+arg of the invoked context, such as the controller.
 The chanko is enabled when the block returns true.
   # activeif's block is used to decide if the chanko is active or not.
   # context is the object which invoked the callback.
@@ -105,13 +119,14 @@ The chanko is enabled when the block returns true.
     true
   end
 
-Also, "active_if()" accept pre defined symbols. "active_if()" get AND result for all symbols and block.
+Also, "active_if()" accepts pre defined symbols. "active_if()" evaluates the AND
+result for all symbols and the block.
   # This definition means "user is staff and environment is not production"
   active_if :staff, :not_production do |context, options|
     # some additional conditions
   end
 
-You can define symbol in lib/active_if_files/main.rb.
+You can define additional symbols in lib/active_if_files/main.rb.
   Chanko::ActiveIf.define(:not_production?) do |context, options|
     !Rails.env.production?
   end
@@ -123,12 +138,14 @@ You can define symbol in lib/active_if_files/main.rb.
     next true
   end
 
-When you want to set OR defines, use "any()".
+When you want to use an OR condition, use "any()".
   # This means "current user is staff or paid user. And environment is not production"
   active_if any(:staff, :paid), :not_production
 
 == shared method
-A "shared()" is syntax for shared method definitions. you can use defined method through callbacks of either :controller or :view or etc. a block of shared method behave as instance method.
+"shared()" is the syntax for shared method definitions. you can use the defined
+method through callbacks of either :controller or :view. A block of a shared
+method behaves as an instance method.
   shared(:hello) do |name|
     "hello #{name}"
   end
@@ -140,8 +157,12 @@ A "shared()" is syntax for shared method definitions. you can use defined method
   end
 
 == callback
-A "callback()" is an expanding block for the current code. This block's context behaves as an invoked context, so you can access original context instance variables. if you need to access local variables, callback provides a :locals option that is similar to :locals of render.
-A callback is scoped, and its scope is a restriction for the callback. The callback is only called from scoped context.
+A "callback()" is expanded in the calling code. This block's context behaves
+as an invoked context, so you can access the original context's instance
+variables. if you need to access local variables, a callback provides a :locals
+option that is similar to :locals use in render.
+A callback is scoped, and its scope is a restriction for the callback. The
+callback is only called from scoped context.
   #scope can receive specified context such as "scope('UsersController')".
   scope(:controller) do
     callback(:controller_show) do
@@ -149,14 +170,17 @@ A callback is scoped, and its scope is a restriction for the callback. The callb
     end
   end
 
-"invoke()" runs a callback block if the active_if block returns true.
+"invoke()" in your controller runs a callback block if the active_if block
+returns true. In this case, if active_if for the sample chanko is true, then
+controller_show will be invoked in the chanko main.rb
   class UsersController
     def show
-       invoke(:sample, :controller_show)
+      invoke(:sample, :controller_show)
     end
   end
 
-"invoke()" can receive a block as a default process. The block is executed if active_if block return false or the callback raises an error.
+"invoke()" can receive a block as a default fallback. The block is executed if
+the active_if block returns false or the callback raises an error.
   invoke(:sample, :controller_show) do
      default_behaviour
   end
@@ -168,7 +192,8 @@ it is used by callback block
     "#{result} + hello"
   end
 
-"invoke()" can receive multiple callbacks. "invoke" tries to run the callbacks in turn. Only the first enabled callback is executed.
+"invoke()" can receive multiple callbacks. "invoke" tries to run the callbacks
+in turn. Only the first enabled callback is executed.
   #invoke doesn't run next_ext callback if first_ext is enabled.
   invoke([:first_ext, :show], [:next_ext, :show])
 
@@ -176,11 +201,13 @@ it is used by callback block
   invoke(:sample, :show, :if => :depend_on_ext)
 
 == expand
-"expand()" expands existing model methods and adds chanko helper methods. The expanded method is only used by the expanding chanko.
-All expanded method must be used via ext proxy as below.
+"expand()" expands existing model methods and adds chanko helper methods. The
+expanded method is only used by the expanding chanko.
+All expanded method must be used in your code via ext proxy as below.
   user_instance.ext.expanded_method
 
-You can write expanding methods for current models. The "models()" block provides association and named_scope and class method syntax.
+You can write expanding methods for current models. The "models()" block
+provides association and named_scope and class method syntax.
   models do
     expand("ExpandedModel") do
        #expanded_model.ext.has_many_associations
@@ -200,7 +227,8 @@ You can write expanding methods for current models. The "models()" block provide
     end
   end
 
-when used as symbol as :include option for ActiveRecord, you must wrap label with "ext.label()" syntax.
+When used as a symbol as an :include option for ActiveRecord, you must wrap
+label with "ext.label()" syntax.
   User.find(:first, :include => [ext.label(:recipes)])
 
 == Helpers
@@ -222,11 +250,9 @@ Use following code.
   end
   return if performed?
 
-
-always activate or inactive chanko.
+always activate or deactivate a chanko.
 Use :always_true/:always_false on active_if.
   active_if :always_true # or :always_false
-
 
 invoke with before_filter.
 Use block and invoke.
@@ -234,7 +260,7 @@ Use block and invoke.
     controller.invoke(:contest_noseru_ext, :store_contest_id)
   end
 
-check status of chanko.
+check status of a chanko.
 you can check the status of an chanko. In almost all situations, context is controller.（deprecated ?)
   ext(:sample).active? #=> return boolean
 
