@@ -52,14 +52,33 @@ describe Chanko do
       let(:controller) { @controller =  ApplicationController.new }
       before { ext_mock("ViewPathTest")  }
 
-      it 'should attach view_paths' do
-        ViewPathTest.attach(controller) do
-          ViewPathTest.view_paths.each do |path|
-            controller.view_paths.map(&:to_path).should be_include(path)
+      context 'attached to controller' do
+        specify 'controller.view_paths includes view_paths of the extension' do
+          ViewPathTest.attach(controller) do
+            ViewPathTest.view_paths.each do |path|
+              controller.view_paths.map(&:to_path).should be_include(path)
+            end
           end
         end
-        ViewPathTest.view_paths.each do |path|
-          controller.view_paths.map(&:to_path).should_not be_include(path)
+      end
+
+      context 'just after detaching from controller' do
+        before do
+          ViewPathTest.attach(controller) { }
+        end
+
+        specify 'controller.view_paths does not include view_paths of the extension' do
+          ViewPathTest.view_paths.each do |path|
+            controller.view_paths.map(&:to_path).should_not be_include(path)
+          end
+        end
+      end
+
+      context 'not attached to controller' do
+        specify 'controller.view_paths does not include view_paths of the extension' do
+          ViewPathTest.view_paths.each do |path|
+            controller.view_paths.map(&:to_path).should_not be_include(path)
+          end
         end
       end
 
