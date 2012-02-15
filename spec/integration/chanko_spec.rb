@@ -12,7 +12,7 @@ describe 'Invoker', :type => :integration do
 
   it 'invoke with view' do
     visit '/invoke/with_view'
-    page.should have_content('render view file')
-    page.should have_selector('div', :class => %w(extension ext_acceptance_test ext_acceptance_test-render))
+    (response || page).body.should have_content('render view file')
+    (response || page).body.should match(/extension ext_acceptance_test ext_acceptance_test-render/)
   end
 end

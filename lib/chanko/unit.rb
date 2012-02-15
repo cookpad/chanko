@@ -199,13 +199,17 @@ module Chanko
           resolver = if Chanko.config.view_resolver
             Chanko.config.view_resolver.new(path)
           else
-            path
+            if Rails::VERSION::MINOR >= 1
+              ActionView::OptimizedFileSystemResolver.new(path)
+            else
+              path
+            end
           end
 
           if Rails::VERSION::MINOR >= 2
-            scope.view_paths.paths.unshift(path)
+            scope.view_paths.paths.unshift(resolver)
           else
-            scope.view_paths.unshift(path)
+            scope.view_paths.unshift(resolver)
           end
         end
       end
