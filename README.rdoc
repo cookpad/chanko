@@ -15,8 +15,10 @@ Chanko is currently released as a beta.
 
 == Supported versions
 Ruby 1.8.7, 1.9.2
+
 Rails 3.0.10 ~
-Rails 3.2.: you might want to use beta branch.
+
+Rails 3.2: you might want to use beta branch.
 
 == Install
 Add your Gemfile.
