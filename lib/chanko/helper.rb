@@ -26,9 +26,9 @@ module Chanko
       end
     end
 
-    def self.deregister(unit_name)
-      line = caller.detect { |c| c =~ /(.*#{unit_name}.*\.rb).*/ }
-      path = $1
+    def self.deregister(name)
+      line = caller.detect { |c| c =~ /(.*#{name}.*\.rb).*/ }
+      path = $1 || name
       return remove_old_methods_by_file_path(path)
     end
 
@@ -43,11 +43,11 @@ module Chanko
 
     def self.save_new_methods(name, methods)
       line = caller.detect { |c| c =~ /(.*#{name}.*\.rb).*/ }
-      file = $1
-      self.files[file] ||= {}
-      self.files[file][:timestamp] = Time.now
-      self.files[file][:methods] ||= []
-      self.files[file][:methods].concat(methods)
+      path = $1 || name
+      self.files[path] ||= {}
+      self.files[path][:timestamp] = Time.now
+      self.files[path][:methods] ||= []
+      self.files[path][:methods].concat(methods)
     end
 
     def self.rename_new_methods(name, new_methods)
