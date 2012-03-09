@@ -1,9 +1,11 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'
 #require File.expand_path("../../config/environment", __FILE__)
-require 'simplecov'
-SimpleCov.start do
-  coverage_dir '/tmp/cov'
+if RUBY_VERSION =~ /\A1.9.*/
+  require 'simplecov'
+  SimpleCov.start do
+    coverage_dir '/tmp/cov'
+  end
 end
 
 require 'chanko'
