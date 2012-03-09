@@ -49,6 +49,9 @@ RSpec.configure do |config|
     ActionView::Base.send(:include, Chanko::Invoker)
     CreateAllTables.up unless ActiveRecord::Base.connection.table_exists? 'users'
   end
+  config.before do
+    Chanko::Helper.stub!(:check_to_update_interval).and_return(0)
+  end
 
   config.after do
     Chanko::Loader.clear_cache!
