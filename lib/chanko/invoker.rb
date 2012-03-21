@@ -92,7 +92,6 @@ module Chanko
         return nil if callbacks.blank? && !default
         render_callbacks(callbacks, default, options)
       ensure
-        @__ext_default = nil
         extension_locals.pop
       end
 
@@ -142,10 +141,11 @@ module Chanko
         succeeded_callbacks = []
         callbacks.each do |callback|
           begin
-            @__ext_default = default
+            @__ext_default ||= []
+            @__ext_default.unshift(default)
             result = run_callback(callback, options)
           ensure
-            @__ext_default = nil
+            @__ext_default.shift
           end
 
           next if Chanko::Aborted == result
@@ -159,8 +159,9 @@ module Chanko
       end
 
       def run_default
-        return nil unless @__ext_default
-        result = run_callback(@__ext_default, {:type => :plain, :capture => view?})
+        default = @__ext_default[0]
+        return nil unless default
+        result = run_callback(default, {:type => :plain, :capture => view?})
       end
 
 
