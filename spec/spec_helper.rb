@@ -1,9 +1,11 @@
 # This file is copied to spec/ when you run 'rails generate rspec:install'
 ENV["RAILS_ENV"] ||= 'test'
 #require File.expand_path("../../config/environment", __FILE__)
-require 'simplecov'
-SimpleCov.start do
-  coverage_dir '/tmp/cov'
+if RUBY_VERSION =~ /\A1.9.*/
+  require 'simplecov'
+  SimpleCov.start do
+    coverage_dir '/tmp/cov'
+  end
 end
 
 require 'chanko'
@@ -46,6 +48,9 @@ RSpec.configure do |config|
     ApplicationController.send(:include, Chanko::Invoker)
     ActionView::Base.send(:include, Chanko::Invoker)
     CreateAllTables.up unless ActiveRecord::Base.connection.table_exists? 'users'
+  end
+  config.before do
+    Chanko::Helper.check_to_update_interval = 0
   end
 
   config.after do

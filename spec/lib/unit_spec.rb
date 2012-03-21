@@ -56,7 +56,11 @@ describe Chanko do
         specify 'controller.view_paths includes view_paths of the extension' do
           ViewPathTest.attach(controller) do
             ViewPathTest.view_paths.each do |path|
-              controller.view_paths.map(&:to_path).should be_include(path)
+              if Rails::VERSION::MINOR >= 2
+                controller.view_paths.map(&:to_s).should be_include(path)
+              else
+                controller.view_paths.map(&:to_path).should be_include(path)
+              end
             end
           end
         end
@@ -69,15 +73,11 @@ describe Chanko do
 
         specify 'controller.view_paths does not include view_paths of the extension' do
           ViewPathTest.view_paths.each do |path|
-            controller.view_paths.map(&:to_path).should_not be_include(path)
-          end
-        end
-      end
-
-      context 'not attached to controller' do
-        specify 'controller.view_paths does not include view_paths of the extension' do
-          ViewPathTest.view_paths.each do |path|
-            controller.view_paths.map(&:to_path).should_not be_include(path)
+            if Rails::VERSION::MINOR >= 2
+              controller.view_paths.map(&:to_s).should_not be_include(path)
+            else
+              controller.view_paths.map(&:to_path).should_not be_include(path)
+            end
           end
         end
       end
@@ -88,7 +88,11 @@ describe Chanko do
         }.to raise_error(RuntimeError)
 
         ViewPathTest.view_paths.each do |path|
-          controller.view_paths.map(&:to_path).should_not be_include(path)
+          if Rails::VERSION::MINOR >= 2
+            controller.view_paths.map(&:to_s).should_not be_include(path)
+          else
+            controller.view_paths.map(&:to_path).should_not be_include(path)
+          end
         end
       end
     end
@@ -127,7 +131,7 @@ describe Chanko do
         it 'should raise' do
           expect {
             UnitScopeTest.class_eval do
-              scope("MissingScopeClass") { }
+            scope("MissingScopeClass") { }
             end
           }.to raise_error
         end
@@ -136,7 +140,7 @@ describe Chanko do
           no_raise_chanko_exception
           expect {
             UnitScopeTest.class_eval do
-              scope("MissingScopeClass") { }
+            scope("MissingScopeClass") { }
             end
           }.to_not raise_error
         end
@@ -188,14 +192,14 @@ describe Chanko do
         }.to raise_error(NameError)
       end
 
-       it 'should not raise when raising is repressed' do
-         no_raise_chanko_exception
-         expect  {
+      it 'should not raise when raising is repressed' do
+        no_raise_chanko_exception
+        expect  {
           UnitExpandTest.send(:models) do
             expand("MissingObject") { }
           end
-         }.to_not raise_error(NameError)
-       end
+        }.to_not raise_error(NameError)
+      end
     end
 
     describe 'active_if' do

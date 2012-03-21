@@ -1,6 +1,8 @@
 class ApplicationController < ActionController::Base; end
 
 class InvokeController < ApplicationController
+  ext_action :acceptance_test, :text
+
   def with_view
     render :inline => <<-EOS
       <html>

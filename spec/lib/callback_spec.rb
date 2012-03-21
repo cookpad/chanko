@@ -94,7 +94,7 @@ describe "Chanko" do
         let(:default_callback) { Chanko::Callback.default { '<div>hoge</div>' } }
 
         before do
-          Chanko.config.default_view_type = :plain
+          Chanko.config.default_view_type = :block
         end
 
         subject { Chanko::Callback.default { '<div>hoge</div>' } }
@@ -104,7 +104,7 @@ describe "Chanko" do
         end
 
         it 'should escape' do
-          default_callback.invoke!(view, :capture => true).should == ERB::Util.html_escape('<div>hoge</div>')
+          default_callback.invoke!(view, :capture => true).should == '<div class="extension ext_ ext_-__default__">' + ERB::Util.html_escape('<div>hoge</div>') + '</div>'
         end
       end
     end

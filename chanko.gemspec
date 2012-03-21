@@ -17,21 +17,21 @@ Gem::Specification.new do |s|
   s.rubygems_version = %q{1.6.2}
   s.summary = %q{extension framework}
 
-  s.add_dependency 'rails', ['>= 3.0.0']
+  s.add_dependency 'rails', ['>= 3.0.10']
   s.add_development_dependency 'sqlite3', ['>= 0']
   s.add_development_dependency 'rspec', ['>= 0']
   s.add_development_dependency 'rspec-rails', ['>= 0']
   if RUBY_VERSION =~ /\A1.9.*/
     s.add_development_dependency 'ruby-debug19', ['>= 0']
+    s.add_development_dependency 'simplecov', ['>= 0.4.0']
   else
+    s.add_development_dependency 'rcov'
     s.add_development_dependency 'ruby-debug', ['>= 0']
   end
 
-  s.add_development_dependency 'rcov' if RUBY_VERSION < '1.8'
   s.add_development_dependency 'capybara'
   s.add_development_dependency 'factory_girl', ['>2.0.0']
   s.add_development_dependency 'database_cleaner', ['>= 0']
-  s.add_development_dependency 'simplecov', ['>= 0.4.0']
 
   if s.respond_to? :specification_version then
     s.specification_version = 3

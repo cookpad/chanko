@@ -196,10 +196,20 @@ module Chanko
           end
           path ||= _path
 
-          if Chanko.config.view_resolver
-            scope.view_paths.unshift(Chanko.config.view_resolver.new(path))
+          resolver = if Chanko.config.view_resolver
+            Chanko.config.view_resolver.new(path)
           else
-            scope.view_paths.unshift(path)
+            if Rails::VERSION::MINOR >= 1
+              ActionView::OptimizedFileSystemResolver.new(path)
+            else
+              path
+            end
+          end
+
+          if Rails::VERSION::MINOR >= 2
+            scope.view_paths.paths.unshift(resolver)
+          else
+            scope.view_paths.unshift(resolver)
           end
         end
       end
@@ -208,17 +218,12 @@ module Chanko
       def detach_view_paths(scope)
         return unless scope.respond_to?("view_paths")
         absolute_view_paths.size.times do |path|
-          # NOTE: in rails 3.2, ActionView::PathSet has lack of shift method.
-          if scope.view_paths.instance_of? Array
-            shifted_path = scope.view_paths.shift
+          if Rails::VERSION::MINOR >= 2
+            shifted_path  = scope.view_paths.paths.shift
           else
-            view_paths = scope.view_paths.to_a
-            shifted_path  = view_paths.shift
-            scope.lookup_context.view_paths = ActionView::PathSet.new(view_paths)
+            shifted_path  = scope.view_paths.shift
           end
           Chanko::Unit.__eager_paths[shifted_path] = shifted_path
-          #NOTE does it need to check?
-          #return scope.view_paths.unshift(shifted_path) unless absolute_view_paths.include?(shifted_path.to_path)
         end
       end
       private :detach_view_paths

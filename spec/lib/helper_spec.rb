@@ -2,10 +2,6 @@ require 'spec_helper'
 
 describe Chanko do
   shared_examples_for 'helper' do
-    before do
-      Chanko::Helper.reset
-    end
-
     it 'should regist' do
       Chanko::Helper.register('foo') do
         def bar; 'bar'; end
@@ -14,7 +10,6 @@ describe Chanko do
     end
 
     it 'should remove' do
-      Chanko::Helper.stub!(:check_to_update_interval).and_return(0)
       Chanko::Helper.register('foo') do
         def bar; 'bar'; end
       end
