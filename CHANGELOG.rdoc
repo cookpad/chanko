@@ -1,3 +1,10 @@
+== 1.0.3, released 2012-03-22
+* Support Rails 3.2~
+* Fixed nested run_default method. it was broken.
+* Fixed 'rails generate chanko:install'.
+* Add 'Chanko.config.view_resolver'. it is used instead of
+ActionView::OptimizedFileSystemResolver when it is set.
+
 == 1.0.2, released 2012-02-02
 * Fixed updating load tried to remove previous defined constants by mistake.
 
