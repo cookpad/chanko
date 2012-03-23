@@ -38,7 +38,11 @@ module Chanko
           result = nil
           self.ext.attach(scope) do
             if self.ext.default? && scope.view? && options[:capture]
-              result = scope.capture(&block)
+              if scope.respond_to?("capture_haml") && scope.is_haml? && scope.block_is_haml?(block)
+                result = scope.capture_haml(&block)
+              else
+                result = scope.capture(&block)
+              end
             else
               result = scope.instance_eval(&block)
             end

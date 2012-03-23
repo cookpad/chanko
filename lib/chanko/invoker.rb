@@ -153,6 +153,7 @@ module Chanko
           next unless result
           buffer.safe_concat(result)
         end
+
         return buffer if succeeded_callbacks.present?
         return ActiveSupport::SafeBuffer.new unless default
         run_callback(default, options)

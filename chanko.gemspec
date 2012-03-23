@@ -29,7 +29,8 @@ Gem::Specification.new do |s|
     s.add_development_dependency 'ruby-debug', ['>= 0']
   end
 
-  s.add_development_dependency 'capybara'
+  s.add_development_dependency 'haml', ['= 3.1.2']
+  s.add_development_dependency 'webrat'
   s.add_development_dependency 'factory_girl', ['>2.0.0']
   s.add_development_dependency 'database_cleaner', ['>= 0']
 

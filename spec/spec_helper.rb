@@ -9,9 +9,11 @@ if RUBY_VERSION =~ /\A1.9.*/
 end
 
 require 'chanko'
+require 'haml'
 require 'app'
-require 'rspec/rails'
 
+#Rails.root = Fir.dirname(__FILE__)
+require 'rspec/rails'
 
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
