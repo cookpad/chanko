@@ -24,14 +24,15 @@ Gem::Specification.new do |s|
   if RUBY_VERSION =~ /\A1.9.*/
     s.add_development_dependency 'ruby-debug19', ['>= 0']
     s.add_development_dependency 'simplecov', ['>= 0.4.0']
+    s.add_development_dependency 'factory_girl', ['=3.0.0']
   else
     s.add_development_dependency 'rcov'
     s.add_development_dependency 'ruby-debug', ['>= 0']
+    s.add_development_dependency 'factory_girl', ['=2.6.4']
   end
 
-  s.add_development_dependency 'haml', ['= 3.1.2']
+  s.add_development_dependency 'haml', ['= 3.1.4']
   s.add_development_dependency 'webrat'
-  s.add_development_dependency 'factory_girl', ['>2.0.0']
   s.add_development_dependency 'database_cleaner', ['>= 0']
 
   if s.respond_to? :specification_version then
