@@ -14,11 +14,12 @@ module Chanko
 
         unless ext = Chanko::Loader.load_extension(ext_label)
           return nil if block_given?
-          return Chanko::MethodProxy::NullProxy.new
+          return Chanko::MethodProxy::NullProxy.proxy
         end
 
         unless block_given?
-          return Chanko::MethodProxy::Proxy.new(self, ext)
+          @method_proxy ||= {}
+          return @method_proxy[ext] ||= Chanko::MethodProxy::Proxy.new(self, ext)
         end
 
         begin
@@ -40,6 +41,10 @@ module Chanko
     end
 
     class NullProxy
+      def self.proxy
+        @null_proxy ||= self.new
+      end
+
       def method_missing(name, *args, &block)
         nil
       end
@@ -60,13 +65,10 @@ module Chanko
       def ext_method(name)
         "__#{@ext.name.underscore}__#{name}"
       end
+      alias_method :label, :ext_method
 
       def method_missing(name, *args, &block)
         @obj.send(ext_method(name), *args, &block)
-      end
-
-      def label(name)
-        ext_method(name)
       end
     end
   end
