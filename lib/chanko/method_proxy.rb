@@ -18,8 +18,7 @@ module Chanko
         end
 
         unless block_given?
-          @method_proxy ||= {}
-          return @method_proxy[ext] ||= Chanko::MethodProxy::Proxy.new(self, ext)
+          return Chanko::MethodProxy::Proxy.new(self, ext)
         end
 
         begin
