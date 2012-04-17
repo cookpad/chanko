@@ -16,7 +16,8 @@ module Chanko
 
     def notify
       run_callbacks :notify do
-        Rails.logger.debug("Chanko::Exception #{message} #{payload.inspect}")
+        backtrace = payload[:exception].try(:backtrace).try(:[], 0..10).try(:join, "\n")
+        Rails.logger.debug("Chanko::Exception #{message}\n#{backtrace}")
       end
       return if !force && !Chanko.config.raise
       raise payload[:exception] if payload[:exception]
