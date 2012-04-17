@@ -1,6 +1,6 @@
 module Chanko
   class ExceptionNotifier
-    include Chanko::Callbacks
+    include ActiveSupport::Callbacks
     define_callbacks :notify
     attr_accessor :message, :payload, :force
 

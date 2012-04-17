@@ -1,6 +1,6 @@
 module Chanko
   class Callback
-    include Chanko::Callbacks
+    include ActiveSupport::Callbacks
     define_callbacks :invoke
 
     autoload :ActionView, 'action_view'

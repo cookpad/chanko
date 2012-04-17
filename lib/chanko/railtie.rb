@@ -2,7 +2,7 @@ require "rails"
 
 module Chanko
   load_klasses = %w(aborted log loader unit helper method_proxy invoker controller tools)
-  load_klasses += %w(test callback callbacks active_if directories aliases exception exception_notifier expand active_record updating_load)
+  load_klasses += %w(test callback active_if directories aliases exception exception_notifier expand active_record updating_load)
   load_klasses.each do |klass|
     autoload klass.camelize, "chanko/#{klass}"
   end
