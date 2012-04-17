@@ -27,6 +27,7 @@ Run install.
   rails generate chanko:install
 Add this code to ApplicationHelper.
   include Chanko::Invoker
+  include Chanko::Helper
 
 == Files
 
@@ -91,7 +92,9 @@ Tests for this chanko go here.
         #expanded_model.ext(:sample).has_many_associations
         has_many :has_many_associations
         has_one :has_one_association
-        named_scope :exists, :conditions => {:deleted_at => nil}
+
+        # should use lambda
+        scope :exists, lambda { where(:deleted_at => nil) }
 
         # expanded_model_instance.ext.new_method
         def new_method
