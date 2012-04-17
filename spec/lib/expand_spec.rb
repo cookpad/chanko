@@ -99,13 +99,15 @@ describe Chanko do
 
       it 'should use scope' do
         expander.class_eval do
-          scope :alice, lambda { |name| where(:name => name) }
+          scope :named, lambda { |name| where(:name => name) }
+          scope :alice, lambda { where(:name => 'alice') }
         end
         expander.attach(user_klass)
         %w(alice bob).each { |name| User.create!(:name => name) }
 
         user_klass.should have(2).records
-        user_klass.ext(:prefix).alice('alice').should have(1).records
+        user_klass.ext(:prefix).named('alice').should have(1).records
+        user_klass.ext(:prefix).alice.should have(1).records
       end
 
       it 'should work with a block' do
