@@ -2,7 +2,7 @@
 =begin
 require 'spec_helper'
 
-describe <%= class_name %>Controller, :type => :controller do
+describe '<%= class_name %>Controller', :type => :controller do
   before do
     enable_unit(:<%= file_name %>)
   end
