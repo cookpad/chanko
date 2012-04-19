@@ -2,18 +2,18 @@ module Chanko
   module Unit
     autoload 'Default', 'chanko/unit/default'
 
-    mattr_accessor :__callbacks_cache
+    mattr_accessor :__functions_cache
     mattr_accessor :__ancestors_cache
     mattr_accessor :__eager_paths
     def self.clear_cache!
       self.__ancestors_cache = Chanko::Tools.nested_hash(1)
-      self.__callbacks_cache = Chanko::Tools.nested_hash(2)
+      self.__functions_cache = Chanko::Tools.nested_hash(2)
       self.__eager_paths = Hash.new
     end
     clear_cache!
 
-    def self.clear_callback_cache(name)
-      return Chanko::Unit.__callbacks_cache[name] = Chanko::Tools.nested_hash(1)
+    def self.clear_function_cache(name)
+      return Chanko::Unit.__functions_cache[name] = Chanko::Tools.nested_hash(1)
     end
 
     def self.included(obj)
@@ -31,7 +31,7 @@ module Chanko
 
           def unitize!
             Chanko::Loader.register(self)
-            @callbacks = {}
+            @functions = {}
             @active_if = Chanko::ActiveIf.new
           end
         end
@@ -39,8 +39,8 @@ module Chanko
       obj.unitize!
     end
 
-    def self.unit_method_name(ext_name, method)
-      "__#{ext_name}__#{method}"
+    def self.unit_method_name(unit_name, method)
+      "__#{unit_name}__#{method}"
     end
 
     module ModelsClassMethods
@@ -79,7 +79,7 @@ module Chanko
 
       def active?(context=nil, options={})
         begin
-          options = options.merge(:ext => self)
+          options = options.merge(:unit => self)
           @active_if.enabled?(context, options)
         rescue ::Exception => e
           Chanko::ExceptionNotifier.notify("Activeif definition #{self.name} raised", false,
@@ -98,13 +98,13 @@ module Chanko
       end
       private :any
 
-      def ext_name
+      def unit_name
         self.name.split("::").first.underscore
       end
-      memoize :ext_name
+      memoize :unit_name
 
       def expand_prefix
-        "__#{ext_name}__"
+        "__#{unit_name}__"
       end
       memoize :expand_prefix
 
@@ -148,29 +148,30 @@ module Chanko
       end
       private :scope
 
-      def callback(label, options = {}, &block)
+      def function(label, options = {}, &block)
         self.add(@scope, label, block, options)
       end
+      alias_method :callback, :function
       private :callback
-
+      private :function
 
       def underscore
         name.to_s.underscore
       end
       memoize :underscore
 
-      def stylesheet_name
+      def css_name
         underscore
       end
 
       def add(scope, label, block, options={})
-        @callbacks[scope] ||= {}
-        @callbacks[scope][label] = Chanko::Callback.new(label, self, options, &block)
+        @functions[scope] ||= {}
+        @functions[scope][label] = Chanko::Function.new(label, self, options, &block)
         @keys = nil
       end
 
       def scopes
-        @keys ||= @callbacks.keys
+        @keys ||= @functions.keys
       end
 
       def absolute_view_paths
@@ -240,13 +241,13 @@ module Chanko
 
       def attach!(scope)
         attach_view_paths(scope)
-        scope.attached_extension_classes ||= []
-        scope.attached_extension_classes.push(self)
+        scope.attached_unit_classes ||= []
+        scope.attached_unit_classes.push(self)
       end
 
       def detach!(scope)
         detach_view_paths(scope)
-        scope.attached_extension_classes.pop if scope.respond_to?("attached_extension_classes")
+        scope.attached_unit_classes.pop if scope.respond_to?("attached_unit_classes")
       end
 
       def ancestors?(scope, context)
@@ -275,39 +276,39 @@ module Chanko
       end
       memoize :default?
 
-      def callbacks(context, label, active_if_options={}, options = {})
+      def functions(context, label, active_if_options={}, options = {})
         return [] unless active?(context, active_if_options)
 
         label = label.kind_of?(Symbol) ? label : label.to_sym
         context_class =  Chanko::Aliases.alias(options[:as] || context.class)
         context_class = context_class.constantize if context_class.is_a?(String)
         scope_key = Chanko.config.cache_classes ? context_class : context_class.name
-        cache =  Chanko::Unit.__callbacks_cache[self.name][scope_key][label]
+        cache =  Chanko::Unit.__functions_cache[self.name][scope_key][label]
         return cache unless cache.nil?
 
         cbks = []
         scopes.each do |scope|
           next unless ancestors?(scope, context_class)
-          callback = get_callback(scope, label)
-          cbks << callback if callback
+          function = get_function(scope, label)
+          cbks << function if function
         end
-        Chanko::Unit.__callbacks_cache[self.name][scope_key][label] = cbks
+        Chanko::Unit.__functions_cache[self.name][scope_key][label] = cbks
 
         return cbks.dup unless cbks.blank?
 
-        Chanko::ExceptionNotifier.notify("missing callbacks #{self.name}##{label}", false,
-                                 :exception_klass => Chanko::Exception::MissingCallback,
-                                 :key => "missing callback #{self.name}",
+        Chanko::ExceptionNotifier.notify("missing functions #{self.name}##{label}", false,
+                                 :exception_klass => Chanko::Exception::MissingFunction,
+                                 :key => "missing function #{self.name}",
                                  :context => self
                                 )
                                 return []
       end
 
-      def get_callback(scope, label)
-        @callbacks[scope] ||= {}
-        @callbacks[scope][label]
+      def get_function(scope, label)
+        @functions[scope] ||= {}
+        @functions[scope][label]
       end
-      private :get_callback
+      private :get_function
 
       def add_shared_method(name, &block)
         @shared_methods ||= {}

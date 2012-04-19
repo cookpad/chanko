@@ -1,7 +1,7 @@
 class ChankoGenerator < Rails::Generators::NamedBase
   source_root File.expand_path('../templates', __FILE__)
   argument :models, :type => :array, :default => [], :banner => "model model"
-  class_option :directory, :type => :string, :default => 'chanko', :description => "Chanko directory name"
+  class_option :directory, :type => :string, :description => "Chanko directory name"
   class_option :scss, :type => :boolean, :default => true, :description => "Generate a template SCSS file"
   class_option :js, :type => :boolean, :default => true, :description => "Generate a template javascript file"
   class_option :coffee, :type => :boolean, :default => false, :description => "Generate a template coffeescript file"
@@ -72,7 +72,8 @@ class ChankoGenerator < Rails::Generators::NamedBase
 
   private
   def base_directory
-    ENV['CHANKOS_DIRECTORY'] || options[:directory].pluralize
+    name = options[:directory] || Chanko.config.directory_name 
+    name.pluralize
   end
 
   def file_name

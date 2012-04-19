@@ -1,3 +1,4 @@
 log/*
 tmp/*
 Gemfile.lock
+webrat.log

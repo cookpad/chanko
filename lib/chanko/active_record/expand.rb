@@ -9,7 +9,7 @@ module Chanko
             definitions = instance_variable_get("@__#{association}_definitions")
             instance_variable_set("@__#{association}_definitions", definitions || [])
 
-            add_after_callback do |target, prefix|
+            add_after_function do |target, prefix|
               begin
                 instance_variable_get("@__#{association}_definitions").each do |name, options, block|
                   if block
@@ -23,7 +23,7 @@ module Chanko
           end
 
           %w(belongs_to).each do |association|
-            add_after_callback do |target, prefix|
+            add_after_function do |target, prefix|
               begin
                 x = instance_variable_get("@__#{association}_definitions")
                 instance_variable_get("@__#{association}_definitions").each do |name, options|

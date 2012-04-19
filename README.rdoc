@@ -33,32 +33,32 @@ Add this code to ApplicationHelper.
 
 Generate chanko.
   rails generate chanko sample
-        create  app/chankos/sample/sample.rb
-        create  app/chankos/sample/views/_show.html.haml
-        create  app/chankos/sample/stylesheets/tutorial.scss
-        create  app/chankos/sample/images/logo.png
-        create  app/chankos/sample/specs/models/sample_spec.rb
-        create  app/chankos/sample/specs/controllers/sample_controller_spec.rb
-        create  app/chankos/sample/specs/helpers/sample_helper_spec.rb
+        create  app/units/sample/sample.rb
+        create  app/units/sample/views/_show.html.haml
+        create  app/units/sample/stylesheets/tutorial.scss
+        create  app/units/sample/images/logo.png
+        create  app/units/sample/specs/models/sample_spec.rb
+        create  app/units/sample/specs/controllers/sample_controller_spec.rb
+        create  app/units/sample/specs/helpers/sample_helper_spec.rb
 
-=== app/chankos/sample/sample.rb
+=== app/units/sample/sample.rb
 Main file. You write your model and controller logic in this file.
 
-=== app/chankos/sample/views
+=== app/units/sample/views
 The view files for your chanko. Each chanko refers to its own views directory.
 
-=== app/chankos/sample/stylesheets/tutorial.scss
+=== app/units/sample/stylesheets/tutorial.scss
 Write styles for your chanko in this file. These files will be merged during
 startup or first access.
 
-=== app/chankos/sample/images/logo.png
+=== app/units/sample/images/logo.png
 The image files for this chanko.
 if you manually created this directory, you should create a symbolic link from
-app/chankos/sample/images to  (public or assets)/images/chankos/#{ext_name}
+app/units/sample/images to  (public or assets)/images/units/#{unit_name}
 with attention to use the relative path.
 If you used generator, the symbolic link is automaticlly generated.
 
-=== app/chankos/sample/specs/
+=== app/units/sample/specs/
 Tests for this chanko go here.
 
 == Syntax
@@ -66,7 +66,7 @@ Tests for this chanko go here.
     include Chanko::Unit
 
     # active_if's block is used to decide if the chanko is active or not.
-    # context is the object which invoked the callback.
+    # context is the object which invoked the function.
     active_if :always_true do |context, options|
       true
     end
@@ -76,31 +76,31 @@ Tests for this chanko go here.
     end
 
     scope(:controller) do
-      callback(:controller_show) do
+      function(:controller_show) do
         # controller code here
       end
     end
 
     scope(:view) do
-      callback(:view_show) do
+      function(:view_show) do
         render :partial => "/show"
       end
     end
 
     models do
       expand("ExpandedModel") do
-        #expanded_model.ext(:sample).has_many_associations
+        #expanded_model.unit(:sample).has_many_associations
         has_many :has_many_associations
         has_one :has_one_association
 
         # should use lambda
         scope :exists, lambda { where(:deleted_at => nil) }
 
-        # expanded_model_instance.ext.new_method
+        # expanded_model_instance.unit.new_method
         def new_method
         end
 
-        #expanded_mode.ext.new_method
+        #expanded_mode.unit.new_method
         class_methods do
           def new_class_method
           end
@@ -109,7 +109,7 @@ Tests for this chanko go here.
     end
 
     helpers do
-      # ext.helper_method
+      # unit.helper_method
       def helper_method
       end
     end
@@ -120,8 +120,8 @@ Tests for this chanko go here.
 arg of the invoked context, such as the controller.
 The chanko is enabled when the block returns true.
   # activeif's block is used to decide if the chanko is active or not.
-  # context is the object which invoked the callback.
-   which invoking callback object.
+  # context is the object which invoked the function.
+   which invoking function object.
   active_if do |context, options|
     true
   end
@@ -151,33 +151,33 @@ When you want to use an OR condition, use "any()".
 
 == shared method
 "shared()" is the syntax for shared method definitions. you can use the defined
-method through callbacks of either :controller or :view. A block of a shared
+method through functions of either :controller or :view. A block of a shared
 method behaves as an instance method.
   shared(:hello) do |name|
     "hello #{name}"
   end
 
   scope(:view) do
-    callback(:hello) do
+    function(:hello) do
       hello("alice")
     end
   end
 
-== callback
-A "callback()" is expanded in the calling code. This block's context behaves
+== function
+A "function()" is expanded in the calling code. This block's context behaves
 as an invoked context, so you can access the original context's instance
-variables. if you need to access local variables, a callback provides a :locals
+variables. if you need to access local variables, a function provides a :locals
 option that is similar to :locals use in render.
-A callback is scoped, and its scope is a restriction for the callback. The
-callback is only called from scoped context.
+A function is scoped, and its scope is a restriction for the function. The
+function is only called from scoped context.
   #scope can receive specified context such as "scope('UsersController')".
   scope(:controller) do
-    callback(:controller_show) do
+    function(:controller_show) do
       # controller code here
     end
   end
 
-"invoke()" in your controller runs a callback block if the active_if block
+"invoke()" in your controller runs a function block if the active_if block
 returns true. In this case, if active_if for the sample chanko is true, then
 controller_show will be invoked in the chanko main.rb
   class UsersController
@@ -187,46 +187,46 @@ controller_show will be invoked in the chanko main.rb
   end
 
 "invoke()" can receive a block as a default fallback. The block is executed if
-the active_if block returns false or the callback raises an error.
+the active_if block returns false or the function raises an error.
   invoke(:sample, :controller_show) do
      default_behaviour
   end
 
 "run_default()" method runs default block and return a result as string.
-it is used by callback block
-  callback(:hello) do
+it is used by function block
+  function(:hello) do
     result = run_default
     "#{result} + hello"
   end
 
-"invoke()" can receive multiple callbacks. "invoke" tries to run the callbacks
-in turn. Only the first enabled callback is executed.
-  #invoke doesn't run next_ext callback if first_ext is enabled.
-  invoke([:first_ext, :show], [:next_ext, :show])
+"invoke()" can receive multiple functions. "invoke" tries to run the functions
+in turn. Only the first enabled function is executed.
+  #invoke doesn't run second_unit function if first_unit is enabled.
+  invoke([:first_unit, :show], [:second_unit, :show])
 
 "invoke"() doesn't run if the specified chanko in the :if is disabled
-  invoke(:sample, :show, :if => :depend_on_ext)
+  invoke(:sample, :show, :if => :depend_on_unit)
 
 == expand
 "expand()" expands existing model methods and adds chanko helper methods. The
 expanded method is only used by the expanding chanko.
-All expanded method must be used in your code via ext proxy as below.
-  user_instance.ext.expanded_method
+All expanded method must be used in your code via unit proxy as below.
+  user_instance.unit.expanded_method
 
 You can write expanding methods for current models. The "models()" block
 provides association and named_scope and class method syntax.
   models do
     expand("ExpandedModel") do
-       #expanded_model.ext.has_many_associations
+       #expanded_model.unit.has_many_associations
        has_many :has_many_associations
        has_one :has_one_association
        has_many :through_associations, :through => label(:has_many_associations)
        named_scope :exists, :conditions => {:deleted_at => nil}
-        # expanded_model_instance.ext.new_method
+        # expanded_model_instance.unit.new_method
        def new_method
        end
 
-       #expanded_mode.ext.new_method
+       #expanded_mode.unit.new_method
        class_methods do
         def cmethod
         end
@@ -235,8 +235,8 @@ provides association and named_scope and class method syntax.
   end
 
 When used as a symbol as an :include option for ActiveRecord, you must wrap
-label with "ext.label()" syntax.
-  User.find(:first, :include => [ext.label(:recipes)])
+label with "unit.label()" syntax.
+  User.find(:first, :include => [unit.label(:recipes)])
 
 == Helpers
 You can write chanko helpers.
@@ -245,8 +245,8 @@ You can write chanko helpers.
     end
   end
 
-And can use helpers in views and controllers via ext proxy.
-  callback(:sample) { ext.hello }
+And can use helpers in views and controllers via unit proxy.
+  function(:sample) { unit.hello }
   helpers { def hello; 'hello'; end }
 
 == Tips
@@ -264,10 +264,10 @@ Use :always_true/:always_false on active_if.
 invoke with before_filter.
 Use block and invoke.
   before_filter :only => :index do |controller|
-    controller.invoke(:contest_noseru_ext, :store_contest_id)
+    controller.invoke(:your_unit, :before_function)
   end
 
 check status of a chanko.
 you can check the status of an chanko. In almost all situations, context is controller.（deprecated ?)
-  ext(:sample).active? #=> return boolean
+  unit(:sample).active? #=> return boolean
 

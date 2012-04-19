@@ -10,8 +10,8 @@ describe "Ext" do
     let(:invoker) { Chanko::Test::Invoker.new }
 
     before do
-      ext_mock("SharedMethodTestExt", Chanko::Test::Invoker)
-      ext_mock("NestedSharedMethodTestExt", Chanko::Test::Invoker)
+      mock_unit("SharedMethodTestExt", Chanko::Test::Invoker)
+      mock_unit("NestedSharedMethodTestExt", Chanko::Test::Invoker)
 
       SharedMethodTestExt.class_eval do
         shared(:shared_hello) { "shared hello" }
@@ -24,28 +24,28 @@ describe "Ext" do
     end
 
     it 'should use shared method' do
-      callback = Chanko::Callback.new(:hello, SharedMethodTestExt) do
+      function = Chanko::Function.new(:hello, SharedMethodTestExt) do
         @var = shared_hello
         shared_hello
       end
 
-      callback.invoke!(invoker).should == "shared hello"
+      function.invoke!(invoker).should == "shared hello"
       invoker.instance_variable_get("@var").should == "shared hello"
     end
 
     it 'should raise error when shared method raise error' do
-      callback = Chanko::Callback.new(:hello, SharedMethodTestExt) do
+      function = Chanko::Function.new(:hello, SharedMethodTestExt) do
         raise_error
       end
-      expect { callback.invoke!(invoker) }.to raise_error(Exception)
+      expect { function.invoke!(invoker) }.to raise_error(Exception)
     end
 
-    it 'should store error and skip raise if raise_extension_exception is false' do
+    it 'should store error and skip raise if raise_chanko_exception is false' do
       no_raise_chanko_exception
-      callback = Chanko::Callback.new(:hello, SharedMethodTestExt) do
+      function = Chanko::Function.new(:hello, SharedMethodTestExt) do
         raise_error
       end
-      expect { callback.invoke!(invoker) }.to_not raise_error(StandardError)
+      expect { function.invoke!(invoker) }.to_not raise_error(StandardError)
       #FIXME
       #ErrorLog.should have(1).records
     end
@@ -55,16 +55,16 @@ describe "Ext" do
         shared(:shared_hello) { "nested hello" }
       end
 
-      nested_callback = Chanko::Callback.new(:hello, NestedSharedMethodTestExt) do
+      nested_function = Chanko::Function.new(:hello, NestedSharedMethodTestExt) do
         @nested_var = shared_hello
       end
 
-      callback = Chanko::Callback.new(:hello, SharedMethodTestExt) do
+      function = Chanko::Function.new(:hello, SharedMethodTestExt) do
         @before_shared_var = shared_hello
-        nested_callback.invoke!(self)
+        nested_function.invoke!(self)
         @after_shared_var = shared_hello
       end
-      callback.invoke!(invoker)
+      function.invoke!(invoker)
 
       invoker.instance_eval do
         @before_shared_var.should == 'shared hello'
@@ -73,30 +73,30 @@ describe "Ext" do
       end
     end
 
-    describe 'must not use other ext method' do
+    describe 'must not use other unit method' do
       before do
         NestedSharedMethodTestExt.class_eval do
           shared(:nested_hello) { shared_hello }
         end
 
-        nested_callback = Chanko::Callback.new(:hello, NestedSharedMethodTestExt) do
+        nested_function = Chanko::Function.new(:hello, NestedSharedMethodTestExt) do
           nested_hello
         end
 
         @invoker = invoker
         _invoker = @invoker
-        @callback =Chanko::Callback.new(:hello, SharedMethodTestExt) do
-          nested_callback.invoke!(_invoker)
+        @function =Chanko::Function.new(:hello, SharedMethodTestExt) do
+          nested_function.invoke!(_invoker)
         end
       end
 
-      it 'should raise error when shared method is used from other ext' do
-        expect { @callback.invoke!(@invoker) }.to raise_error(NameError, /undefined local variable or method `shared_hello'/)
+      it 'should raise error when shared method is used from other unit' do
+        expect { @function.invoke!(@invoker) }.to raise_error(NameError, /undefined local variable or method `shared_hello'/)
       end
 
-      it 'should store NameError log and skip to raise if raise_extension_exception is false' do
+      it 'should store NameError log and skip to raise if raise_chanko_exception is false' do
         no_raise_chanko_exception
-        expect { @callback.invoke!(@invoker) }.to_not raise_error(NameError)
+        expect { @function.invoke!(@invoker) }.to_not raise_error(NameError)
         #FIXME
         #ErrorLog.should have(1).records
       end

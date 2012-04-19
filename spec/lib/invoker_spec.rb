@@ -4,9 +4,9 @@ describe Chanko do
   shared_examples_for 'invoker' do
     let(:invoker) { Chanko::Test::Invoker.new }
 
-    it 'should run my scoped ext methods' do
+    it 'should run my scoped unit methods' do
       raise_chanko_exception
-      ext_mock("RunTest", Chanko::Test::Invoker, {:hoge => 1})
+      mock_unit("RunTest", Chanko::Test::Invoker, {:hoge => 1})
       invoker.invoke(:run_test, :hoge)
       invoker.instance_eval { @hoge.should == 1 }
     end
@@ -14,10 +14,10 @@ describe Chanko do
     describe 'locals' do
       context 'cant find' do
         it 'should raise' do
-          ext_mock("LocalVariableTest")
+          mock_unit("LocalVariableTest")
           LocalVariableTest.class_eval do
             scope(Chanko::Test::Invoker) do
-              callback(:missing_locals) { missing }
+              function(:missing_locals) { missing }
             end
           end
           expect {
@@ -27,10 +27,10 @@ describe Chanko do
 
         it 'should not raise when raising is repressed' do
           no_raise_chanko_exception
-          ext_mock("LocalVariableTest")
+          mock_unit("LocalVariableTest")
           LocalVariableTest.class_eval do
             scope(Chanko::Test::Invoker) do
-              callback(:missing_locals) { missing }
+              function(:missing_locals) { missing }
             end
           end
           expect {
@@ -40,7 +40,7 @@ describe Chanko do
       end
 
       it 'should skip default' do
-        ext_mock("SkipDefault",  Chanko::Test::Invoker, {:hoge => {:value => 1}})
+        mock_unit("SkipDefault",  Chanko::Test::Invoker, {:hoge => {:value => 1}})
         invoker.invoke(:skip_default, :hoge) { @fuga = 1 }
         invoker.instance_eval do
           @hoge.should == 1
@@ -49,9 +49,9 @@ describe Chanko do
       end
 
 
-      it 'should run first enabled extension' do
-        ext_mock("FirstTest", Chanko::Test::Invoker, :hello => { :value => Proc.new { run_default; @hello = "hello"} })
-        ext_mock("SecondTest", Chanko::Test::Invoker, :goodbye => { :value => "goodbye" })
+      it 'should run first enabled unit' do
+        mock_unit("FirstTest", Chanko::Test::Invoker, :hello => { :value => Proc.new { run_default; @hello = "hello"} })
+        mock_unit("SecondTest", Chanko::Test::Invoker, :goodbye => { :value => "goodbye" })
         invoker.invoke([:first_test, :hello], [:second_test, :hello]) { @default1 = 1 }
         invoker.instance_eval do
           @hello.should == "hello"
@@ -70,41 +70,41 @@ describe Chanko do
         end
       end
 
-      it 'should run other context callback' do
-        ext_mock("SecondTest", :controller, :hello => { :value => "hello" })
+      it 'should run other context function' do
+        mock_unit("SecondTest", :controller, :hello => { :value => "hello" })
         invoker.invoke(:second_test, :hello, :as => :controller)
         invoker.instance_eval { @hello.should == "hello" }
       end
 
 
-      it 'should run callback when depend on extension was enabled' do
+      it 'should run function when depend on unit was enabled' do
         raise_chanko_exception
-        ext_mock("DependOnExt", Chanko::Test::Invoker, { :hello => "hello" })
-        ext_mock("EnabledExt", Chanko::Test::Invoker, { :hello => "hello2"})
-        invoker.invoke(:depend_on_ext, :hello, :if => :enabled_ext)
+        mock_unit("DependOnUnit", Chanko::Test::Invoker, { :hello => "hello" })
+        mock_unit("EnabledUnit", Chanko::Test::Invoker, { :hello => "hello2"})
+        invoker.invoke(:depend_on_unit, :hello, :if => :enabled_unit)
         invoker.instance_eval { @hello.should == "hello" }
       end
 
-      it 'should not run callback if depend on extension is disabled' do
+      it 'should not run function if depend on unit is disabled' do
         no_raise_chanko_exception
-        ext_mock("DependOnExt", Chanko::Test::Invoker, { :hello => "hello" })
-        ext_mock("DisabledExt", Chanko::Test::Invoker, { :hello => {:value => "hello2"}}, :disable => true)
-        invoker.invoke(:depend_on_ext, :hello, :if => :disabled_ext)
+        mock_unit("DependOnUnit", Chanko::Test::Invoker, { :hello => "hello" })
+        mock_unit("DisabledUnit", Chanko::Test::Invoker, { :hello => {:value => "hello2"}}, :disable => true)
+        invoker.invoke(:depend_on_unit, :hello, :if => :disabled_unit)
         invoker.instance_eval { @hello.should == nil }
       end
 
-      it 'should not run callback if depend on extension is missing' do
+      it 'should not run function if depend on unit is missing' do
         no_raise_chanko_exception
-        ext_mock("DependOnExt", Chanko::Test::Invoker, { :hello => "hello" })
-        invoker.invoke(:depend_on_ext, :hello, :if => :missing_extension)
+        mock_unit("DependOnUnit", Chanko::Test::Invoker, { :hello => "hello" })
+        invoker.invoke(:depend_on_unit, :hello, :if => :missing_unit)
         invoker.instance_eval { @hello.should == nil }
       end
 
       it 'should access locals' do
-        ext_mock("LocalVariableTest", self.class, {:hoge => 1})
+        mock_unit("LocalVariableTest", self.class, {:hoge => 1})
         LocalVariableTest.class_eval do
           scope(Chanko::Test::Invoker) do
-            callback(:set_variable) { @var = var }
+            function(:set_variable) { @var = var }
           end
         end
         invoker.invoke(:local_variable_test, :set_variable, :locals => {:var => true})
@@ -114,12 +114,12 @@ describe Chanko do
       end
 
       it 'should access nested locals' do
-        ext_mock("LocalVariableTest", self.class, {:hoge => 1})
-        ext_mock("NestedLocalVariableTest", self.class, {:hoge => 1})
+        mock_unit("LocalVariableTest", self.class, {:hoge => 1})
+        mock_unit("NestedLocalVariableTest", self.class, {:hoge => 1})
 
         LocalVariableTest.class_eval do
           scope(Chanko::Test::Invoker) do
-            callback(:set_variable) do
+            function(:set_variable) do
               @before = var
               invoke(:nested_local_variable_test, :set_variable, :locals => {:var => false})
               @after = var
@@ -129,7 +129,7 @@ describe Chanko do
 
         NestedLocalVariableTest.class_eval do
           scope(Chanko::Test::Invoker) do
-            callback(:set_variable) do
+            function(:set_variable) do
               @nested = var
             end
           end
@@ -146,7 +146,7 @@ describe Chanko do
 
     it 'should acceed to active_if symbols' do
       no_raise_chanko_exception
-      ext_mock("SymbolActiveIfTest", Chanko::Test::Invoker, { :hello => "hello" })
+      mock_unit("SymbolActiveIfTest", Chanko::Test::Invoker, { :hello => "hello" })
       SymbolActiveIfTest.class_eval { active_if :always_false }
       invoker.invoke(:symbol_active_if_test, :hello)
       @hello.should == nil
@@ -182,8 +182,8 @@ describe Chanko do
       invoker.instance_eval { @hello = nil }
 
       Chanko::ActiveIf.define(:symbol_active_if_test) do |context, options|
-        ext = options[:ext]
-        ext.name == "SymbolActiveIfTest"
+        unit = options[:unit]
+        unit.name == "SymbolActiveIfTest"
       end
 
       SymbolActiveIfTest.class_eval do
@@ -196,12 +196,12 @@ describe Chanko do
     end
 
 
-    it 'should set current callback' do
-      ext_mock("CurrentCallbackTest", Chanko::Test::Invoker, { :set_current_callback => {:value => Proc.new { @current_callback = __current_callback}  }})
-      invoker.invoke(:current_callback_test, :set_current_callback)
-      invoker.instance_eval { @current_callback.ext.name.should == "CurrentCallbackTest"}
-      invoker.instance_eval { @current_callback.label.should == :set_current_callback}
-      invoker.__current_callback.should be_nil
+    it 'should set current function' do
+      mock_unit("CurrentFunctionTest", Chanko::Test::Invoker, { :set_current_function => {:value => Proc.new { @current_function = __current_function}  }})
+      invoker.invoke(:current_function_test, :set_current_function)
+      invoker.instance_eval { @current_function.unit.name.should == "CurrentFunctionTest"}
+      invoker.instance_eval { @current_function.label.should == :set_current_function}
+      invoker.__current_function.should be_nil
     end
   end
 
@@ -210,8 +210,7 @@ describe Chanko do
     it_should_behave_like 'invoker'
   end
 
-  context 'without cache_classes' do
-    before { Chanko.config.cache_classes = false }
+  context 'without cache_classes' do before { Chanko.config.cache_classes = false }
     it_should_behave_like 'invoker'
   end
 end

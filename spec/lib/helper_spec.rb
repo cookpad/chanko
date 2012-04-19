@@ -27,7 +27,7 @@ describe Chanko do
     end
 
     it 'should use' do
-      ext_mock("HelperTest")
+      mock_unit("HelperTest")
       Chanko::Helper.register('HelperTest') do
         def bar; 'bar'; end
       end
@@ -37,7 +37,7 @@ describe Chanko do
         klass.send(:include, Chanko::Helper)
       end.new
 
-      instance.ext(:helper_test).bar.should == 'bar'
+      instance.unit(:helper_test).bar.should == 'bar'
     end
   end
 

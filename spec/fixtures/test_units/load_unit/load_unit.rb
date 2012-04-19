@@ -1,4 +1,4 @@
-module LoadExt
+module LoadUnit
   include Chanko::Unit
 end
 

@@ -6,8 +6,8 @@ describe "Chanko" do
 
     before do
       no_raise_chanko_exception
-      ext_mock("RunDefaultTestExt", Chanko::Test::Invoker)
-      ext_mock("RunNestedDefaultTestExt", Chanko::Test::Invoker)
+      mock_unit("RunDefaultTestExt", Chanko::Test::Invoker)
+      mock_unit("RunNestedDefaultTestExt", Chanko::Test::Invoker)
       ::INVOKER_FOR_NESTED_RUN_DEFAULT_TEST = Chanko::Test::Invoker.new
     end
 
@@ -18,31 +18,31 @@ describe "Chanko" do
     let(:invoker) { Chanko::Test::Invoker.new }
 
     it 'render default block via run_default method' do
-      callbacks = []
+      functions = []
       options = {}
-      callbacks << Chanko::Callback.new(:hello, RunDefaultTestExt) do
+      functions << Chanko::Function.new(:hello, RunDefaultTestExt) do
         buffer ='before_default '
         buffer << run_default
         buffer << ' after_default'
         buffer
       end
-      default = Chanko::Callback.default { 'default' }
-      result = invoker.render_callbacks(callbacks, default, options)
+      default = Chanko::Function.default { 'default' }
+      result = invoker.render_functions(functions, default, options)
       result.should == 'before_default default after_default'
     end
 
     describe 'nested' do
       it 'render default block via run_default' do
-        callback = Chanko::Callback.new(:hello, RunDefaultTestExt) do
-          default = Chanko::Callback.default { 'inner' }
-          nested_callback = Chanko::Callback.new(:hello, RunNestedDefaultTestExt) do
+        function = Chanko::Function.new(:hello, RunDefaultTestExt) do
+          default = Chanko::Function.default { 'inner' }
+          nested_function = Chanko::Function.new(:hello, RunNestedDefaultTestExt) do
             run_default 
           end
-          "#{::INVOKER_FOR_NESTED_RUN_DEFAULT_TEST.render_callbacks([nested_callback], default, {})} #{run_default}"
+          "#{::INVOKER_FOR_NESTED_RUN_DEFAULT_TEST.render_functions([nested_function], default, {})} #{run_default}"
         end
 
-        default = Chanko::Callback.default { 'outer' }
-        result = ::INVOKER_FOR_NESTED_RUN_DEFAULT_TEST.render_callbacks([callback], default, {})
+        default = Chanko::Function.default { 'outer' }
+        result = ::INVOKER_FOR_NESTED_RUN_DEFAULT_TEST.render_functions([function], default, {})
         result.should == 'inner outer'
       end
     end

@@ -6,12 +6,12 @@ module Chanko
         extend ClassMethods
 
         mattr_accessor :defined_blocks
-        attr_accessor :attached_extension_classes
-        attr_accessor :__current_callback
+        attr_accessor :attached_unit_classes
+        attr_accessor :__current_function
 
         define_once(:method_missing_with_shared_method) do
           def method_missing_with_shared_method(method_symbol, *args)
-            if block = self.attached_extension_classes.try(:last).try(:shared_method, method_symbol)
+            if block = self.attached_unit_classes.try(:last).try(:shared_method, method_symbol)
               self.instance_exec(*args, &block)
             else
               method_missing_without_shared_method(method_symbol, *args)
@@ -47,13 +47,13 @@ module Chanko
       end
       private :_local_val
 
-      def extension_locals
-        @__extension_locals ||= []
+      def unit_locals
+        @__unit_locals ||= []
       end
-      private :extension_locals
+      private :unit_locals
 
       def current_locals
-        extension_locals.last || {}
+        unit_locals.last || {}
       end
       private :current_locals
 
@@ -67,32 +67,32 @@ module Chanko
 
       def requests(_requests)
         return _requests if _requests.first.is_a?(Array)
-        return [[_requests[0], _requests[1]]] #[[ext_name, label]]
+        return [[_requests[0], _requests[1]]] #[[unit_name, label]]
       end
       private :requests
 
-      def extension_names(requests)
+      def unit_names(requests)
         return requests.transpose.first if requests.first.is_a?(Array)
         return [requests[0]]
       end
-      private :extension_names
+      private :unit_names
 
       def invoke(*args, &block)
         options = args.extract_options!
         options.reverse_merge!(:locals => {}, :active_if_options => {}, :capture => true)
         active_if_options = options.delete(:active_if_options)
         depend_on = options.delete(:if)
-        extension_locals.push(options.delete(:locals).symbolize_keys)
+        unit_locals.push(options.delete(:locals).symbolize_keys)
 
-        Chanko::Loader.requested(extension_names(args))
-        callbacks = get_callbacks(requests(args), depend_on, active_if_options, options)
-        if default = Chanko::Callback.default(&block)
+        Chanko::Loader.requested(unit_names(args))
+        functions = get_functions(requests(args), depend_on, active_if_options, options)
+        if default = Chanko::Function.default(&block)
           default.called_from = args.join("#")
         end
-        return nil if callbacks.blank? && !default
-        render_callbacks(callbacks, default, options)
+        return nil if functions.blank? && !default
+        render_functions(functions, default, options)
       ensure
-        extension_locals.pop
+        unit_locals.pop
       end
 
       def array(obj)
@@ -100,69 +100,69 @@ module Chanko
       end
       private :array
 
-      def validate_depend_on_extensions(depended_extensions, options={})
-        return true unless depended_extensions
-        array(depended_extensions).each do |ext_name|
-          return false unless ext = Chanko::Loader.fetch(ext_name)
-          return false unless ext.enabled?(self, options)
+      def validate_depend_on_units(depended_units, options={})
+        return true unless depended_units
+        array(depended_units).each do |unit_name|
+          return false unless unit = Chanko::Loader.fetch(unit_name)
+          return false unless unit.enabled?(self, options)
         end
         return true
       end
-      private :validate_depend_on_extensions
+      private :validate_depend_on_units
 
-      def get_callbacks(requests, depend_on, active_if_options, options={})
-        return [] unless validate_depend_on_extensions(depend_on, active_if_options)
-        requests.each do |extension_name, label|
-          next unless ext = Chanko::Loader.fetch(extension_name)
-          callbacks = ext.callbacks(self, label, active_if_options, options)
-          next if callbacks.blank?
-          Chanko::Loader.invoked(extension_name)
-          return callbacks
+      def get_functions(requests, depend_on, active_if_options, options={})
+        return [] unless validate_depend_on_units(depend_on, active_if_options)
+        requests.each do |unit_name, label|
+          next unless unit = Chanko::Loader.fetch(unit_name)
+          functions = unit.functions(self, label, active_if_options, options)
+          next if functions.blank?
+          Chanko::Loader.invoked(unit_name)
+          return functions
         end
         []
       end
-      private :get_callbacks
+      private :get_functions
 
-      def run_callback(callback, options)
-        if callback.ext.default?
-          mes = "[DEFAULT CALLBACK] <- #{callback.called_from}"
+      def run_function(function, options)
+        if function.unit.default?
+          mes = "[DEFAULT CALLBACK] <- #{function.called_from}"
         else
-          mes = "#{callback.ext.name}##{callback.label}"
+          mes = "#{function.unit.name}##{function.label}"
         end
         Rails.logger.debug("Chanko::Run \e[0;32mcall\e[0m #{mes}")
-        result = callback.invoke!(self, options)
+        result = function.invoke!(self, options)
         return str_or_nil(result) unless Chanko::Aborted == result
         return Chanko::Aborted
       end
-      private :run_callback
+      private :run_function
 
-      def render_callbacks(callbacks, default, options)
+      def render_functions(functions, default, options)
         buffer = ActiveSupport::SafeBuffer.new
-        succeeded_callbacks = []
-        callbacks.each do |callback|
+        succeeded_functions = []
+        functions.each do |function|
           begin
-            @__ext_default ||= []
-            @__ext_default.unshift(default)
-            result = run_callback(callback, options)
+            @__unit_default ||= []
+            @__unit_default.unshift(default)
+            result = run_function(function, options)
           ensure
-            @__ext_default.shift
+            @__unit_default.shift
           end
 
           next if Chanko::Aborted == result
-          succeeded_callbacks << callback
+          succeeded_functions << function
           next unless result
           buffer.safe_concat(result)
         end
 
-        return buffer if succeeded_callbacks.present?
+        return buffer if succeeded_functions.present?
         return ActiveSupport::SafeBuffer.new unless default
-        run_callback(default, options)
+        run_function(default, options)
       end
 
       def run_default
-        default = @__ext_default[0]
+        default = @__unit_default[0]
         return nil unless default
-        result = run_callback(default, {:type => :plain, :capture => view?})
+        result = run_function(default, {:type => :plain, :capture => view?})
       end
 
 

@@ -16,6 +16,9 @@ module Chanko
     config_accessor :default_active_if
     config_accessor :default_view_type
     config_accessor :view_resolver
+    config_accessor :compatible_css_class
+    config_accessor :css_class
+    config_accessor :directory_name
   end
 
   configure do |config|
@@ -25,6 +28,8 @@ module Chanko
     config.default_active_if = lambda { false }
     config.default_view_type = :block
     config.view_resolver = nil
+    config.css_class = 'unit'
+    config.directory_name = 'units'
   end
 end
 

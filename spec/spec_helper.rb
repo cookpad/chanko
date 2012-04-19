@@ -44,7 +44,7 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     $: << fixtures_path.join('lib')
-    path = fixtures_path.join('test_extensions')
+    path = fixtures_path.join('test_units')
     Chanko::Loader.directories.unshift(path)
     Chanko::ActiveIf.files = [fixtures_path.join('active_if', "main")]
     ApplicationController.send(:include, Chanko::Invoker)

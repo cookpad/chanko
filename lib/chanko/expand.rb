@@ -31,7 +31,7 @@ module Chanko
         @klass = target
         expand!
         target.send(:include, self)
-        run_after_callbacks(target)
+        run_after_functions(target)
       end
 
       def expanded_already?(method)
@@ -80,19 +80,19 @@ module Chanko
         !!@expanded
       end
 
-      def add_after_callback(&block)
-        @after_callbacks ||= []
-        @after_callbacks << block
+      def add_after_function(&block)
+        @after_functions ||= []
+        @after_functions << block
       end
-      private :add_after_callback
+      private :add_after_function
 
-      def run_after_callbacks(target)
-        @after_callbacks ||= []
-        @after_callbacks.each do |callback|
-          callback.call(target, prefix)
+      def run_after_functions(target)
+        @after_functions ||= []
+        @after_functions.each do |function|
+          function.call(target, prefix)
         end
       end
-      private :run_after_callbacks
+      private :run_after_functions
 
       #TODO remove
       def expanded=(bool)

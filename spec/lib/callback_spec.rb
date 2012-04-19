@@ -2,8 +2,9 @@
 require 'spec_helper'
 
 describe "Chanko" do
-  shared_examples_for 'callback' do
+  shared_examples_for 'function' do
     before { raise_chanko_exception }
+
     let(:controller) do
       ApplicationController.new.tap do |controller|
         controller.request = ActionController::TestRequest.new
@@ -17,33 +18,33 @@ describe "Chanko" do
 
     context 'controller' do
       before do
-        ext_mock("RenderTest")
+        mock_unit("RenderTest")
       end
 
       it 'render text' do
-        callback = Chanko::Callback.new(:hello, RenderTest) do
+        function = Chanko::Function.new(:hello, RenderTest) do
           render :text => 'hello'
         end
-        callback.invoke!(controller).should == 'hello'
+        function.invoke!(controller).should == 'hello'
         Array.wrap(controller.response_body).first.should == 'hello'
       end
 
       it 'render inline' do
-        callback = Chanko::Callback.new(:hello, RenderTest) do
+        function = Chanko::Function.new(:hello, RenderTest) do
           render :inline => "<%= 'hello' -%>"
         end
-        callback.invoke!(controller).should == 'hello'
+        function.invoke!(controller).should == 'hello'
         Array.wrap(controller.response_body).first.should == 'hello'
       end
     end
 
     context 'view' do
-      let(:callback) do
-        Chanko::Callback.new(:render, RenderTest) { render :text => 'hello' }
+      let(:function) do
+        Chanko::Function.new(:render, RenderTest) { render :text => 'hello' }
       end
 
       before do
-        ext_mock("RenderTest")
+        mock_unit("RenderTest")
         @_default_view_type = Chanko.config.default_view_type
       end
 
@@ -53,58 +54,74 @@ describe "Chanko" do
 
       it 'should render as plain' do
         expect = 'hello'
-        callback.invoke!(view, :type => :plain).should == expect
+        function.invoke!(view, :type => :plain).should == expect
         view.output_buffer.should == ''
       end
 
       it 'should render as inline' do
-        expect = '<span class="extension ext_render_test ext_render_test-render">hello</span>'
-        callback.invoke!(view, :type => :inline).should == expect
+        expect = '<span class="unit unit_render_test unit_render_test-render">hello</span>'
+        function.invoke!(view, :type => :inline).should == expect
         view.output_buffer.should == ''
       end
 
       it 'should render as block' do
-        expect = '<div class="extension ext_render_test ext_render_test-render">hello</div>'
-        callback.invoke!(view, :type => :block).should == expect
+        expect = '<div class="unit unit_render_test unit_render_test-render">hello</div>'
+        function.invoke!(view, :type => :block).should == expect
         view.output_buffer.should == ''
       end
 
       it 'should render as default' do
         Chanko.config.default_view_type = :block
-        expect = '<div class="extension ext_render_test ext_render_test-render">hello</div>'
-        callback.invoke!(view).should == expect
+        expect = '<div class="unit unit_render_test unit_render_test-render">hello</div>'
+        function.invoke!(view).should == expect
         Chanko.config.default_view_type = :plain
         expect = 'hello'
-        callback.invoke!(view).should == expect
+        function.invoke!(view).should == expect
       end
 
       it 'should return as string if block is not given' do
-        expect = '<div class="extension ext_render_test ext_render_test-render">hello</div>'
-        callback.invoke!(view).should == expect
+        expect = '<div class="unit unit_render_test unit_render_test-render">hello</div>'
+        function.invoke!(view).should == expect
         view.output_buffer.should == ''
       end
 
       it 'should return as string if block is given' do
-        expect = '<div class="extension ext_render_test ext_render_test-render">hello</div>'
-        callback.invoke!(view) {}.should == expect
+        expect = '<div class="unit unit_render_test unit_render_test-render">hello</div>'
+        function.invoke!(view) {}.should == expect
         view.output_buffer.should == ''
       end
 
       context 'default' do
-        let(:default_callback) { Chanko::Callback.default { '<div>hoge</div>' } }
+        let(:default_function) { Chanko::Function.default { '<div>hoge</div>' } }
 
         before do
           Chanko.config.default_view_type = :block
         end
 
-        subject { Chanko::Callback.default { '<div>hoge</div>' } }
+        subject { Chanko::Function.default { '<div>hoge</div>' } }
 
-        it 'default_callback unit is default unit' do
-          default_callback.ext.should == Chanko::Unit::Default
+        it 'default_function unit is default unit' do
+          default_function.unit.should == Chanko::Unit::Default
         end
 
         it 'should escape' do
-          default_callback.invoke!(view, :capture => true).should == '<div class="extension ext_ ext_-__default__">' + ERB::Util.html_escape('<div>hoge</div>') + '</div>'
+          default_function.invoke!(view, :capture => true).should == '<div class="unit unit_ unit_-__default__">' + ERB::Util.html_escape('<div>hoge</div>') + '</div>'
+        end
+      end
+
+      context 'compatible' do
+        before do
+          Chanko.config.compatible_css_class = true
+        end
+
+        after do
+          Chanko.config.compatible_css_class = false
+        end
+
+        it 'render compatible class name' do
+          expect = '<div class="extension ext_render_test ext_render_test-render">hello</div>'
+          function.invoke!(view, :type => :block).should == expect
+          view.output_buffer.should == ''
         end
       end
     end
@@ -112,12 +129,12 @@ describe "Chanko" do
 
   context 'with cache_classes' do
     before { Chanko.config.cache_classes = true }
-    it_behaves_like 'callback'
+    it_behaves_like 'function'
   end
 
   context 'without cache_classes' do
     before { Chanko.config.cache_classes = false }
-    it_behaves_like 'callback'
+    it_behaves_like 'function'
   end
 end
 

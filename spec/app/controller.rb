@@ -3,7 +3,7 @@ ApplicationController.view_paths = File.dirname(__FILE__)
 
 class InvokeController < ApplicationController
   layout 'application'
-  ext_action :acceptance_test, :text
+  unit_action :acceptance_test, :text
 
   def nested
     render :action => 'nested'

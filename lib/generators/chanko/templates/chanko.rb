@@ -8,12 +8,12 @@ module <%= class_name %>
   end
 
   scope(:controller) do
-    callback(:show) do
+    function(:show) do
     end
   end
 
   scope(:view) do
-    callback(:show) do
+    function(:show) do
       render :partial => "/show"
     end
   end

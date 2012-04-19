@@ -4,7 +4,7 @@ require 'spec_helper'
 
 describe <%= class_name %>Controller, :type => :controller do
   before do
-    enable_ext(:<%= file_name %>)
+    enable_unit(:<%= file_name %>)
   end
 
   it "success" do

@@ -4,33 +4,41 @@ describe Chanko do
   shared_examples_for 'loader' do
     let(:invoker) { Chanko::Test::Invoker.new }
 
-    it 'should get required extnames' do
-      ext_mock("Invoked", Chanko::Test::Invoker, { :hello => "hello" })
-      ext_mock("Requested", Chanko::Test::Invoker, { :hello => {:value => "hello"}}, :disable => true)
-      invoker.invoke(:invoked, :hello)
-      invoker.invoke(:requested, :hello)
-      Chanko::Loader.requested_extensions.should == ["invoked", "requested"]
-      Chanko::Loader.invoked_extensions.should == ["invoked"]
+    describe 'store requested unit names' do
+      before do
+        mock_unit("Invoked", Chanko::Test::Invoker, { :hello => "hello" })
+        mock_unit("Requested", Chanko::Test::Invoker, { :hello => {:value => "hello"}}, :disable => true)
+        invoker.invoke(:invoked, :hello)
+        invoker.invoke(:requested, :hello)
+      end
+
+      it 'get requested unit names' do
+        Chanko::Loader.requested_units.should == ["invoked", "requested"]
+      end
+
+      it 'get invoked unit names' do
+        Chanko::Loader.invoked_units.should == ["invoked"]
+      end
     end
 
     describe 'scope' do
       it 'should return current_scope' do
         raise_chanko_exception
         invoker = Chanko::Test::Invoker.new
-        ext_mock("CallbackTest")
-        ext_mock("InlineCallbackTest")
+        mock_unit("FunctionTest")
+        mock_unit("InlineFunctionTest")
 
-        inline_callback = Chanko::Callback.new(:hello, InlineCallbackTest) do
-          Chanko::Loader.current_scope.should == 'inline_callback_test'
+        inline_function = Chanko::Function.new(:hello, InlineFunctionTest) do
+          Chanko::Loader.current_scope.should == 'inline_function_test'
         end
 
-        callback = Chanko::Callback.new(:hello, CallbackTest) do
-          Chanko::Loader.current_scope.should == 'callback_test'
-          inline_callback.invoke!(invoker)
-          Chanko::Loader.current_scope.should == 'callback_test'
+        function = Chanko::Function.new(:hello, FunctionTest) do
+          Chanko::Loader.current_scope.should == 'function_test'
+          inline_function.invoke!(invoker)
+          Chanko::Loader.current_scope.should == 'function_test'
         end
 
-        callback.invoke!(invoker)
+        function.invoke!(invoker)
       end
     end
 
@@ -56,23 +64,23 @@ describe Chanko do
     end
 
     describe 'load' do
-      it 'should load extension from file' do
-        Chanko::Loader.load_extension(:load_ext)
+      it 'should load unit from file' do
+        Chanko::Loader.load_unit(:load_unit)
         Chanko::Loader.size.should == 1
-        Object.constants.map(&:to_s).include?(LoadExt)
-        LoadExt.ancestors.should be_include(Chanko::Unit)
+        Object.constants.map(&:to_s).include?(LoadUnit)
+        LoadUnit.ancestors.should be_include(Chanko::Unit)
       end
 
       it 'should not notify load error when skip_raise is true' do
         Chanko::ExceptionNotifier.should_receive(:notify).exactly(1)
-        Chanko::Loader.load_extension(:missing_ext, :skip_raise => true)
-        Chanko::Loader.load_extension(:missing_ext1, :skip_raise => false)
+        Chanko::Loader.load_unit(:missing_unit, :skip_raise => true)
+        Chanko::Loader.load_unit(:missing_unit1, :skip_raise => false)
       end
     end
 
 
     it 'should return jsfiles' do
-      Chanko::Loader.javascripts("sample_ext").size.should == 2
+      Chanko::Loader.javascripts("sample_unit").size.should == 2
     end
   end
 

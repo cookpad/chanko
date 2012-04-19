@@ -1,6 +1,6 @@
 /* example
-.ext_<%= file_name %> {
-  &.ext_<%= file_name %>-callback_name {
+.<%= Chanko.config.css_class %>_<%= file_name %> {
+  &.<%= Chanko.config.css_class %>_<%= file_name %>-function_name {
   }
 }
 */

@@ -1,6 +1,6 @@
-module SampleExt
+module SampleUnit
   include Chanko::Unit
-  active_if do |context, ext, options|
+  active_if do |context, unit, options|
     case context
     when TrueClass
       next context
@@ -11,70 +11,70 @@ module SampleExt
     end
   end
 
-  scope("Example::ExtensionController") do
-    callback(:rendering_haml) do
-      render "extension/rendering_haml", :layout => false
+  scope("Example::UnitController") do
+    function(:rendering_haml) do
+      render "unit/rendering_haml", :layout => false
     end
 
-    callback(:rendering) do
-      render "extension/rendering", :layout => false
+    function(:rendering) do
+      render "unit/rendering", :layout => false
     end
 
-    callback(:variable_test) do
+    function(:variable_test) do
       @success = true
     end
 
-    callback(:view_files_must_not_be_used_without_ext) do
+    function(:view_files_must_not_be_used_without_unit) do
       #nothing todo
     end
 
-    callback(:raise_error) do
+    function(:raise_error) do
       raise "hello"
     end
 
-    callback(:helper_test_view) do
-      render "/extension/helper_test_view"
+    function(:helper_test_view) do
+      render "/unit/helper_test_view"
     end
   end
 
   scope(:view) do
-    callback(:samename) do
+    function(:samename) do
       render(:partial => "/same_partial")
     end
 
-    callback(:render_partial) do
-      render(:partial => "extension/partial")
+    function(:render_partial) do
+      render(:partial => "unit/partial")
     end
 
-    callback(:render_partial_haml) do
-      render(:partial => "extension/partial_haml")
+    function(:render_partial_haml) do
+      render(:partial => "unit/partial_haml")
     end
 
-    callback(:render) do
+    function(:render) do
       "render 1"
     end
 
-    callback(:render2) do
+    function(:render2) do
       "render 2"
     end
 
-    callback(:render_with_block) do
+    function(:render_with_block) do
       "render with block #{run_default}"
     end
 
-    callback(:render_with_inline) do
+    function(:render_with_inline) do
       "render with inline #{run_default}"
     end
 
-    callback(:render_with_plain) do
+    function(:render_with_plain) do
       "render with plain #{run_default}"
     end
 
-    callback(:helper) do
-      "callback_helper_text #{run_default}"
+    function(:helper) do
+      "function_helper_text #{run_default}"
     end
 
-    callback(:raise_error) do
+    function(:raise_error) do
       raise
     end
   end
@@ -87,7 +87,7 @@ module SampleExt
       scope :existence, :conditions => ["dropped_at IS NULL"]
       scope :user, lambda { |id| {:conditions => ["id = ?", id]} }
 
-      def sample_ext_hello
+      def sample_unit_hello
         'hello'
       end
 
@@ -130,7 +130,7 @@ module SampleExt
     end
 
     def helper_test
-      invoke(:sample_ext, :helper, :capture => false) do
+      invoke(:sample_unit, :helper, :capture => false) do
         "in_block_helper_text"
       end
     end

@@ -2,32 +2,32 @@ require 'spec_helper'
 
 describe "Chanko", :type => :integration do
   before do
-    ext_mock("AcceptanceTest")
+    mock_unit("AcceptanceTest")
     AcceptanceTest.class_eval do
       scope(:controller) do
-        callback(:text) { render :text => 'hello'}
+        function(:text) { render :text => 'hello'}
       end
 
       scope(:view) do
-        callback(:render) do
+        function(:render) do
           render :partial => '/show' 
         end
 
-        callback(:outside) do
+        function(:outside) do
           'outside ' + run_default
         end
 
-        callback(:blank) do
+        function(:blank) do
           
         end
       end
     end
 
-    ext_mock("AcceptanceSkipTest")
+    mock_unit("AcceptanceSkipTest")
     AcceptanceSkipTest.class_eval do
       active_if  { false }
       scope(:view) do
-        callback(:skip) do
+        function(:skip) do
           'skip'
         end
       end
@@ -37,10 +37,10 @@ describe "Chanko", :type => :integration do
   it 'invoke with view' do
     visit "/invoke/with_view"
     (response || page).body.should match(/render view file/)
-    (response || page).body.should match(/extension ext_acceptance_test ext_acceptance_test-render/)
+    (response || page).body.should match(/unit unit_acceptance_test unit_acceptance_test-render/)
   end
 
-  it 'invoke by ext_action' do
+  it 'invoke by unit_action' do
     visit "/invoke/text"
     (response || page).body.should match(/hello/)
   end

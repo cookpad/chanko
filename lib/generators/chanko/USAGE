@@ -1,25 +1,25 @@
 Description:
-    Stubs out a new chanko file with controller and view callbacks,
+    Stubs out a new unit file with controller and view functions,
     a stylesheet, spec files and default logo image.
 
-    This will generate the chanko class template in app/chankos/,
-    a view stub in /app/chankos/#{chanko_name}/views/ ,
-    a stylesheet in /app/chankos/#{chanko_name}/stylesheets/ ,
-    spec stubs in /app/chankos/#{chanko_name}/specs/ ,
-    and the blank logo.png in /app/chankos/#{chanko_name}/images/
-    along with a symlink in public/images/chankos/#{chanko_name}
+    This will generate the unit class template in app/units/,
+    a view stub in /app/units/#{unit_name}/views/ ,
+    a stylesheet in /app/units/#{unit_name}/stylesheets/ ,
+    spec stubs in /app/units/#{unit_name}/specs/ ,
+    and the blank logo.png in /app/units/#{unit_name}/images/
+    along with a symlink in public/images/units/#{unit_name}
 
-    You will need to add the invoke(:your_chanko, :callback_name) code in the appropriate places.
+    You will need to add the invoke(:your_unit, :function_name) code in the appropriate places.
 
 Example:
-    rails generate chanko sample
+    rails generate unit sample
 
     This will create:
-        app/chankos/sample.rb
-        app/chankos/sample/views/show.html.haml
-        app/chankos/sample/stylesheets/sample.scss
-        app/chankos/sample/images/logo.png
-        app/chankos/sample/specs/controllers/sample_controller_spec.rb
-        app/chankos/sample/specs/models/sample_model_spec.rb
-        app/chankos/sample/specs/helper/sample_helper_spec.rb
-        public/images/chankos/sample -> ../../../app/chankos/sample/images
+        app/units/sample.rb
+        app/units/sample/views/show.html.haml
+        app/units/sample/stylesheets/sample.scss
+        app/units/sample/images/logo.png
+        app/units/sample/specs/controllers/sample_controller_spec.rb
+        app/units/sample/specs/models/sample_model_spec.rb
+        app/units/sample/specs/helper/sample_helper_spec.rb
+        public/images/units/sample -> ../../../app/units/sample/images

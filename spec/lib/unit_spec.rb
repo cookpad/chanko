@@ -12,48 +12,48 @@ describe Chanko do
       end
 
       it 'should return absolute view paths' do
-        chanko = ext_mock('AbsolutePathTest')
+        chanko = mock_unit('AbsolutePathTest')
         chanko.send(:absolute_view_paths).should be_include(Rails.root.join('dir1', 'absolute_path_test', 'views').to_s)
       end
     end
 
     describe 'new' do
       before do
-        @unit = ext_mock("ExtensionUnitTest", Chanko::Test::Invoker)
+        @unit = mock_unit("UnitTest", Chanko::Test::Invoker)
       end
 
       it 'should increment size' do
         Chanko::Loader.size.should == 1
       end
 
-      it 'should get callbacks' do
+      it 'should get functions' do
         klass = self.class
         @unit.class_eval do
-          scope(klass) { callback(:hello) {} }
+          scope(klass) { function(:hello) {} }
         end
 
-        @unit.callbacks(self, :hello).size.should == 1
+        @unit.functions(self, :hello).size.should == 1
       end
 
-      describe 'try to get missing callback' do
+      describe 'try to get missing function' do
         it 'should raise' do
           raise_chanko_exception
-          expect { @unit.callbacks(self, :missing) }.to raise_error(Chanko::Exception::MissingCallback)
+          expect { @unit.functions(self, :missing) }.to raise_error(Chanko::Exception::MissingFunction)
         end
 
         it 'should not raise when raising is repressed' do
           no_raise_chanko_exception
-          expect { @unit.callbacks(self, :missing) }.to_not raise_error(Chanko::Exception::MissingCallback)
+          expect { @unit.functions(self, :missing) }.to_not raise_error(Chanko::Exception::MissingFunction)
         end
       end
     end
 
     describe 'view' do
       let(:controller) { @controller =  ApplicationController.new }
-      before { ext_mock("ViewPathTest")  }
+      before { mock_unit("ViewPathTest")  }
 
       context 'attached to controller' do
-        specify 'controller.view_paths includes view_paths of the extension' do
+        specify 'controller.view_paths includes view_paths of the unit' do
           ViewPathTest.attach(controller) do
             ViewPathTest.view_paths.each do |path|
               if Rails::VERSION::MINOR >= 2
@@ -71,7 +71,7 @@ describe Chanko do
           ViewPathTest.attach(controller) { }
         end
 
-        specify 'controller.view_paths does not include view_paths of the extension' do
+        specify 'controller.view_paths does not include view_paths of the unit' do
           ViewPathTest.view_paths.each do |path|
             if Rails::VERSION::MINOR >= 2
               controller.view_paths.map(&:to_s).should_not be_include(path)
@@ -99,7 +99,7 @@ describe Chanko do
 
     describe 'cache' do
       it 'should use ancestors_cache' do
-        ext_mock("AncestorsCacheTest", :controller)
+        mock_unit("AncestorsCacheTest", :controller)
         ancestors = Object.ancestors
         Object.should_receive(:ancestors).exactly(1).times.and_return(ancestors)
         AncestorsCacheTest.send(:ancestors?, Object, String)
@@ -109,22 +109,22 @@ describe Chanko do
 
     describe 'scope' do
       before do
-        ext_mock("UnitScopeTest")
+        mock_unit("UnitScopeTest")
       end
 
-      it 'should add callback to scope' do
+      it 'should add function to scope' do
         no_raise_chanko_exception
         ScopeTestClass = Class.new
         ScopeTestClass2 = Class.new
-        UnitScopeTest.callbacks(ScopeTestClass, :cb).size.should == 0
-        UnitScopeTest.callbacks(ScopeTestClass2, :cb).size.should == 0
+        UnitScopeTest.functions(ScopeTestClass, :cb).size.should == 0
+        UnitScopeTest.functions(ScopeTestClass2, :cb).size.should == 0
         UnitScopeTest.class_eval do
           scope("ScopeTestClass") do
-            callback(:cb) {}
+            function(:cb) {}
           end
         end
-        UnitScopeTest.callbacks(ScopeTestClass.new, :cb).size.should == 1
-        UnitScopeTest.callbacks(ScopeTestClass2.new, :cb).size.should == 0
+        UnitScopeTest.functions(ScopeTestClass.new, :cb).size.should == 1
+        UnitScopeTest.functions(ScopeTestClass2.new, :cb).size.should == 0
       end
 
       context 'specified class is missing' do
@@ -149,7 +149,7 @@ describe Chanko do
 
     describe 'expand model' do
       before do
-        ext_mock("UnitExpandTest")
+        mock_unit("UnitExpandTest")
       end
 
       it 'should create a models module if the modules method is called' do
@@ -204,7 +204,7 @@ describe Chanko do
 
     describe 'active_if' do
       before do
-        ext_mock("UnitActiveIfTest")
+        mock_unit("UnitActiveIfTest")
       end
 
       it 'should set active if' do

@@ -1,8 +1,8 @@
-module Sample2Ext
+module Sample2Unit
   include Chanko::Unit
 
   scope(:view) do
-    callback(:samename) do
+    function(:samename) do
       render(:partial => "/same_partial")
     end
   end

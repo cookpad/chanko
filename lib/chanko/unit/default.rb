@@ -4,7 +4,7 @@ module Chanko
       include Chanko::Unit
       self.default = true
 
-      def self.stylesheet_name
+      def self.css_name
         ''
       end
     end

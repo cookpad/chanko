@@ -1,7 +1,7 @@
 module Chanko
   module Test
     module Mock
-      def ext_mock(class_name, _scope=nil, pair = {}, options={})
+      def mock_unit(class_name, _scope=nil, pair = {}, options={})
         obj = Class.new(::Object)
         ::Object.const_set(class_name, obj)
         const = Object.const_get(class_name)
@@ -18,12 +18,12 @@ module Chanko
             scope(_scope) do
               pair.each do |key, hash|
                 unless hash.kind_of?(Hash)
-                  callback(key) { instance_variable_set("@#{key}", hash) }
+                  function(key) { instance_variable_set("@#{key}", hash) }
                   next
                 end
                 value = hash.delete(:value)
 
-                callback(key, hash) do
+                function(key, hash) do
                   if value.kind_of?(Proc)
                     instance_eval(&value)
                   else
@@ -36,6 +36,7 @@ module Chanko
         end
         const
       end
+      alias_method :ext_mock, :mock_unit
 
       mattr_accessor :classes
       self.classes = []
@@ -50,29 +51,29 @@ module Chanko
         end
 
         #TODO move to other file
-        def enabled?(context, ext, options={})
-          return nil unless ext
+        def enabled?(context, unit, options={})
+          return nil unless unit
           user = options[:user] || context.instance_variable_get("@login_user") || context.instance_variable_get("@current_user")
           all = nil
-          return @enables[symbolize(ext)][all] unless user
+          return @enables[symbolize(unit)][all] unless user
 
-          unless @enables[symbolize(ext)][user.id].nil?
-            return @enables[symbolize(ext)][user.id]
+          unless @enables[symbolize(unit)][user.id].nil?
+            return @enables[symbolize(unit)][user.id]
           else
-            return @enables[symbolize(ext)][all]
+            return @enables[symbolize(unit)][all]
           end
         end
 
-        def enable(ext, user_id, options)
+        def enable(unit, user_id, options)
           user_id = user_id.id if user_id.is_a?(User)
-          Chanko::Loader.load_extension(ext)
-          @enables[symbolize(ext)][user_id] = true
+          Chanko::Loader.load_unit(unit)
+          @enables[symbolize(unit)][user_id] = true
         end
 
-        def disable(ext, user_id, options)
+        def disable(unit, user_id, options)
           user_id = user_id.id if user_id.is_a?(User)
-          Chanko::Loader.load_extension(ext)
-          @enables[symbolize(ext)][user_id] = false
+          Chanko::Loader.load_unit(unit)
+          @enables[symbolize(unit)][user_id] = false
         end
 
         def symbolize(name)

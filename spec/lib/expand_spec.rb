@@ -42,11 +42,11 @@ describe Chanko do
         klass.should be_respond_to('__prefix__hello')
       end
 
-      it 'should run after callback' do
+      it 'should run after function' do
         klass = Class.new
         mock = mock("Dummy")
         mock.should_receive(:hello)
-        expander.send(:add_after_callback) do
+        expander.send(:add_after_function) do
           mock.hello
         end
         expander.attach(klass)
@@ -75,7 +75,7 @@ describe Chanko do
         expander.class_eval { has_one :recipe, :foreign_key => 'user_id' }
         expander.attach(user_klass)
         user = user_klass.create!(:name => 'alice')
-        user.ext(:prefix).recipe.should be_blank
+        user.unit(:prefix).recipe.should be_blank
         user.create___prefix__recipe(:title => 'hello')
         Recipe.count(:conditions => {:user_id => user.id}).should == 1
       end
@@ -84,9 +84,9 @@ describe Chanko do
         expander.class_eval { has_many :recipes, :foreign_key => 'user_id' }
         expander.attach(user_klass)
         user = user_klass.create!(:name => 'alice')
-        user.ext(:prefix).recipes.should be_blank
-        user.ext(:prefix).recipes.create!(:title => 'hello')
-        user.ext(:prefix).recipes.should have(1).records
+        user.unit(:prefix).recipes.should be_blank
+        user.unit(:prefix).recipes.create!(:title => 'hello')
+        user.unit(:prefix).recipes.should have(1).records
       end
 
       it 'should use belongs_to association' do
@@ -94,7 +94,7 @@ describe Chanko do
         expander.attach(recipe_klass)
         user = user_klass.create!(:name => 'alice')
         recipe = recipe_klass.create!(:user_id => user.id, :title => 'hello')
-        recipe.ext(:prefix).user.id.should == user.id
+        recipe.unit(:prefix).user.id.should == user.id
       end
 
       it 'should use scope' do
@@ -106,8 +106,8 @@ describe Chanko do
         %w(alice bob).each { |name| User.create!(:name => name) }
 
         user_klass.should have(2).records
-        user_klass.ext(:prefix).named('alice').should have(1).records
-        user_klass.ext(:prefix).alice.should have(1).records
+        user_klass.unit(:prefix).named('alice').should have(1).records
+        user_klass.unit(:prefix).alice.should have(1).records
       end
 
       it 'should work with a block' do
@@ -139,8 +139,8 @@ describe Chanko do
           scope :icecream, lambda { where(:title => 'icecream') }
         end
         expander2.attach(AssociationProxyTestRecipe)
-        user_klass.where(:id => alice.id).first.ext(:prefix).recipes.ext(:prefix).icecream.size.should == 1
-        user_klass.where(:id => alice.id).first.ext(:prefix).recipes.ext(:prefix).icecream.first.id.should == alice_icecream.id
+        user_klass.where(:id => alice.id).first.unit(:prefix).recipes.unit(:prefix).icecream.size.should == 1
+        user_klass.where(:id => alice.id).first.unit(:prefix).recipes.unit(:prefix).icecream.first.id.should == alice_icecream.id
       end
     end
   end

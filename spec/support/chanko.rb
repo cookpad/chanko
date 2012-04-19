@@ -1,5 +1,5 @@
 Chanko::ActiveIf.expanded_judgements << lambda do |context, options|
-   Chanko::Test::Mock.enabled?(context, options[:ext], options)
+   Chanko::Test::Mock.enabled?(context, options[:unit], options)
 end
 
 

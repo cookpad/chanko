@@ -7,12 +7,13 @@ Description:
 DESC
 
       source_root File.expand_path("../templates", __FILE__)
-      class_option :directory, :type => :string, :default => 'chanko', :description => "Chanko directory name"
+      class_option :directory, :type => :string, :default => 'units', :description => "Chanko directory name"
       def copy_install_file
         initializer("chanko_initializer.rb") do
           <<-EOS
 Chanko.config.raise = true if Rails.env.development?
 Chanko::Loader.add_path(Rails.root.join('app/#{base_directory}')) if Chanko::Loader.directories.blank?
+Chanko.config.directory_name = '#{base_directory}'
 active_if_files = Pathname.glob(Rails.root.join("lib", "chanko", "active_if", "*.rb")).map(&:to_s)
 Chanko::ActiveIf.files = active_if_files
           EOS
@@ -32,7 +33,7 @@ Chanko::ActiveIf.files = active_if_files
 
       private
       def base_directory
-        ENV['CHANKOS_DIRECTORY'] || options[:directory].pluralize
+        options[:directory].pluralize
       end
     end
   end

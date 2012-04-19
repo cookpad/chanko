@@ -8,11 +8,11 @@ module Chanko
     end
 
     module Methods
-      def ext(_ext_label=nil, &block)
-        ext_label = _ext_label || Chanko::Loader.current_scope
-        raise NoExtError unless ext_label
+      def unit(_unit_label=nil, &block)
+        unit_label = _unit_label || Chanko::Loader.current_scope
+        raise NoExtError unless unit_label
 
-        unless ext = Chanko::Loader.load_extension(ext_label)
+        unless ext = Chanko::Loader.load_unit(unit_label)
           return nil if block_given?
           return Chanko::MethodProxy::NullProxy.proxy
         end
@@ -22,21 +22,22 @@ module Chanko
         end
 
         begin
-          Chanko::Loader.push_scope(ext_label) if _ext_label
+          Chanko::Loader.push_scope(unit_label) if _unit_label
           begin
-            yield Chanko::Loader.fetch(ext_label)
+            yield Chanko::Loader.fetch(unit_label)
           rescue ::Exception => e
-            Chanko::ExceptionNotifier.notify("unknown error #{_ext_label}", false,
+            Chanko::ExceptionNotifier.notify("unknown error #{_unit_label}", false,
                                      :exception => e,
-                                     :key => "method_proxy unknown error #{_ext_label}",
+                                     :key => "method_proxy unknown error #{_unit_label}",
                                      :context => self,
                                      :backtrace => e.backtrace[0..20]
                                     )
           end
         ensure
-          Chanko::Loader.pop_scope if _ext_label
+          Chanko::Loader.pop_scope if _unit_label
         end
       end
+      alias_method :ext, :unit
     end
 
     class NullProxy
@@ -50,24 +51,24 @@ module Chanko
     end
 
     class Proxy
-      def initialize(obj, ext)
-        @obj, @ext = obj, ext
+      def initialize(obj, unit)
+        @obj, @unit = obj, unit
       end
-      attr_accessor :ext, :obj
+      attr_accessor :unit, :obj
 
       def active?(_options={})
         options = _options.is_a?(Hash) ? _options : {}
-        @ext.active?(@obj, options)
+        @unit.active?(@obj, options)
       end
       alias_method :judge?, :active?
 
-      def ext_method(name)
-        "__#{@ext.name.underscore}__#{name}"
+      def unit_method_name(name)
+        "__#{@unit.name.underscore}__#{name}"
       end
-      alias_method :label, :ext_method
+      alias_method :label, :unit_method_name
 
       def method_missing(name, *args, &block)
-        @obj.send(ext_method(name), *args, &block)
+        @obj.send(unit_method_name(name), *args, &block)
       end
     end
   end

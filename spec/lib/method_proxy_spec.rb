@@ -9,18 +9,18 @@ describe Chanko do
       dummy_klass.new
     end
 
-    let(:proxy) { receiver.ext(:proxy_test) }
+    let(:proxy) { receiver.unit(:proxy_test) }
 
     before do
-      ext_mock("ProxyTest")
+      mock_unit("ProxyTest")
     end
 
-    it 'should return extension proxy' do
+    it 'should return unit proxy' do
       proxy.should be_kind_of(Chanko::MethodProxy::Proxy)
-      proxy.ext.should == ProxyTest
+      proxy.unit.should == ProxyTest
     end
 
-    it 'should run extension method' do
+    it 'should run unit method' do
       receiver.should_receive(:__proxy_test__hello).and_return('hello')
       proxy.hello.should == 'hello'
     end
@@ -50,17 +50,17 @@ describe Chanko do
         end
 
         receiver.instance_eval { class<<self; self; end }.class_eval { include Chanko::Helper }
-        receiver.ext(:proxy_test) do |unit|
+        receiver.unit(:proxy_test) do |unit|
           unit.should == ProxyTest
           Chanko::Loader.current_scope.should == :proxy_test
-          receiver.ext.hello.should == 'hello'
+          receiver.unit.hello.should == 'hello'
         end
       end
 
       it 'should raise error' do
         raise_chanko_exception
         expect {
-          receiver.ext(:proxy_test) do |unit|
+          receiver.unit(:proxy_test) do |unit|
             raise StandardError, 'error'
           end
         }.to raise_error(StandardError, 'error')
@@ -69,7 +69,7 @@ describe Chanko do
       it 'should not raise error when raise is repressed' do
         no_raise_chanko_exception
         expect {
-          receiver.ext(:proxy_test) do |unit|
+          receiver.unit(:proxy_test) do |unit|
             raise StandardError, 'error'
           end
         }.to_not raise_error(StandardError, 'error')
@@ -82,13 +82,13 @@ describe Chanko do
         no_raise_chanko_exception
       end
 
-      it 'should return null proxy when non-existent extension is specified' do
-        null_proxy = receiver.ext(:missing)
+      it 'should return null proxy when non-existent unit is specified' do
+        null_proxy = receiver.unit(:missing)
         null_proxy.should be_kind_of(Chanko::MethodProxy::NullProxy)
       end
 
       it 'should always return nil' do
-        null_proxy = receiver.ext(:missing)
+        null_proxy = receiver.unit(:missing)
         null_proxy.hoge.should be_false
       end
     end
@@ -96,8 +96,8 @@ describe Chanko do
     context 'spec' do
       it 'use stub' do
         pending('stub doesnt work')
-        receiver.ext(:proxy_test).stub(:hello).and_return(1)
-        receiver.ext(:proxy_test).hello.should == 1
+        receiver.unit(:proxy_test).stub(:hello).and_return(1)
+        receiver.unit(:proxy_test).hello.should == 1
       end
     end
   end

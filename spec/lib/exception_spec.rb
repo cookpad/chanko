@@ -32,13 +32,13 @@ describe Chanko do
       end
 
       it 'should occour error if raise option is on' do
-        expect { invoke(:missing_ext, :hoge) { @default = true } }.to raise_error(NameError)
+        expect { invoke(:missing_unit, :hoge) { @default = true } }.to raise_error(NameError)
       end
 
-      it 'should occour missing callback error if raise option is on' do
+      it 'should occour missing function error if raise option is on' do
         raise_chanko_exception
-        ext_mock("MissingCallbackTest", self.class, {:hoge => {:value => 1}})
-        expect { invoke(:missing_callback_test, :missing_callback) { @default = true } }.to raise_error(StandardError)
+        mock_unit("MissingFunctionTest", self.class, {:hoge => {:value => 1}})
+        expect { invoke(:missing_function_test, :missing_function) { @default = true } }.to raise_error(StandardError)
       end
     end
 
@@ -48,13 +48,13 @@ describe Chanko do
       end
 
       it 'should not occour error if raise option is on' do
-        invoker.invoke(:missing_ext, :hoge) { @default = true }
+        invoker.invoke(:missing_unit, :hoge) { @default = true }
         invoker.instance_eval { @default.should == true }
       end
 
-      it 'should not occour missing callback error if raise option is on' do
-        ext_mock("MissingCallbackTest", Chanko::Test::Invoker, {:hoge => {:value => 1}})
-        invoker.invoke(:missing_callback_test, :missing_callback) { @default = true }
+      it 'should not occour missing function error if raise option is on' do
+        mock_unit("MissingFunctionTest", Chanko::Test::Invoker, {:hoge => {:value => 1}})
+        invoker.invoke(:missing_function_test, :missing_function) { @default = true }
         invoker.instance_eval { @default.should == true }
       end
     end

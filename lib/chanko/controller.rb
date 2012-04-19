@@ -10,14 +10,15 @@ module Chanko
     end
 
     module ClassMethods
-      def ext_action(ext_name, callback_name, options={}, &block)
-        action_name = options.delete(:action) || callback_name
+      def unit_action(unit_name, function_name, options={}, &block)
+        action_name = options.delete(:action) || function_name
         block ||= Proc.new { head(400) }
 
         define_method(action_name) do
-          invoke(ext_name, callback_name, options, &block)
+          invoke(unit_name, function_name, options, &block)
         end
       end
+      alias_method :ext_action, :unit_action
     end
   end
 end

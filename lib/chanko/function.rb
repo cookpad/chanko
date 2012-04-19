@@ -1,5 +1,5 @@
 module Chanko
-  class Callback
+  class Function
     include ActiveSupport::Callbacks
     define_callbacks :invoke
 
@@ -9,19 +9,19 @@ module Chanko
       include ActionView::Helpers::TagHelper
     end
 
-    attr_reader :label, :block, :options, :ext
+    attr_reader :label, :block, :options, :unit
     attr_accessor :called_from # for debug
     attr_accessor :__current_scope
 
     def self.default(&block)
       return nil unless block_given?
-      Chanko::Callback.new(:__default__, Chanko::Unit::Default, &block)
+      Chanko::Function.new(:__default__, Chanko::Unit::Default, &block)
     end
 
-    def initialize(label, ext, options={}, &block)
+    def initialize(label, unit, options={}, &block)
       @label = label.to_s.to_sym if label
       @block = block
-      @ext = ext
+      @unit = unit
       @options = options
     end
 
@@ -32,12 +32,12 @@ module Chanko
     def invoke!(scope, options={})
       begin
         self.__current_scope = scope
-        scope.__current_callback = self
+        scope.__current_function = self
         run_callbacks :invoke do
-          Chanko::Loader.push_scope(ext.underscore)
+          Chanko::Loader.push_scope(unit.underscore)
           result = nil
-          self.ext.attach(scope) do
-            if self.ext.default? && scope.view? && options[:capture]
+          self.unit.attach(scope) do
+            if self.unit.default? && scope.view? && options[:capture]
               if scope.respond_to?("capture_haml") && scope.is_haml? && scope.block_is_haml?(block)
                 result = scope.capture_haml(&block)
               else
@@ -54,13 +54,13 @@ module Chanko
           result
         end
       rescue ::Exception => e
-        Chanko::ExceptionNotifier.notify("raise exception #{ext.name}##{@label} => #{e.message}", self.ext.default?,
-                                :exception => e, :backtrace =>  e.backtrace[0..20], :key => "#{ext.name}_exception", :context => scope)
+        Chanko::ExceptionNotifier.notify("raise exception #{unit.name}##{@label} => #{e.message}", self.unit.default?,
+                                :exception => e, :backtrace =>  e.backtrace[0..20], :key => "#{unit.name}_exception", :context => scope)
         return Chanko::Aborted
       ensure
         Chanko::Loader.pop_scope
         self.__current_scope = nil
-        scope.__current_callback = nil
+        scope.__current_function = nil
       end
     end
 
@@ -69,16 +69,21 @@ module Chanko
       when :plain
         result
       when :inline
-        tag_helper.content_tag(:span, result, :class => chanko_class)
+        tag_helper.content_tag(:span, result, :class => unit_class)
       when :block
-        tag_helper.content_tag(:div, result, :class => chanko_class)
+        tag_helper.content_tag(:div, result, :class => unit_class)
       else
         view_result(result, Chanko.config.default_view_type)
       end
     end
 
-    def chanko_class
-      "extension ext_#{self.ext.stylesheet_name} ext_#{self.ext.stylesheet_name}-#{label.to_s}"
+    def unit_class
+      if Chanko.config.compatible_css_class
+        "extension ext_#{self.unit.css_name} ext_#{self.unit.css_name}-#{label.to_s}"
+      else
+        css_class = Chanko.config.css_class
+        "#{css_class} #{css_class}_#{self.unit.css_name} #{css_class}_#{self.unit.css_name}-#{label.to_s}"
+      end
     end
   end
 end

@@ -1,0 +1,13 @@
+rendering view
+
+<%= unit.helper_hello %>
+<%= invoke(:sample_unit, :render)  -%>
+<%- invoke(:sample_unit, :render2) -%>
+<%= invoke(:sample_unit, :render_partial)  -%>
+<%- invoke(:sample_unit, :render_with_block) do -%>
+  <%- @default = true %>
+  render_with_block_default_line
+  finish
+<%- end %>
+<%= invoke(:sample_unit, :render_with_inline, :type => :inline)  -%>
+<%= invoke(:sample_unit, :render_with_plain, :type => :plain)  -%>
