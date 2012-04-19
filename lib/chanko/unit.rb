@@ -101,7 +101,9 @@ module Chanko
       def unit_name
         self.name.split("::").first.underscore
       end
+      alias_method :ext_name, :unit_name
       memoize :unit_name
+      memoize :ext_name
 
       def expand_prefix
         "__#{unit_name}__"
