@@ -60,7 +60,7 @@ module Chanko
 
       def fetch(unit_name)
         return nil unless self.load_unit(unit_name)
-        unit = begin unit_name.to_s.singularize.camelize.constantize; rescue; end
+        unit = begin unit_name.to_s.camelize.constantize; rescue; end
         return nil unless unit
         return nil unless unit.ancestors.include?(Chanko::Unit)
         unit
