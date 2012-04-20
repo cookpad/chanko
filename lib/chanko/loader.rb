@@ -5,8 +5,9 @@ module Chanko
     mattr_accessor :units
     mattr_accessor :loaded
     mattr_accessor :current_scopes
-    mattr_accessor :__invoked_units
-    mattr_accessor :__requested_units
+    mattr_accessor :__invoked
+    mattr_accessor :__requested
+    mattr_accessor :__aborted
     self.units = ::HashWithIndifferentAccess.new
 
     class<<self
@@ -24,9 +25,9 @@ module Chanko
         end
 
         self.current_scopes = []
-        self.__invoked_units = []
-        self.__requested_units = []
-
+        self.__invoked = []
+        self.__requested = []
+        self.__aborted = []
       end
 
       def paths(name)
@@ -46,13 +47,15 @@ module Chanko
       end
 
       def invoked(unit_names)
-        self.__invoked_units.concat(Array.wrap(unit_names).map(&:to_s))
+        self.__invoked.concat(Array.wrap(unit_names).map(&:to_s))
       end
 
       def requested(unit_names)
-        unit_names = [unit_names] unless unit_names.is_a?(Array)
-        unit_names = unit_names.map(&:to_s)
-        self.__requested_units.concat(unit_names)
+        self.__requested.concat(Array.wrap(unit_names).map(&:to_s))
+      end
+
+      def aborted(unit_names)
+        self.__aborted.concat(Array.wrap(unit_names).map(&:to_s))
       end
 
       def fetch(unit_name)
@@ -76,13 +79,18 @@ module Chanko
       end
 
       def invoked_units
-        self.__invoked_units.uniq
+        self.__invoked.uniq
       end
 
       def requested_units
-        self.__requested_units.uniq
+        self.__requested.uniq
       end
-      #don't expand models when unit_name receive nil
+
+      def aborted_units
+        self.__aborted.uniq
+      end
+
+
       def load_expander(unit_name)
         %w(models helpers).each do |targets|
           Chanko::Loader.directories.each do |directory|

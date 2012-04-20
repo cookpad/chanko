@@ -6,18 +6,25 @@ describe Chanko do
 
     describe 'store requested unit names' do
       before do
-        mock_unit("Invoked", Chanko::Test::Invoker, { :hello => "hello" })
-        mock_unit("Requested", Chanko::Test::Invoker, { :hello => {:value => "hello"}}, :disable => true)
-        invoker.invoke(:invoked, :hello)
-        invoker.invoke(:requested, :hello)
+        no_raise_chanko_exception
+        mock_unit("Invoke", Chanko::Test::Invoker, { :hello => "hello" })
+        mock_unit("Request", Chanko::Test::Invoker, { :hello => {:value => "hello"}}, :disable => true)
+        mock_unit("Abort", Chanko::Test::Invoker, { :hello => {:value => Proc.new { raise }} })
+        invoker.invoke(:invoke, :hello)
+        invoker.invoke(:request, :hello)
+        invoker.invoke(:abort, :hello)
       end
 
       it 'get requested unit names' do
-        Chanko::Loader.requested_units.should == ["invoked", "requested"]
+        Chanko::Loader.requested_units.should == ["invoke", "request", "abort"]
       end
 
       it 'get invoked unit names' do
-        Chanko::Loader.invoked_units.should == ["invoked"]
+        Chanko::Loader.invoked_units.should == ["invoke", "abort"]
+      end
+
+      it 'get aborted unit names' do
+        Chanko::Loader.aborted_units.should == ["abort"]
       end
     end
 

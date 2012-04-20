@@ -95,14 +95,10 @@ module Chanko
         unit_locals.pop
       end
 
-      def array(obj)
-        obj.is_a?(Array) ? obj : [obj]
-      end
-      private :array
 
       def validate_depend_on_units(depended_units, options={})
         return true unless depended_units
-        array(depended_units).each do |unit_name|
+        Array.wrap(depended_units).each do |unit_name|
           return false unless unit = Chanko::Loader.fetch(unit_name)
           return false unless unit.enabled?(self, options)
         end
@@ -110,10 +106,16 @@ module Chanko
       end
       private :validate_depend_on_units
 
+      def aborted?(unit)
+        Chanko::Loader.aborted_units.include?(unit.unit_name)
+      end
+      private :aborted?
+
       def get_functions(requests, depend_on, active_if_options, options={})
         return [] unless validate_depend_on_units(depend_on, active_if_options)
         requests.each do |unit_name, label|
           next unless unit = Chanko::Loader.fetch(unit_name)
+          next if aborted?(unit)
           functions = unit.functions(self, label, active_if_options, options)
           next if functions.blank?
           Chanko::Loader.invoked(unit_name)

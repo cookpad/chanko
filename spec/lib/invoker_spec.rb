@@ -4,7 +4,7 @@ describe Chanko do
   shared_examples_for 'invoker' do
     let(:invoker) { Chanko::Test::Invoker.new }
 
-    it 'should run my scoped unit methods' do
+    it 'run my scoped unit methods' do
       raise_chanko_exception
       mock_unit("RunTest", Chanko::Test::Invoker, {:hoge => 1})
       invoker.invoke(:run_test, :hoge)
@@ -13,7 +13,7 @@ describe Chanko do
 
     describe 'locals' do
       context 'cant find' do
-        it 'should raise' do
+        it 'raise' do
           mock_unit("LocalVariableTest")
           LocalVariableTest.class_eval do
             scope(Chanko::Test::Invoker) do
@@ -25,7 +25,7 @@ describe Chanko do
           }.to raise_error(NameError)
         end
 
-        it 'should not raise when raising is repressed' do
+        it 'not raise when raising is repressed' do
           no_raise_chanko_exception
           mock_unit("LocalVariableTest")
           LocalVariableTest.class_eval do
@@ -39,7 +39,7 @@ describe Chanko do
         end
       end
 
-      it 'should skip default' do
+      it 'skip default' do
         mock_unit("SkipDefault",  Chanko::Test::Invoker, {:hoge => {:value => 1}})
         invoker.invoke(:skip_default, :hoge) { @fuga = 1 }
         invoker.instance_eval do
@@ -49,7 +49,7 @@ describe Chanko do
       end
 
 
-      it 'should run first enabled unit' do
+      it 'run first enabled unit' do
         mock_unit("FirstTest", Chanko::Test::Invoker, :hello => { :value => Proc.new { run_default; @hello = "hello"} })
         mock_unit("SecondTest", Chanko::Test::Invoker, :goodbye => { :value => "goodbye" })
         invoker.invoke([:first_test, :hello], [:second_test, :hello]) { @default1 = 1 }
@@ -70,14 +70,14 @@ describe Chanko do
         end
       end
 
-      it 'should run other context function' do
+      it 'run other context function' do
         mock_unit("SecondTest", :controller, :hello => { :value => "hello" })
         invoker.invoke(:second_test, :hello, :as => :controller)
         invoker.instance_eval { @hello.should == "hello" }
       end
 
 
-      it 'should run function when depend on unit was enabled' do
+      it 'run function when depend on unit was enabled' do
         raise_chanko_exception
         mock_unit("DependOnUnit", Chanko::Test::Invoker, { :hello => "hello" })
         mock_unit("EnabledUnit", Chanko::Test::Invoker, { :hello => "hello2"})
@@ -85,7 +85,7 @@ describe Chanko do
         invoker.instance_eval { @hello.should == "hello" }
       end
 
-      it 'should not run function if depend on unit is disabled' do
+      it 'not run function if depend on unit is disabled' do
         no_raise_chanko_exception
         mock_unit("DependOnUnit", Chanko::Test::Invoker, { :hello => "hello" })
         mock_unit("DisabledUnit", Chanko::Test::Invoker, { :hello => {:value => "hello2"}}, :disable => true)
@@ -93,14 +93,14 @@ describe Chanko do
         invoker.instance_eval { @hello.should == nil }
       end
 
-      it 'should not run function if depend on unit is missing' do
+      it 'not run function if depend on unit is missing' do
         no_raise_chanko_exception
         mock_unit("DependOnUnit", Chanko::Test::Invoker, { :hello => "hello" })
         invoker.invoke(:depend_on_unit, :hello, :if => :missing_unit)
         invoker.instance_eval { @hello.should == nil }
       end
 
-      it 'should access locals' do
+      it 'access locals' do
         mock_unit("LocalVariableTest", self.class, {:hoge => 1})
         LocalVariableTest.class_eval do
           scope(Chanko::Test::Invoker) do
@@ -113,7 +113,7 @@ describe Chanko do
         end
       end
 
-      it 'should access nested locals' do
+      it 'access nested function locals' do
         mock_unit("LocalVariableTest", self.class, {:hoge => 1})
         mock_unit("NestedLocalVariableTest", self.class, {:hoge => 1})
 
@@ -144,7 +144,7 @@ describe Chanko do
       end
     end
 
-    it 'should acceed to active_if symbols' do
+    it 'accede to active_if symbols' do
       no_raise_chanko_exception
       mock_unit("SymbolActiveIfTest", Chanko::Test::Invoker, { :hello => "hello" })
       SymbolActiveIfTest.class_eval { active_if :always_false }
@@ -168,13 +168,9 @@ describe Chanko do
       invoker.invoke(:symbol_active_if_test, :hello)
       invoker.instance_eval { @hello.should == nil }
 
-      #FIXME
-      #::ErrorLog.count.should == 0
       SymbolActiveIfTest.class_eval { active_if :always_true, :nondefined_symbol  }
       invoker.invoke(:symbol_active_if_test, :hello)
       invoker.instance_eval { @hello.should == nil }
-      #FIXME
-      #::ErrorLog.count.should == 1
 
       SymbolActiveIfTest.class_eval { active_if :always_true do; true; end  }
       invoker.invoke(:symbol_active_if_test, :hello)
@@ -196,12 +192,23 @@ describe Chanko do
     end
 
 
-    it 'should set current function' do
+    it 'set current function' do
       mock_unit("CurrentFunctionTest", Chanko::Test::Invoker, { :set_current_function => {:value => Proc.new { @current_function = __current_function}  }})
       invoker.invoke(:current_function_test, :set_current_function)
       invoker.instance_eval { @current_function.unit.name.should == "CurrentFunctionTest"}
       invoker.instance_eval { @current_function.label.should == :set_current_function}
       invoker.__current_function.should be_nil
+    end
+
+    it 'neve run function when once function aborts' do
+      no_raise_chanko_exception
+      mock_unit("NotRunFunctionTest", Chanko::Test::Invoker, 
+        :raise => {:value => Proc.new { raise } },
+        :success => {:value => Proc.new { @success = true} })
+
+      invoker.invoke(:not_run_function_test, :raise)
+      invoker.invoke(:not_run_function_test, :success)
+      invoker.instance_eval { @success.should == nil }
     end
   end
 
