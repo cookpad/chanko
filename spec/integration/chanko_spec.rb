@@ -37,7 +37,7 @@ describe "Chanko", :type => :integration do
   it 'invoke with view' do
     visit "/invoke/with_view"
     (response || page).body.should match(/render view file/)
-    (response || page).body.should match(/unit unit_acceptance_test unit_acceptance_test-render/)
+    (response || page).body.should match(/unit unit__acceptance_test unit__acceptance_test__render/)
   end
 
   it 'invoke by unit_action' do

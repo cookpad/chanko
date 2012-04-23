@@ -59,20 +59,20 @@ describe "Chanko" do
       end
 
       it 'should render as inline' do
-        expect = '<span class="unit unit_render_test unit_render_test-render">hello</span>'
+        expect = '<span class="unit unit__render_test unit__render_test__render">hello</span>'
         function.invoke!(view, :type => :inline).should == expect
         view.output_buffer.should == ''
       end
 
       it 'should render as block' do
-        expect = '<div class="unit unit_render_test unit_render_test-render">hello</div>'
+        expect = '<div class="unit unit__render_test unit__render_test__render">hello</div>'
         function.invoke!(view, :type => :block).should == expect
         view.output_buffer.should == ''
       end
 
       it 'should render as default' do
         Chanko.config.default_view_type = :block
-        expect = '<div class="unit unit_render_test unit_render_test-render">hello</div>'
+        expect = '<div class="unit unit__render_test unit__render_test__render">hello</div>'
         function.invoke!(view).should == expect
         Chanko.config.default_view_type = :plain
         expect = 'hello'
@@ -80,13 +80,13 @@ describe "Chanko" do
       end
 
       it 'should return as string if block is not given' do
-        expect = '<div class="unit unit_render_test unit_render_test-render">hello</div>'
+        expect = '<div class="unit unit__render_test unit__render_test__render">hello</div>'
         function.invoke!(view).should == expect
         view.output_buffer.should == ''
       end
 
       it 'should return as string if block is given' do
-        expect = '<div class="unit unit_render_test unit_render_test-render">hello</div>'
+        expect = '<div class="unit unit__render_test unit__render_test__render">hello</div>'
         function.invoke!(view) {}.should == expect
         view.output_buffer.should == ''
       end
@@ -105,7 +105,7 @@ describe "Chanko" do
         end
 
         it 'should escape' do
-          default_function.invoke!(view, :capture => true).should == '<div class="unit unit_ unit_-__default__">' + ERB::Util.html_escape('<div>hoge</div>') + '</div>'
+          default_function.invoke!(view, :capture => true).should == '<div class="unit unit__ unit______default__">' + ERB::Util.html_escape('<div>hoge</div>') + '</div>'
         end
       end
 
