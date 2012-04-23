@@ -1,3 +1,14 @@
+== 1.0.5 released 2012-04-24
+* A unit never run while same request processing when once it aborts.
+* Change unit css name.
+if you need to use old style, set 'Chanko.config.compatible_css_name = true'.
+* Change default unit directory.
+if you continuously use old directory,
+add "Chanko.config.directory_name = 'chankos'" to initializer/chanko_initializer.rb.
+* generator create symbolic link of unit css to assets/public css directory.
+
+
+
 == 1.0.3, released 2012-03-22
 * Support Rails 3.2~
 * Fixed nested run_default method. it was broken.
