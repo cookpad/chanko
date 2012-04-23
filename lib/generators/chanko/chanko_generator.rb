@@ -26,7 +26,10 @@ class ChankoGenerator < Rails::Generators::NamedBase
   end
 
   def create_scss_files
-    template 'chanko.scss', File.join("app", base_directory, file_name, "stylesheets", "#{file_name}.scss") if options.scss?
+    if options.scss?
+      template 'chanko.scss', File.join("app", base_directory, file_name, "stylesheets", "#{file_name}.scss")
+      create_symlink('stylesheets')
+    end
   end
 
   def create_js_files
