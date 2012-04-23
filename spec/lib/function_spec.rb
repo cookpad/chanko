@@ -105,7 +105,7 @@ describe "Chanko" do
         end
 
         it 'should escape' do
-          default_function.invoke!(view, :capture => true).should == '<div class="unit unit__ unit______default__">' + ERB::Util.html_escape('<div>hoge</div>') + '</div>'
+          default_function.invoke!(view, :capture => true).should ==  ERB::Util.html_escape('<div>hoge</div>')
         end
       end
 

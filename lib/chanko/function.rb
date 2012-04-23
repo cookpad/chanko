@@ -66,6 +66,7 @@ module Chanko
     end
 
     def view_result(result, type)
+      return result if self.unit.default?
       case type
       when :plain
         result
