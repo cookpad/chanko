@@ -32,18 +32,21 @@ class ChankoGenerator < Rails::Generators::NamedBase
   def create_js_files
     if options.js? && !options.coffee?
       template 'chanko.js', File.join("app", base_directory, file_name, "javascripts", "#{file_name}.js")
+      create_symlink('javascripts')
     end
   end
 
   def create_coffee_files
     if options.coffee?
       template 'chanko.coffee', File.join("app", base_directory, file_name, "javascripts", "#{file_name}.js.coffee")
+      create_symlink('javascripts', {:asset => true})
     end
   end
 
   def create_logo_file
     if options.image?
       template 'chanko_blank.png', File.join("app", base_directory, file_name, "images", "logo.png")
+      create_symlink('images')
     end
   end
 
@@ -69,7 +72,7 @@ class ChankoGenerator < Rails::Generators::NamedBase
 
   private
   def base_directory
-    name = options[:directory] || Chanko.config.directory_name
+    name = options[:directory] || Chanko.config.directory_name 
     name.pluralize
   end
 

@@ -24,16 +24,6 @@ Chanko::ActiveIf.files = active_if_files
         inside(Rails.root) do
           run("ln -ns ../app/#{base_directory} spec/#{base_directory}") if File.exists?(Rails.root.join("spec"))
           run("ln -ns ../app/#{base_directory} test/#{base_directory}") if File.exists?(Rails.root.join("test"))
-          run("ln -ns ../app/#{base_directory} test/#{base_directory}") if File.exists?(Rails.root.join("test"))
-          if (defined? Sprockets)
-            run("ln -ns ../../../app/#{base_directory} app/assets/images/#{base_directory}")
-            run("ln -ns ../../../app/#{base_directory} app/assets/javascripts/#{base_directory}")
-            run("ln -ns ../../../app/#{base_directory} app/assets/stylesheets/#{base_directory}")
-          else
-            run("ln -ns ../../app/#{base_directory} public/images/#{base_directory}")
-            run("ln -ns ../../app/#{base_directory} public/javascripts/#{base_directory}")
-            run("ln -ns ../../app/#{base_directory} public/stylesheets/#{base_directory}")
-          end
         end
       end
 
