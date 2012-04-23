@@ -83,7 +83,7 @@ module Chanko
         "extension ext_#{self.unit.css_name} ext_#{self.unit.css_name}-#{label.to_s}"
       else
         css_class = Chanko.config.css_class
-        "#{css_class} #{css_class}_#{self.unit.css_name} #{css_class}_#{self.unit.css_name}-#{label.to_s}"
+        "#{css_class} #{css_class}__#{self.unit.css_name} #{css_class}__#{self.unit.css_name}__#{label.to_s}"
       end
     end
   end
