@@ -89,18 +89,18 @@ Tests for this chanko go here.
 
     models do
       expand("ExpandedModel") do
-        #expanded_model.unit(:sample).has_many_associations
+        #expanded_model.ext(:sample).has_many_associations
         has_many :has_many_associations
         has_one :has_one_association
 
         # should use lambda
         scope :exists, lambda { where(:deleted_at => nil) }
 
-        # expanded_model_instance.unit.new_method
+        # expanded_model_instance.ext.new_method
         def new_method
         end
 
-        #expanded_mode.unit.new_method
+        #expanded_mode.ext.new_method
         class_methods do
           def new_class_method
           end
@@ -109,7 +109,7 @@ Tests for this chanko go here.
     end
 
     helpers do
-      # unit.helper_method
+      # ext.helper_method
       def helper_method
       end
     end
@@ -210,23 +210,23 @@ in turn. Only the first enabled function is executed.
 == expand
 "expand()" expands existing model methods and adds chanko helper methods. The
 expanded method is only used by the expanding chanko.
-All expanded method must be used in your code via unit proxy as below.
-  user_instance.unit.expanded_method
+All expanded method must be used in your code via *ext* proxy as below.
+  user_instance.ext.expanded_method
 
 You can write expanding methods for current models. The "models()" block
 provides association and named_scope and class method syntax.
   models do
     expand("ExpandedModel") do
-       #expanded_model.unit.has_many_associations
+       #expanded_model.ext.has_many_associations
        has_many :has_many_associations
        has_one :has_one_association
        has_many :through_associations, :through => label(:has_many_associations)
        named_scope :exists, :conditions => {:deleted_at => nil}
-        # expanded_model_instance.unit.new_method
+        # expanded_model_instance.ext.new_method
        def new_method
        end
 
-       #expanded_mode.unit.new_method
+       #expanded_mode.ext.new_method
        class_methods do
         def cmethod
         end
@@ -235,8 +235,8 @@ provides association and named_scope and class method syntax.
   end
 
 When used as a symbol as an :include option for ActiveRecord, you must wrap
-label with "unit.label()" syntax.
-  User.find(:first, :include => [unit.label(:recipes)])
+label with "ext.label()" syntax.
+  User.find(:first, :include => [ext.label(:recipes)])
 
 == Helpers
 You can write chanko helpers.
@@ -245,8 +245,8 @@ You can write chanko helpers.
     end
   end
 
-And can use helpers in views and controllers via unit proxy.
-  function(:sample) { unit.hello }
+And can use helpers in views and controllers via *ext* proxy.
+  function(:sample) { ext.hello }
   helpers { def hello; 'hello'; end }
 
 == Tips
@@ -269,5 +269,5 @@ Use block and invoke.
 
 check status of a chanko.
 you can check the status of an chanko. In almost all situations, context is controller.（deprecated ?)
-  unit(:sample).active? #=> return boolean
+  ext(:sample).active? #=> return boolean
 
