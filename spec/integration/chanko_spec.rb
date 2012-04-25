@@ -20,12 +20,6 @@ describe "Chanko", :type => :integration do
         function(:blank) do
           
         end
-
-        function(:content_for) do
-          content_for :content_for_hello do
-            'content_for_hello'
-          end
-        end
       end
     end
 
@@ -54,11 +48,5 @@ describe "Chanko", :type => :integration do
   it 'nested invoke with blank result' do
     visit "/invoke/nested"
     (response || page).body.should == "<!DOCTYPE html>\n<html>\n<body>\nhello\noutside \n</body>\n</html>\n"
-  end
-
-  it 'nested invoke with content_for' do
-    no_raise_chanko_exception
-    visit "/invoke/content_for_hello"
-    (response || page).body.should == "<!DOCTYPE html>\n<html>\n<body>\n\nbefore\nbefore\ncontent_for_hellodefault\nafter\n\nafter\n\n</body>\n</html>\n"
   end
 end
