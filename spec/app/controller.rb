@@ -18,6 +18,10 @@ class InvokeController < ApplicationController
       </html>
     EOS
   end
+
+  def content_for_hello
+  end
+end
 end
 
 # helpers
