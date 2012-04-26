@@ -22,7 +22,6 @@ class InvokeController < ApplicationController
   def content_for_hello
   end
 end
-end
 
 # helpers
 Object.const_set(:ApplicationHelper, Module.new)
