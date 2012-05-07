@@ -1,5 +1,25 @@
-class ApplicationController < ActionController::Base; end
-ApplicationController.view_paths = File.dirname(__FILE__)
+# helpers
+module ApplicationHelper
+  include Chanko::Invoker
+end
+
+class ApplicationController < ActionController::Base
+  include Chanko::Invoker
+  include Rails.application.routes.url_helpers
+  def _routes() ::Rails.application.routes end
+  def controller() parent_controller end
+end
+
+ActionView::TestCase::TestController.class_eval do
+  include Chanko::Invoker
+  include Rails.application.routes.url_helpers
+  def _routes() ::Rails.application.routes end
+  def controller() parent_controller end
+end
+
+ApplicationController.view_paths = File.join(File.dirname(__FILE__), 'views')
+ActionView::TestCase::TestController.view_paths = File.join(File.dirname(__FILE__), 'views')
+
 
 class InvokeController < ApplicationController
   layout 'application'
@@ -23,5 +43,3 @@ class InvokeController < ApplicationController
   end
 end
 
-# helpers
-Object.const_set(:ApplicationHelper, Module.new)

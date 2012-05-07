@@ -8,17 +8,15 @@ module Chanko
         mattr_accessor :defined_blocks
         attr_accessor :attached_unit_classes
         attr_accessor :__current_function
+      end
 
-        define_once(:method_missing_with_shared_method) do
-          def method_missing_with_shared_method(method_symbol, *args)
-            if block = self.attached_unit_classes.try(:last).try(:shared_method, method_symbol)
-              self.instance_exec(*args, &block)
-            else
-              method_missing_without_shared_method(method_symbol, *args)
-            end
-          end
-          alias_method_chain :method_missing, :shared_method
-        end
+    end
+
+    def method_missing(method_symbol, *args)
+      if block = self.attached_unit_classes.try(:last).try(:shared_method, method_symbol)
+        self.instance_exec(*args, &block)
+      else
+        super(method_symbol, *args)
       end
     end
 
@@ -34,13 +32,12 @@ module Chanko
         self.is_a?(ActionView::Base) && respond_to?("concat")
       end
 
-      def method_missing_with_access_locals(method_symbol, *args)
+      def method_missing(method_symbol, *args)
         if _has_local_val?(method_symbol, *args)
           return _local_val(method_symbol)
         end
-        method_missing_without_access_locals(method_symbol, *args)
+        super(method_symbol, *args)
       end
-      alias_method_chain :method_missing, :access_locals
 
       def _local_val(method_symbol)
         current_locals[method_symbol]

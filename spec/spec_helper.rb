@@ -42,15 +42,16 @@ RSpec.configure do |config|
   # instead of true.
   #config.use_transactional_fixtures = true
 
+  #config.include Rails.application.routes.url_helpers
+
   config.before(:suite) do
     $: << fixtures_path.join('lib')
     path = fixtures_path.join('test_units')
     Chanko::Loader.directories.unshift(path)
     Chanko::ActiveIf.files = [fixtures_path.join('active_if', "main")]
-    ApplicationController.send(:include, Chanko::Invoker)
-    ActionView::Base.send(:include, Chanko::Invoker)
     CreateAllTables.up unless ActiveRecord::Base.connection.table_exists? 'users'
   end
+
   config.before do
     Chanko::Helper.check_to_update_interval = 0
   end

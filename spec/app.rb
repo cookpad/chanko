@@ -16,7 +16,7 @@ module Chanko
   end
 end
 
-require 'app/route.rb'
+require 'app/route'
 require 'app/controller'
 
 
