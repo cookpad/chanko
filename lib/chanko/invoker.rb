@@ -3,7 +3,6 @@ module Chanko
     def self.included(obj)
       obj.class_eval do
         include InstanceMethods
-        extend ClassMethods
 
         mattr_accessor :defined_blocks
         attr_accessor :attached_unit_classes
@@ -17,13 +16,6 @@ module Chanko
         self.instance_exec(*args, &block)
       else
         super(method_symbol, *args)
-      end
-    end
-
-    module ClassMethods
-      def define_once(name)
-        return if self.instance_methods.map(&:to_s).include?(name.to_s)
-        yield
       end
     end
 
