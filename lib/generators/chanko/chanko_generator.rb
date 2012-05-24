@@ -8,17 +8,20 @@ class ChankoGenerator < Rails::Generators::NamedBase
   class_option :image, :type => :boolean, :default => true, :description => "Generate a blank image"
   class_option :specs, :type => :boolean, :default => true, :description => "Generate template specs files"
   class_option :view, :type => :boolean, :default => true, :description => "Generate a template view file"
+  class_option :bare, :type => :boolean, :default => false, :description => "Generate a blank extension which only includes the ruby file"
 
   def create_chanko_file
     template 'chanko.rb', File.join("app", base_directory, file_name, "#{file_name}.rb")
   end
 
   def create_view_files
-    template 'chanko.haml', File.join("app", base_directory, file_name, "views", "_show.html.haml") if options.view?
+    if !options.bare? && options.view?
+      template 'chanko.haml', File.join("app", base_directory, file_name, "views", "_show.html.haml")
+    end
   end
 
   def create_spec_file
-    if options.specs?
+    if !options.bare? && options.specs?
       template 'chanko_controller_spec.rb', File.join("app", base_directory, file_name, "specs/controllers", "#{file_name}_controller_spec.rb")
       template 'chanko_model_spec.rb', File.join("app", base_directory, file_name, "specs/models", "#{file_name}_model_spec.rb")
       template 'chanko_helper_spec.rb', File.join("app", base_directory, file_name, "specs/helpers", "#{file_name}_helper_spec.rb")
@@ -26,28 +29,28 @@ class ChankoGenerator < Rails::Generators::NamedBase
   end
 
   def create_scss_files
-    if options.scss?
+    if !options.bare? && options.scss?
       template 'chanko.scss', File.join("app", base_directory, file_name, "stylesheets", "#{file_name}.scss")
       create_symlink('stylesheets')
     end
   end
 
   def create_js_files
-    if options.js? && !options.coffee?
+    if !options.bare? && options.js? && !options.coffee?
       template 'chanko.js', File.join("app", base_directory, file_name, "javascripts", "#{file_name}.js")
       create_symlink('javascripts')
     end
   end
 
   def create_coffee_files
-    if options.coffee?
+    if !options.bare? && options.coffee?
       template 'chanko.coffee', File.join("app", base_directory, file_name, "javascripts", "#{file_name}.js.coffee")
       create_symlink('javascripts', {:asset => true})
     end
   end
 
   def create_logo_file
-    if options.image?
+    if !options.bare? && options.image?
       template 'chanko_blank.png', File.join("app", base_directory, file_name, "images", "logo.png")
       create_symlink('images')
     end
