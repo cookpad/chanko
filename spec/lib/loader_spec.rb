@@ -71,11 +71,25 @@ describe Chanko do
     end
 
     describe 'load' do
-      it 'should load unit from file' do
+      around(:each) do |example|
+        ActiveSupport::Dependencies.reset_timestamps_and_defined_classes
+        example.run
+      end
+
+      it 'should load singular name unit via file' do
+        Chanko::Unit.should_receive(:clear_function_cache).with('LoadUnit')
         Chanko::Loader.load_unit(:load_unit)
         Chanko::Loader.size.should == 1
-        Object.constants.map(&:to_s).include?(LoadUnit)
+        Object.constants.map(&:to_s).should be_include('LoadUnit')
         LoadUnit.ancestors.should be_include(Chanko::Unit)
+      end
+
+      it 'should load plural name unit via file' do
+        Chanko::Unit.should_receive(:clear_function_cache).with('LoadUnits')
+        Chanko::Loader.load_unit(:load_units)
+        Chanko::Loader.size.should == 1
+        Object.constants.map(&:to_s).should be_include('LoadUnits')
+        LoadUnits.ancestors.should be_include(Chanko::Unit)
       end
 
       it 'should not notify load error when skip_raise is true' do

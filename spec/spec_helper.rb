@@ -56,7 +56,7 @@ RSpec.configure do |config|
     Chanko::Helper.check_to_update_interval = 0
   end
 
-  config.after do
+  config.before do
     Chanko::Loader.clear_cache!
     Chanko::Helper.reset
   end

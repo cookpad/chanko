@@ -109,8 +109,8 @@ module Chanko
       def load_core(unit_name, options={})
         Chanko::Loader.directories.each do |directory|
           Pathname.glob(directory.join("#{unit_name}/#{unit_name}.rb")).sort.each do |filename|
-            if require_or_updating_load("#{filename.dirname}/#{filename.basename}")
-              Chanko::Unit.clear_function_cache(unit_name.to_s.classify)
+            if result = require_or_updating_load("#{filename.dirname}/#{filename.basename}")
+              Chanko::Unit.clear_function_cache(unit_name.to_s.camelize)
             end
           end
         end
