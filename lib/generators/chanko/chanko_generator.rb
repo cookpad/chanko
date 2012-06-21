@@ -6,7 +6,7 @@ class ChankoGenerator < Rails::Generators::NamedBase
   class_option :js, :type => :boolean, :default => true, :description => "Generate a template javascript file"
   class_option :coffee, :type => :boolean, :default => false, :description => "Generate a template coffeescript file"
   class_option :image, :type => :boolean, :default => true, :description => "Generate a blank image"
-  class_option :specs, :type => :boolean, :default => true, :description => "Generate template specs files"
+  class_option :spec, :type => :boolean, :default => true, :description => "Generate template spec files"
   class_option :view, :type => :boolean, :default => true, :description => "Generate a template view file"
   class_option :bare, :type => :boolean, :default => false, :description => "Generate a blank extension which only includes the ruby file"
 
@@ -21,10 +21,10 @@ class ChankoGenerator < Rails::Generators::NamedBase
   end
 
   def create_spec_file
-    if !options.bare? && options.specs?
-      template 'chanko_controller_spec.rb', File.join("app", base_directory, file_name, "specs/controllers", "#{file_name}_controller_spec.rb")
-      template 'chanko_model_spec.rb', File.join("app", base_directory, file_name, "specs/models", "#{file_name}_model_spec.rb")
-      template 'chanko_helper_spec.rb', File.join("app", base_directory, file_name, "specs/helpers", "#{file_name}_helper_spec.rb")
+    if !options.bare? && options.spec?
+      template 'chanko_controller_spec.rb', File.join("app", base_directory, file_name, "spec/controllers", "#{file_name}_controller_spec.rb")
+      template 'chanko_model_spec.rb', File.join("app", base_directory, file_name, "spec/models", "#{file_name}_model_spec.rb")
+      template 'chanko_helper_spec.rb', File.join("app", base_directory, file_name, "spec/helpers", "#{file_name}_helper_spec.rb")
     end
   end
 

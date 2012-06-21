@@ -35,9 +35,9 @@ Generate chanko.
         create  app/units/sample/views/_show.html.haml
         create  app/units/sample/stylesheets/tutorial.scss
         create  app/units/sample/images/logo.png
-        create  app/units/sample/specs/models/sample_spec.rb
-        create  app/units/sample/specs/controllers/sample_controller_spec.rb
-        create  app/units/sample/specs/helpers/sample_helper_spec.rb
+        create  app/units/sample/spec/models/sample_spec.rb
+        create  app/units/sample/spec/controllers/sample_controller_spec.rb
+        create  app/units/sample/spec/helpers/sample_helper_spec.rb
 
 === app/units/sample/sample.rb
 Main file. You write your model and controller logic in this file.
@@ -56,8 +56,8 @@ app/units/sample/images to  (public or assets)/images/units/#{unit_name}
 with attention to use the relative path.
 If you used generator, the symbolic link is automaticlly generated.
 
-=== app/units/sample/specs/
-Tests for this chanko go here.
+=== app/units/sample/spec/
+Spec files for this chanko go here.
 
 == Syntax
   module Sample
