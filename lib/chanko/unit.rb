@@ -108,7 +108,6 @@ module Chanko
       def expand_prefix
         "__#{unit_name}__"
       end
-      memoize :expand_prefix
 
       def models_module
         return self.const_get("Models") if self.constants.map(&:to_s).include?("Models")
@@ -276,7 +275,6 @@ module Chanko
       def default?
         !!self.default
       end
-      memoize :default?
 
       def functions(context, label, active_if_options={}, options = {})
         return [] unless active?(context, active_if_options)
