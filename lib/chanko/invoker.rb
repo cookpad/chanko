@@ -164,6 +164,3 @@ module Chanko
     end
   end
 end
-
-
-

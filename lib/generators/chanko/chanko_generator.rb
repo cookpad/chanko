@@ -78,7 +78,7 @@ class ChankoGenerator < Rails::Generators::NamedBase
 
   private
   def base_directory
-    name = options[:directory] || Chanko.config.directory_name 
+    name = options[:directory] || Chanko.config.directory_name
     name.pluralize
   end
 

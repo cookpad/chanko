@@ -9,4 +9,3 @@ end
 Chanko::ActiveIf.define(:not_production) do |context, options|
   !Rails.env.production?
 end
-

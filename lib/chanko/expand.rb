@@ -43,7 +43,7 @@ module Chanko
        "#{prefix}#{method}".to_sym
       end
       private :prefix_method
-      alias_method :label ,:prefix_method
+      alias_method :label, :prefix_method
 
       def self_methods
         ['prefix', 'prefix=']
@@ -101,7 +101,3 @@ module Chanko
     end
   end
 end
-
-
-
-

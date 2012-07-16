@@ -32,5 +32,3 @@ module Chanko
     config.directory_name = 'units'
   end
 end
-
-

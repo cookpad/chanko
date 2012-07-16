@@ -1,4 +1,3 @@
-
 module Chanko
   module UpdatingLoad
     module Loadable

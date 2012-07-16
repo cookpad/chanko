@@ -51,14 +51,14 @@ module Chanko
           name = args.shift
           options = args.shift || {}
           options.merge!(:class_name => name.to_s.singularize.camelize) unless options.key?(:class_name)
-          instance_variable_get("@__has_many_definitions") << [name,options,block]
+          instance_variable_get("@__has_many_definitions") << [name, options, block]
         end
 
         def has_one(*args, &block)
           name = args.shift
           options = args.shift || {}
           options.merge!(:class_name => name.to_s.singularize.camelize) unless options.key?(:class_name)
-          instance_variable_get("@__has_one_definitions") << [name,options,block]
+          instance_variable_get("@__has_one_definitions") << [name, options, block]
         end
 
         def belongs_to(*args, &block)
@@ -66,13 +66,13 @@ module Chanko
           options = args.shift || {}
           options.merge!(:class_name => name.to_s.singularize.camelize) unless options.key?(:class_name)
           options.merge!(:foreign_key => "#{name.to_s.singularize.underscore}_id") unless options.key?(:foreign_key)
-          instance_variable_get("@__belongs_to_definitions") << [name,options,block]
+          instance_variable_get("@__belongs_to_definitions") << [name, options, block]
         end
 
         def scope(*args, &block)
           name = args.shift
           options = args.shift || {}
-          instance_variable_get("@__scope_definitions") << [name,options,block]
+          instance_variable_get("@__scope_definitions") << [name, options, block]
         end
       end
     end
