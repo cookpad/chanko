@@ -14,7 +14,6 @@ module Chanko
     end
 
     module ExpandClassMethods
-      extend ActiveSupport::Memoizable
       def class_methods(&block)
         class_eval do
           unless constants.map(&:to_s).include?("ClassMethods")
@@ -48,8 +47,6 @@ module Chanko
       def self_methods
         ['prefix', 'prefix=']
       end
-      memoize :self_methods
-
 
       def expand(obj)
         obj.instance_methods(false).each do |method|
