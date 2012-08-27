@@ -21,8 +21,8 @@ describe "Chanko" do
       class ExceptionToNotPassThroughed < Exception; end
 
       before(:all) do
-        @config_save = Chanko.config.propagate_errors.dup
-        Chanko.config.propagate_errors = [ExceptionToPassThroughed]
+        @config_save = Chanko.config.propagated_errors.dup
+        Chanko.config.propagated_errors = [ExceptionToPassThroughed]
       end
 
       before do
@@ -47,7 +47,7 @@ describe "Chanko" do
       end
 
 
-      after(:all)  {  Chanko.config.propagate_errors = @config_save }
+      after(:all)  {  Chanko.config.propagated_errors = @config_save }
     end
 
     context 'controller' do

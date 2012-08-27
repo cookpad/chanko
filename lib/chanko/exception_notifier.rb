@@ -20,11 +20,11 @@ module Chanko
         Rails.logger.debug("Chanko::Exception #{message}\n#{backtrace}")
       end
 
-      propagate_errors = Chanko.config.propagate_errors
-      if payload[:exception] && propagate_errors.any?{|e| payload[:exception].kind_of?(e) }
+      propagated_errors = Chanko.config.propagated_errors
+      if payload[:exception] && propagated_errors.any?{|e| payload[:exception].kind_of?(e) }
         raise payload[:exception]
       end
-      if payload[:exception_klass] && propagate_errors.any?{|e| payload[:exception_klass].new.kind_of?(e) }
+      if payload[:exception_klass] && propagated_errors.any?{|e| payload[:exception_klass].new.kind_of?(e) }
         raise payload[:exception_klass]
       end
 
