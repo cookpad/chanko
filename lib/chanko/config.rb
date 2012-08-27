@@ -11,7 +11,7 @@ module Chanko
     include ActiveSupport::Configurable
 
     config_accessor :raise
-    config_accessor :exceptions_to_pass_through
+    config_accessor :propagate_errors
     config_accessor :test
     config_accessor :cache_classes
     config_accessor :default_active_if
@@ -24,7 +24,7 @@ module Chanko
 
   configure do |config|
     config.raise = false
-    config.exceptions_to_pass_through = []
+    config.propagate_errors = []
     config.test = Rails.env.test?
     config.cache_classes = Rails.application.config.cache_classes
     config.default_active_if = lambda { false }
