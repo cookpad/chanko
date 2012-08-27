@@ -16,6 +16,40 @@ describe "Chanko" do
       ActionView::Base.new.tap {|view| view.output_buffer = '' }
     end
 
+    describe 'with Exception to pass-through' do
+      class ExceptionToPassThroughed < Exception; end
+      class ExceptionToNotPassThroughed < Exception; end
+
+      before(:all) do
+        @config_save = Chanko.config.exceptions_to_pass_through.dup
+        Chanko.config.exceptions_to_pass_through = [ExceptionToPassThroughed]
+      end
+
+      before do
+        no_raise_chanko_exception
+        mock_unit("RenderTest")
+      end
+
+      it "doesn't raise the exception when it's not in the list" do
+        function = Chanko::Function.new(:hello, RenderTest) do
+          raise ExceptionToNotPassThroughed
+        end
+
+        expect { function.invoke!(controller) }.to_not raise_error
+      end
+
+      it "raises the exception when it's in the list" do
+        function = Chanko::Function.new(:hello, RenderTest) do
+          raise ExceptionToPassThroughed
+        end
+
+        expect { function.invoke!(controller) }.to raise_error(ExceptionToPassThroughed)
+      end
+
+
+      after(:all)  {  Chanko.config.exceptions_to_pass_through= @config_save }
+    end
+
     context 'controller' do
       before do
         mock_unit("RenderTest")
