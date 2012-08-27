@@ -47,7 +47,7 @@ describe "Chanko" do
       end
 
 
-      after(:all)  {  Chanko.config.propagate_errors= @config_save }
+      after(:all)  {  Chanko.config.propagate_errors = @config_save }
     end
 
     context 'controller' do
