@@ -69,7 +69,6 @@ module Chanko
     end
 
     module ClassMethods
-      extend ActiveSupport::Memoizable
       attr_reader :shared_methods
 
       def active_if(*symbols, &block)
@@ -99,16 +98,13 @@ module Chanko
       private :any
 
       def unit_name
-        self.name.split("::").first.underscore
+        @_unit_name ||= self.name.split("::").first.underscore
       end
       alias_method :ext_name, :unit_name
-      memoize :unit_name
-      memoize :ext_name
 
       def expand_prefix
         "__#{unit_name}__"
       end
-      memoize :expand_prefix
 
       def models_module
         return self.const_get("Models") if self.constants.map(&:to_s).include?("Models")
@@ -158,9 +154,8 @@ module Chanko
       private :function
 
       def underscore
-        name.to_s.underscore
+        @_underscore ||= name.to_s.underscore
       end
-      memoize :underscore
 
       def css_name
         underscore
@@ -276,7 +271,6 @@ module Chanko
       def default?
         !!self.default
       end
-      memoize :default?
 
       def functions(context, label, active_if_options={}, options = {})
         return [] unless active?(context, active_if_options)
