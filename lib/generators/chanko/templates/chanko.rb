@@ -1,3 +1,4 @@
+# coding: utf-8
 module <%= class_name %>
   include Chanko::Unit
 
