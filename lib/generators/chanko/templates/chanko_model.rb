@@ -1,3 +1,4 @@
+# coding: utf-8
 module <%= class_name %>
   module Models
     expand("<%= class_name.camelize %>") do
