@@ -28,6 +28,18 @@ describe "Chanko" do
        Chanko::ActiveIf.fetch(:missing).call.should == false
     end
 
+    context 'with option :raise' do
+      it 'raises error when tried to fetch missing stuff' do
+        expect { Chanko::ActiveIf.fetch(:missing, true) }.should raise_error(Chanko::Exception::MissingActiveIfDefinition)
+        expect { Chanko::ActiveIf.fetch(:return_true, true) }.should_not raise_error(Chanko::Exception::MissingActiveIfDefinition)
+      end
+
+      it 'raises error when missing stuff included' do
+        expect { Chanko::ActiveIf.new(:missing, :raise => true) }.should raise_error(Chanko::Exception::MissingActiveIfDefinition)
+        expect { Chanko::ActiveIf.new(:return_true, :raise => true) }.should_not raise_error(Chanko::Exception::MissingActiveIfDefinition)
+      end
+    end
+
     it 'should false if one of definitions is false' do
       Chanko::ActiveIf.new(:return_true, :return_false).enabled?(self).should == false
       Chanko::ActiveIf.new(:return_false, :return_true).enabled?(self).should == false

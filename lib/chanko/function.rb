@@ -55,7 +55,7 @@ module Chanko
         end
       rescue ::Exception => e
         Chanko::Loader.aborted(unit.unit_name)
-        Chanko::ExceptionNotifier.notify("raise exception #{unit.name}##{@label} => #{e.message}", self.unit.default?,
+        Chanko::ExceptionNotifier.notify("raise exception #{unit.name}##{@label} => #{e.message}", @unit.propagates_errors?,
                                 :exception => e, :backtrace =>  e.backtrace[0..20], :key => "#{unit.name}_exception", :context => scope)
         return Chanko::Aborted
       ensure

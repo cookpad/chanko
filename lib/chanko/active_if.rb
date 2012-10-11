@@ -1,18 +1,18 @@
 module Chanko
   class ActiveIf
-
     mattr_accessor :blocks, :files, :loaded, :definitions, :expanded_judgements
     self.files = []
     self.expanded_judgements = []
     self.definitions = {}
 
     def initialize(*names, &block)
+      @options = names.last.is_a?(Hash) ? names.pop : {}
       @blocks = names.map do |name|
         case name
         when Chanko::ActiveIf::Any
           name.block
         else
-          self.class.fetch(name)
+          self.class.fetch(name, @options[:raise])
         end
       end
       @blocks << block if block
@@ -56,11 +56,11 @@ module Chanko
         end
       end
 
-      def fetch(name)
+      def fetch(name, raise_error = false)
         load_definitions!
         result = self.definitions[name.to_sym]
         return result if result
-        Chanko::ExceptionNotifier.notify("missing Activeif definition #{name}", false, :exception_klass => Chanko::Exception::MissingActiveIfDefinition)
+        Chanko::ExceptionNotifier.notify("missing Activeif definition #{name}", raise_error, :exception_klass => Chanko::Exception::MissingActiveIfDefinition)
         Chanko::ActiveIf.default
       end
 
