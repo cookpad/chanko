@@ -229,4 +229,25 @@ describe Chanko do
     before { Chanko.config.cache_classes = false }
     it_should_behave_like 'unit'
   end
+
+  describe 'raise_error' do
+    before do
+      no_raise_chanko_exception
+      mock_unit("RaiseErrorTest", Chanko::Test::Invoker)
+      RaiseErrorTest.raise_error = true
+    end
+
+    it 'raises missingfunction' do
+      expect { RaiseErrorTest.functions(self, :missing) }.to raise_error(Chanko::Exception::MissingFunction)
+    end
+
+    it 'raises missingactiveifdefinition' do
+      expect { RaiseErrorTest.active_if(:missing) }.to raise_error(Chanko::Exception::MissingActiveIfDefinition)
+    end
+
+    it 'raises nameerror' do
+      expect { RaiseErrorTest.scope("MissingScopeName") }.to raise_error(NameError)
+      expect { RaiseErrorTest.models { expand("MissingScopeName") {} } }.to raise_error(NameError)
+    end
+  end
 end
