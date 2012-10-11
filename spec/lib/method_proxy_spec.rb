@@ -75,6 +75,21 @@ describe Chanko do
         }.to_not raise_error(StandardError, 'error')
       end
 
+      it 'raise error when unit.propagates_errors is true' do
+        no_raise_chanko_exception
+        begin
+          ProxyTest.propagates_errors = true
+          expect {
+            receiver.unit(:proxy_test) do |unit|
+              raise StandardError, 'error'
+            end
+          }.to raise_error(StandardError, 'error')
+        ensure
+          ProxyTest.propagates_errors = false
+        end
+      end
+
+
     end
 
     context 'null proxy' do
