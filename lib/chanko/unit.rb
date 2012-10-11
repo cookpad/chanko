@@ -49,7 +49,7 @@ module Chanko
         begin
           klass = klass_name.constantize
         rescue NameError => e
-          Chanko::ExceptionNotifier.notify("expand name error #{self.name} #{klass_name}", false,
+          Chanko::ExceptionNotifier.notify("expand name error #{self.name} #{klass_name}", self.expand_owner.raise_error?,
                                    :key => "#{self.name} expand error", :exception => e,
                                    :context => self, :backtrace => e.backtrace[0..20]
                                   )
@@ -72,16 +72,23 @@ module Chanko
       attr_reader :shared_methods
 
       def active_if(*symbols, &block)
-        @active_if = Chanko::ActiveIf.new(*symbols, &block)
+        @active_if = Chanko::ActiveIf.new(*(symbols + [:raise => @raise_error]), &block)
       end
       alias_method :judge, :active_if
+
+      def raise_error(o=true)
+        @raise_error = o
+      end
+      alias_method :raise_error=, :raise_error
+
+      def raise_error?; @raise_error ||= false; end
 
       def active?(context=nil, options={})
         begin
           options = options.merge(:unit => self)
           @active_if.enabled?(context, options)
         rescue ::Exception => e
-          Chanko::ExceptionNotifier.notify("Activeif definition #{self.name} raised", false,
+          Chanko::ExceptionNotifier.notify("Activeif definition #{self.name} raised", @raise_error,
                                    :key => "#{self.name}_active?",
                                    :context => context,
                                    :backtrace => e.backtrace[0..20],
@@ -109,10 +116,13 @@ module Chanko
       def models_module
         return self.const_get("Models") if self.constants.map(&:to_s).include?("Models")
         expand_prefix = self.expand_prefix
+        owner = self
         models_module = self.const_set("Models", Module.new do
           extend ModelsClassMethods
           mattr_accessor :expand_prefix
+          mattr_accessor :expand_owner
           self.expand_prefix = expand_prefix
+          self.expand_owner  = owner
         end)
         return models_module
       end
@@ -135,7 +145,7 @@ module Chanko
           begin
             scope_klass = scope_klass_string.constantize
           rescue NameError => e
-            Chanko::ExceptionNotifier.notify("scope '#{scope_klass_string}' is unable to constantize", false,
+            Chanko::ExceptionNotifier.notify("scope '#{scope_klass_string}' is unable to constantize", @raise_error,
                                    :key => "#{self.name} expand error", :exception => e,
                                    :backtrace => e.backtrace[0..20])
           end
@@ -292,7 +302,7 @@ module Chanko
 
         return cbks.dup unless cbks.blank?
 
-        Chanko::ExceptionNotifier.notify("missing functions #{self.name}##{label}", false,
+        Chanko::ExceptionNotifier.notify("missing functions #{self.name}##{label}", @raise_error,
                                  :exception_klass => Chanko::Exception::MissingFunction,
                                  :key => "missing function #{self.name}",
                                  :context => self
