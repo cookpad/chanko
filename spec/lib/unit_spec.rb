@@ -234,7 +234,7 @@ describe Chanko do
     before do
       no_raise_chanko_exception
       mock_unit("RaiseErrorTest", Chanko::Test::Invoker)
-      RaiseErrorTest.raise_error = true
+      RaiseErrorTest.propagates_errors = true
     end
 
     it 'raises missingfunction' do

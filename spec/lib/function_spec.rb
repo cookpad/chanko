@@ -50,14 +50,14 @@ describe "Chanko" do
       after(:all)  {  Chanko.config.propagated_errors = @config_save }
     end
 
-    describe 'with unit.raise_error' do
+    describe 'with unit.propagates_errors' do
       before do
         no_raise_chanko_exception
         mock_unit("RaiseErrorTest")
       end
 
-      it "doesn't raise the exception when raise_error == false" do
-        RaiseErrorTest.raise_error = false
+      it "doesn't raise the exception when propagates_errors == false" do
+        RaiseErrorTest.propagates_errors = false
         function = Chanko::Function.new(:hello, RaiseErrorTest) do
           raise Exception
         end
@@ -65,8 +65,8 @@ describe "Chanko" do
         expect { function.invoke!(controller) }.to_not raise_error
       end
 
-      it "raises the exception if raise_error == true" do
-        RaiseErrorTest.raise_error = true
+      it "raises the exception if propagates_errors == true" do
+        RaiseErrorTest.propagates_errors = true
         function = Chanko::Function.new(:hello, RaiseErrorTest) do
           raise Exception
         end

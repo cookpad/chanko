@@ -49,7 +49,7 @@ module Chanko
         begin
           klass = klass_name.constantize
         rescue NameError => e
-          Chanko::ExceptionNotifier.notify("expand name error #{self.name} #{klass_name}", self.expand_owner.raise_error?,
+          Chanko::ExceptionNotifier.notify("expand name error #{self.name} #{klass_name}", self.expand_owner.propagates_errors?,
                                    :key => "#{self.name} expand error", :exception => e,
                                    :context => self, :backtrace => e.backtrace[0..20]
                                   )
@@ -72,23 +72,23 @@ module Chanko
       attr_reader :shared_methods
 
       def active_if(*symbols, &block)
-        @active_if = Chanko::ActiveIf.new(*(symbols + [:raise => @raise_error]), &block)
+        @active_if = Chanko::ActiveIf.new(*(symbols + [:raise => @propagates_errors]), &block)
       end
       alias_method :judge, :active_if
 
-      def raise_error(o=true)
-        @raise_error = o
+      def propagates_errors(o=true)
+        @propagates_errors = o
       end
-      alias_method :raise_error=, :raise_error
+      alias_method :propagates_errors=, :propagates_errors
 
-      def raise_error?; @raise_error ||= false; end
+      def propagates_errors?; @propagates_errors ||= false; end
 
       def active?(context=nil, options={})
         begin
           options = options.merge(:unit => self)
           @active_if.enabled?(context, options)
         rescue ::Exception => e
-          Chanko::ExceptionNotifier.notify("Activeif definition #{self.name} raised", @raise_error,
+          Chanko::ExceptionNotifier.notify("Activeif definition #{self.name} raised", @propagates_errors,
                                    :key => "#{self.name}_active?",
                                    :context => context,
                                    :backtrace => e.backtrace[0..20],
@@ -145,7 +145,7 @@ module Chanko
           begin
             scope_klass = scope_klass_string.constantize
           rescue NameError => e
-            Chanko::ExceptionNotifier.notify("scope '#{scope_klass_string}' is unable to constantize", @raise_error,
+            Chanko::ExceptionNotifier.notify("scope '#{scope_klass_string}' is unable to constantize", @propagates_errors,
                                    :key => "#{self.name} expand error", :exception => e,
                                    :backtrace => e.backtrace[0..20])
           end
@@ -302,7 +302,7 @@ module Chanko
 
         return cbks.dup unless cbks.blank?
 
-        Chanko::ExceptionNotifier.notify("missing functions #{self.name}##{label}", @raise_error,
+        Chanko::ExceptionNotifier.notify("missing functions #{self.name}##{label}", @propagates_errors,
                                  :exception_klass => Chanko::Exception::MissingFunction,
                                  :key => "missing function #{self.name}",
                                  :context => self

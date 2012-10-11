@@ -27,7 +27,7 @@ module Chanko
             unit = Chanko::Loader.fetch(unit_label)
             yield unit
           rescue ::Exception => e
-            Chanko::ExceptionNotifier.notify("unknown error #{_unit_label}", unit.raise_error?,
+            Chanko::ExceptionNotifier.notify("unknown error #{_unit_label}", unit.propagates_errors?,
                                      :exception => e,
                                      :key => "method_proxy unknown error #{_unit_label}",
                                      :context => self,
