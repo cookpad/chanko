@@ -30,13 +30,13 @@ describe "Chanko" do
 
     context 'with option :raise' do
       it 'raises error when tried to fetch missing stuff' do
-        expect { Chanko::ActiveIf.fetch(:missing, true) }.should raise_error(Chanko::Exception::MissingActiveIfDefinition)
-        expect { Chanko::ActiveIf.fetch(:return_true, true) }.should_not raise_error(Chanko::Exception::MissingActiveIfDefinition)
+        expect { Chanko::ActiveIf.fetch(:missing, true) }.to raise_error(Chanko::Exception::MissingActiveIfDefinition)
+        expect { Chanko::ActiveIf.fetch(:return_true, true) }.not_to raise_error(Chanko::Exception::MissingActiveIfDefinition)
       end
 
       it 'raises error when missing stuff included' do
-        expect { Chanko::ActiveIf.new(:missing, :raise => true) }.should raise_error(Chanko::Exception::MissingActiveIfDefinition)
-        expect { Chanko::ActiveIf.new(:return_true, :raise => true) }.should_not raise_error(Chanko::Exception::MissingActiveIfDefinition)
+        expect { Chanko::ActiveIf.new(:missing, :raise => true) }.to raise_error(Chanko::Exception::MissingActiveIfDefinition)
+        expect { Chanko::ActiveIf.new(:return_true, :raise => true) }.not_to raise_error(Chanko::Exception::MissingActiveIfDefinition)
       end
     end
 
