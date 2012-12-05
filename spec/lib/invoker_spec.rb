@@ -113,6 +113,19 @@ describe Chanko do
         end
       end
 
+      it 'access locals without `:locals => {}`' do
+        mock_unit("LocalVariableTest", self.class, {:hoge => 1})
+        LocalVariableTest.class_eval do
+          scope(Chanko::Test::Invoker) do
+            function(:set_variable) { @var = var }
+          end
+        end
+        invoker.invoke(:local_variable_test, :set_variable, :var => true)
+        invoker.instance_eval do
+          @var.should == true
+        end
+      end
+
       it 'access nested function locals' do
         mock_unit("LocalVariableTest", self.class, {:hoge => 1})
         mock_unit("NestedLocalVariableTest", self.class, {:hoge => 1})
