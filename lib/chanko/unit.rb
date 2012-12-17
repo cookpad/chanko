@@ -198,19 +198,20 @@ module Chanko
 
       def attach_view_paths(scope)
         return unless scope.respond_to?("view_paths")
-        absolute_view_paths.each do |_path|
+        absolute_view_paths.each do |path|
           if Chanko.config.cache_classes
-            path = Chanko::Unit.__eager_paths[_path]
+            resolver = Chanko::Unit.__eager_paths[path]
           end
-          path ||= _path
 
-          resolver = if Chanko.config.view_resolver
-            Chanko.config.view_resolver.new(path)
-          else
-            if Rails::VERSION::MINOR >= 1
-              ActionView::OptimizedFileSystemResolver.new(path)
+          unless resolver
+            resolver = if Chanko.config.view_resolver
+              Chanko.config.view_resolver.new(path)
             else
-              path
+              if Rails::VERSION::MINOR >= 1
+                ActionView::OptimizedFileSystemResolver.new(path)
+              else
+                path
+              end
             end
           end
 
@@ -225,13 +226,14 @@ module Chanko
 
       def detach_view_paths(scope)
         return unless scope.respond_to?("view_paths")
-        absolute_view_paths.size.times do |path|
+        absolute_view_paths.size.times do
           if Rails::VERSION::MINOR >= 2
-            shifted_path  = scope.view_paths.paths.shift
+            resolver = scope.view_paths.paths.shift
           else
-            shifted_path  = scope.view_paths.shift
+            resolver = scope.view_paths.shift
           end
-          Chanko::Unit.__eager_paths[shifted_path] = shifted_path
+          path = resolver.to_path
+          Chanko::Unit.__eager_paths[path] = resolver
         end
       end
       private :detach_view_paths
