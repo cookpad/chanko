@@ -6,7 +6,7 @@ specified segments of your user base.
 
 With Chanko, you can release many concurrent features and independently manage
 which users see them. If there are errors with any chanko, it will be
-automatially removed, without impacting your site.
+automatically removed, without impacting your site.
 
 Please take a look at https://github.com/cookpad/chanko_sample which is a
 simple example app using chanko.
@@ -19,7 +19,7 @@ Ruby 1.8.7, 1.9.2
 Rails 3.0.10 ~
 
 == Install
-Add your Gemfile.
+Add to your Gemfile.
   gem 'chanko', :git => 'git://github.com/cookpad/chanko.git'
 Run install.
   rails generate chanko:install
@@ -51,10 +51,10 @@ startup or first access.
 
 === app/units/sample/images/logo.png
 The image files for this chanko.
-if you manually created this directory, you should create a symbolic link from
+If you manually created this directory, you should create a symbolic link from
 app/units/sample/images to  (public or assets)/images/units/#{unit_name}
-with attention to use the relative path.
-If you used generator, the symbolic link is automaticlly generated.
+be sure to use the relative path.
+If you used the generator, the symbolic link is automatically generated.
 
 === app/units/sample/spec/
 Spec files for this chanko go here.
@@ -119,14 +119,13 @@ arg of the invoked context, such as the controller.
 The chanko is enabled when the block returns true.
   # activeif's block is used to decide if the chanko is active or not.
   # context is the object which invoked the function.
-   which invoking function object.
   active_if do |context, options|
     true
   end
 
-Also, "active_if()" accepts pre defined symbols. "active_if()" evaluates the AND
+Also, "active_if()" accepts predefined symbols. "active_if()" evaluates the AND
 result for all symbols and the block.
-  # This definition means "user is staff and environment is not production"
+  # This definition means "the user is staff and the environment is not production"
   active_if :staff, :not_production do |context, options|
     # some additional conditions
   end
@@ -144,13 +143,13 @@ You can define additional symbols in lib/active_if_files/main.rb.
   end
 
 When you want to use an OR condition, use "any()".
-  # This means "current user is staff or paid user. And environment is not production"
+  # This means "the current user is staff or a paid user. And the environment is not production"
   active_if any(:staff, :paid), :not_production
 
 == shared method
-"shared()" is the syntax for shared method definitions. you can use the defined
-method through functions of either :controller or :view. A block of a shared
-method behaves as an instance method.
+"shared()" is the syntax for shared method definitions. You can use the defined
+method through functions of either :controller or :view. The block of a shared
+method behaves like an instance method.
   shared(:hello) do |name|
     "hello #{name}"
   end
@@ -163,8 +162,8 @@ method behaves as an instance method.
 
 == function
 A "function()" is expanded in the calling code. This block's context behaves
-as an invoked context, so you can access the original context's instance
-variables. if you need to access local variables, a function provides a :locals
+like an invoked context, so you can access the original context's instance
+variables. If you need to access local variables, a function provides a :locals
 option that is similar to :locals use in render.
 A function is scoped, and its scope is a restriction for the function. The
 function is only called from scoped context.
@@ -199,7 +198,7 @@ it is used by function block
 
 "invoke()" can receive multiple functions. "invoke" tries to run the functions
 in turn. Only the first enabled function is executed.
-  #invoke doesn't run second_unit function if first_unit is enabled.
+  #invoke doesn't run the second_unit function if first_unit is enabled.
   invoke([:first_unit, :show], [:second_unit, :show])
 
 "invoke"() doesn't run if the specified chanko in the :if is disabled
@@ -208,7 +207,7 @@ in turn. Only the first enabled function is executed.
 == expand
 "expand()" expands existing model methods and adds chanko helper methods. The
 expanded method is only used by the expanding chanko.
-All expanded method must be used in your code via *ext* proxy as below.
+All expanded methods must be used in your code via the *ext* proxy like the sample below.
   user_instance.ext.expanded_method
 
 You can write expanding methods for current models. The "models()" block
@@ -243,29 +242,35 @@ You can write chanko helpers.
     end
   end
 
-And can use helpers in views and controllers via *ext* proxy.
+And can use helpers in views and controllers via the *ext* proxy.
   function(:sample) { ext.hello }
   helpers { def hello; 'hello'; end }
 
 == Tips
-return from inside of invoke block.
-Use following code.
+To return from inside of an invoke block.
+Use the following code.
   invoke(:hoge, :aaa) do
     redirect_to xxx
   end
   return if performed?
 
-always activate or deactivate a chanko.
+Permanently activate or deactivate a chanko.
 Use :always_true/:always_false on active_if.
   active_if :always_true # or :always_false
 
-invoke with before_filter.
+Invoke with before_filter.
 Use block and invoke.
   before_filter :only => :index do |controller|
     controller.invoke(:your_unit, :before_function)
   end
 
-check status of a chanko.
-you can check the status of an chanko. In almost all situations, context is controller.（deprecated ?)
+Check the status of a particular chanko. In almost all situations, context is controller.
   ext(:sample).active? #=> return boolean
 
+When invoking a chanko in a view context to render some output, you may want to suppress the default
+behavior of wrapping the output in a div.
+To suppress the div you can pass a special option when invoking the chanko:
+  # :type => :plain renders the view without any wrapper
+  # :type => :inline renders the view with a span element wrapper
+  # default is a div
+  invoke(:sample, :some_method, :type => :plain)
