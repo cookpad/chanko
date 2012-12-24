@@ -6,7 +6,7 @@ specified segments of your user base.
 
 With Chanko, you can release many concurrent features and independently manage
 which users see them. If there are errors with any chanko, it will be
-automatially removed, without impacting your site.
+automatically removed, without impacting your site.
 
 Please take a look at https://github.com/cookpad/chanko_sample which is a
 simple example app using chanko.
