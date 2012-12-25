@@ -24,7 +24,8 @@ class ChankoGenerator < Rails::Generators::NamedBase
 
   def create_view_files
     if !options.bare? && options.view?
-      template 'chanko.haml', File.join("app", base_directory, file_name, "views", "_show.html.haml")
+      ext = Rails.application.config.generators.options[:rails][:template_engine] || :erb
+      template "chanko.#{ext}", File.join("app", base_directory, file_name, "views", "_show.html.#{ext}")
     end
   end
 
