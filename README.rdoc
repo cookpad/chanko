@@ -164,8 +164,10 @@ method behaves as an instance method.
 == function
 A "function()" is expanded in the calling code. This block's context behaves
 as an invoked context, so you can access the original context's instance
-variables. if you need to access local variables, a function provides a :locals
-option that is similar to :locals use in render.
+variables. If you need to access local variables, a function provides a :locals
+option that is similar to :locals use in render. Also similar to render,
+you can omit to use :locals and give variables just as options when you don't
+use options without :locals.
 A function is scoped, and its scope is a restriction for the function. The
 function is only called from scoped context.
   #scope can receive specified context such as "scope('UsersController')".
