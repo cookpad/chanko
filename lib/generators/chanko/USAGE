@@ -12,7 +12,7 @@ Description:
     You will need to add the invoke(:your_unit, :function_name) code in the appropriate places.
 
 Example:
-    rails generate unit sample
+    rails generate chanko sample
 
     This will create:
         app/units/sample.rb
