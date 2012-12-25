@@ -1,6 +1,7 @@
 class ChankoGenerator < Rails::Generators::NamedBase
   source_root File.expand_path('../templates', __FILE__)
   argument :models, :type => :array, :default => [], :banner => "model model"
+  class_option :template, :type => :string, :description => "Chanko template directory name"
   class_option :directory, :type => :string, :description => "Chanko directory name"
   class_option :scss, :type => :boolean, :default => true, :description => "Generate a template SCSS file"
   class_option :js, :type => :boolean, :default => true, :description => "Generate a template javascript file"
@@ -9,6 +10,13 @@ class ChankoGenerator < Rails::Generators::NamedBase
   class_option :spec, :type => :boolean, :default => true, :description => "Generate template spec files"
   class_option :view, :type => :boolean, :default => true, :description => "Generate a template view file"
   class_option :bare, :type => :boolean, :default => false, :description => "Generate a blank extension which only includes the ruby file"
+
+  def initialize(*args)
+    super
+    if options[:template]
+      self.class.source_root File.expand_path(options[:template], Rails.root)
+    end
+  end
 
   def create_chanko_file
     template 'chanko.rb', File.join("app", base_directory, file_name, "#{file_name}.rb")
