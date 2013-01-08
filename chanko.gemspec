@@ -34,6 +34,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'haml', ['= 3.1.4']
   s.add_development_dependency 'webrat'
   s.add_development_dependency 'database_cleaner', ['>= 0']
+  s.add_development_dependency 'jeweler'
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
