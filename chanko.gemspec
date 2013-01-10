@@ -25,6 +25,9 @@ Gem::Specification.new do |s|
     s.add_development_dependency 'ruby-debug19', ['>= 0']
     s.add_development_dependency 'simplecov', ['>= 0.4.0']
     s.add_development_dependency 'factory_girl', ['=3.0.0']
+  elsif RUBY_VERSION =~ /\A2.0.*/
+    s.add_development_dependency 'simplecov', ['>= 0.4.0']
+    s.add_development_dependency 'factory_girl', ['=3.0.0']
   else
     s.add_development_dependency 'rcov'
     s.add_development_dependency 'ruby-debug', ['>= 0']
