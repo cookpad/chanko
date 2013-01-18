@@ -21,7 +21,7 @@ describe "Chanko" do
       functions = []
       options = {}
       functions << Chanko::Function.new(:hello, RunDefaultTestExt) do
-        buffer ='before_default '
+        buffer = 'before_default '
         buffer << run_default
         buffer << ' after_default'
         buffer
@@ -29,6 +29,21 @@ describe "Chanko" do
       default = Chanko::Function.default { 'default' }
       result = invoker.render_functions(functions, default, options)
       result.should == 'before_default default after_default'
+    end
+
+    it 'raise exception when run_default is aborted' do
+      functions = []
+      options = {}
+      functions << Chanko::Function.new(:hello, RunDefaultTestExt) do
+        buffer = 'before_default '
+        buffer << run_default
+        buffer << ' after_default'
+        buffer
+      end
+      default = Chanko::Function.default { raise }
+      expect {
+        invoker.render_functions(functions, default, options)
+      }.to raise_error(StandardError)
     end
 
     describe 'nested' do
