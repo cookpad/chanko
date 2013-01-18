@@ -21,7 +21,7 @@ describe "Chanko" do
       functions = []
       options = {}
       functions << Chanko::Function.new(:hello, RunDefaultTestExt) do
-        buffer ='before_default '
+        buffer = 'before_default '
         buffer << run_default
         buffer << ' after_default'
         buffer
@@ -35,12 +35,12 @@ describe "Chanko" do
       functions = []
       options = {}
       functions << Chanko::Function.new(:hello, RunDefaultTestExt) do
-        buffer ='before_default '
+        buffer = 'before_default '
         buffer << run_default
         buffer << ' after_default'
         buffer
       end
-      default = Chanko::Function.default { raise  }
+      default = Chanko::Function.default { raise }
       expect {
         invoker.render_functions(functions, default, options)
       }.to raise_error(StandardError)
