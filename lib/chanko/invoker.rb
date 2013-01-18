@@ -154,13 +154,13 @@ module Chanko
 
         return buffer if succeeded_functions.present?
         return ActiveSupport::SafeBuffer.new unless default
-        run_function(default, options)
+        run_function(default, options.merge(:raise_exception => true))
       end
 
       def run_default
         default = @__unit_default[0]
         return nil unless default
-        result = run_function(default, {:type => :plain, :capture => view?})
+        result = run_function(default, {:type => :plain, :capture => view?, :raise_exception => true})
       end
 
 

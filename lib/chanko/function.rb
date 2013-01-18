@@ -57,6 +57,7 @@ module Chanko
         Chanko::Loader.aborted(unit.unit_name)
         Chanko::ExceptionNotifier.notify("raise exception #{unit.name}##{@label} => #{e.message}", @unit.propagates_errors?,
                                 :exception => e, :backtrace =>  e.backtrace[0..20], :key => "#{unit.name}_exception", :context => scope)
+        raise e if options[:raise_exception]
         return Chanko::Aborted
       ensure
         Chanko::Loader.pop_scope
