@@ -24,8 +24,13 @@ module Chanko
       result = self.class.run_expanded_judgements(context, options)
       return result unless result.nil?
       return !!self.class.default.call(context, options) if @blocks.blank?
-      @blocks.each do |active_if_block|
-        return false unless !!active_if_block.call(context, options)
+      @blocks.each do |active_if|
+        case active_if
+        when true, false
+          return active_if
+        else
+          return false unless !!active_if.call(context, options)
+        end
       end
       return true
     end
@@ -37,12 +42,7 @@ module Chanko
         Chanko.config.default_active_if || lambda { :false }
       end
 
-      def prefix_name(name)
-        "__active_if__#{name}"
-      end
-
       def define(name, &block)
-        method_name = prefix_name(name)
         self.definitions[name.to_sym] = block
       end
 
@@ -59,7 +59,7 @@ module Chanko
       def fetch(name, raise_error = false)
         load_definitions!
         result = self.definitions[name.to_sym]
-        return result if result
+        return result unless result.nil?
         Chanko::ExceptionNotifier.notify("missing Activeif definition #{name}", raise_error, :exception_klass => Chanko::Exception::MissingActiveIfDefinition)
         Chanko::ActiveIf.default
       end
