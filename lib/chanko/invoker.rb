@@ -70,11 +70,13 @@ module Chanko
 
       def invoke(*args, &block)
         options = args.extract_options!
-        if options.keys - INVOKE_OPTIONS == options.keys
-          locals = options.dup
-          options.clear
+
+        if options.present? && !options.keys.any? { |option| INVOKE_OPTIONS.include?(option) }
+          locals = options
+          options = {}
           options[:locals] = locals
         end
+
         options.reverse_merge!(:locals => {}, :active_if_options => {}, :capture => true)
         active_if_options = options.delete(:active_if_options)
         depend_on = options.delete(:if)
