@@ -7,6 +7,8 @@ describe "Chanko" do
       no_raise_chanko_exception
       Chanko::ActiveIf.define(:return_true) { true }
       Chanko::ActiveIf.define(:return_false) { false }
+      Chanko::ActiveIf.definitions[:immediate_true] = true
+      Chanko::ActiveIf.definitions[:immediate_false] = false
     end
 
     it 'should true' do
@@ -22,6 +24,8 @@ describe "Chanko" do
     it 'should fetch definition object' do
       Chanko::ActiveIf.fetch(:return_true).call.should be_true
       Chanko::ActiveIf.fetch(:return_false).call.should be_false
+      Chanko::ActiveIf.fetch(:immediate_true).should be_true
+      Chanko::ActiveIf.fetch(:immediate_false).should be_false
     end
 
     it 'should return always_false when a non-definition is fetched' do
