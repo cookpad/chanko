@@ -72,7 +72,7 @@ module Chanko
       attr_reader :shared_methods
 
       def active_if(*symbols, &block)
-        @active_if = Chanko::ActiveIf.new(*(symbols + [:raise => @propagates_errors]), &block)
+        @active_if = Chanko::ActiveIf.new(*symbols, :raise => @propagates_errors, &block)
       end
       alias_method :judge, :active_if
 
