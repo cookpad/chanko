@@ -8,7 +8,7 @@ module Chanko
     end
 
     module Methods
-      def unit(_unit_label=nil, &block)
+      def ext(_unit_label=nil, &block)
         unit_label = _unit_label || Chanko::Loader.current_scope
         raise NoExtError unless unit_label
 
@@ -38,7 +38,6 @@ module Chanko
           Chanko::Loader.pop_scope if _unit_label
         end
       end
-      alias_method :ext, :unit
     end
 
     class NullProxy

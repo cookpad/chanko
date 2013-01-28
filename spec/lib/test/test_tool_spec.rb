@@ -17,23 +17,23 @@ describe Chanko do
     describe 'active' do
       it 'should be activated' do
         enable_unit(:mock_test)
-        invoker.unit(:mock_test).should be_active
+        invoker.ext(:mock_test).should be_active
       end
 
       it 'should be deactivated' do
         disable_unit(:mock_test)
-        invoker.unit(:mock_test).should_not be_active
+        invoker.ext(:mock_test).should_not be_active
       end
 
       it 'should be activated with user_id' do
         user = mock("User")
         user.stub!(:id).and_return(1)
         enable_unit(:mock_test, 1)
-        invoker.unit(:mock_test).should be_active(:user => user)
+        invoker.ext(:mock_test).should be_active(:user => user)
 
         user2 = mock("User")
         user2.stub!(:id).and_return(2)
-        invoker.unit(:mock_test).should_not be_active(:user => user2)
+        invoker.ext(:mock_test).should_not be_active(:user => user2)
       end
 
       it 'should be deactivated with user_id' do
@@ -42,11 +42,11 @@ describe Chanko do
         enable_unit(:mock_test, 1)
         enable_unit(:mock_test, 2)
         disable_unit(:mock_test, 1)
-        invoker.unit(:mock_test).should_not be_active(:user => user)
+        invoker.ext(:mock_test).should_not be_active(:user => user)
 
         user2 = mock("User")
         user.stub!(:id).and_return(2)
-        invoker.unit(:mock_test).should be_active(:user => user)
+        invoker.ext(:mock_test).should be_active(:user => user)
       end
     end
   end
