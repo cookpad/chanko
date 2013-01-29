@@ -2,18 +2,18 @@ module Chanko
   module Unit
     autoload 'Default', 'chanko/unit/default'
 
-    mattr_accessor :__functions_cache
+    mattr_accessor :__function_cache
     mattr_accessor :__ancestors_cache
     mattr_accessor :__eager_paths
     def self.clear_cache!
       self.__ancestors_cache = Chanko::Tools.nested_hash(1)
-      self.__functions_cache = Chanko::Tools.nested_hash(2)
+      self.__function_cache = Chanko::Tools.nested_hash(2)
       self.__eager_paths = Hash.new
     end
     clear_cache!
 
     def self.clear_function_cache(name)
-      return Chanko::Unit.__functions_cache[name] = Chanko::Tools.nested_hash(1)
+      return Chanko::Unit.__function_cache[name] = Chanko::Tools.nested_hash(1)
     end
 
     def self.included(obj)
@@ -284,32 +284,30 @@ module Chanko
         !!self.default
       end
 
-      def functions(context, label, active_if_options={}, options = {})
-        return [] unless active?(context, active_if_options)
-
+      def fetch_function(context, label, active_if_options={}, options = {})
+        return nil unless active?(context, active_if_options)
         label = label.kind_of?(Symbol) ? label : label.to_sym
         context_class =  Chanko::Aliases.alias(options[:as] || context.class)
         context_class = context_class.constantize if context_class.is_a?(String)
         scope_key = Chanko.config.cache_classes ? context_class : context_class.name
-        cache =  Chanko::Unit.__functions_cache[self.name][scope_key][label]
+        cache =  Chanko::Unit.__function_cache[self.name][scope_key][label]
         return cache unless cache.nil?
 
-        cbks = []
         scopes.each do |scope|
           next unless ancestors?(scope, context_class)
           function = get_function(scope, label)
-          cbks << function if function
+          if function
+            Chanko::Unit.__function_cache[self.name][scope_key][label] = function
+            return function
+          end
         end
-        Chanko::Unit.__functions_cache[self.name][scope_key][label] = cbks
-
-        return cbks.dup unless cbks.blank?
 
         Chanko::ExceptionNotifier.notify("missing functions #{self.name}##{label}", @propagates_errors,
                                  :exception_klass => Chanko::Exception::MissingFunction,
                                  :key => "missing function #{self.name}",
                                  :context => self
                                 )
-                                return []
+        return nil
       end
 
       def get_function(scope, label)

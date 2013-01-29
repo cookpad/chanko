@@ -32,18 +32,18 @@ describe Chanko do
           scope(klass) { function(:hello) {} }
         end
 
-        @unit.functions(self, :hello).size.should == 1
+        @unit.fetch_function(self, :hello).should be_present
       end
 
       describe 'try to get missing function' do
         it 'should raise' do
           raise_chanko_exception
-          expect { @unit.functions(self, :missing) }.to raise_error(Chanko::Exception::MissingFunction)
+          expect { @unit.fetch_function(self, :missing) }.to raise_error(Chanko::Exception::MissingFunction)
         end
 
         it 'should not raise when raising is repressed' do
           no_raise_chanko_exception
-          expect { @unit.functions(self, :missing) }.to_not raise_error(Chanko::Exception::MissingFunction)
+          expect { @unit.fetch_function(self, :missing) }.to_not raise_error(Chanko::Exception::MissingFunction)
         end
       end
     end
@@ -116,15 +116,15 @@ describe Chanko do
         no_raise_chanko_exception
         ScopeTestClass = Class.new
         ScopeTestClass2 = Class.new
-        UnitScopeTest.functions(ScopeTestClass, :cb).size.should == 0
-        UnitScopeTest.functions(ScopeTestClass2, :cb).size.should == 0
+        UnitScopeTest.fetch_function(ScopeTestClass, :cb).should be_nil
+        UnitScopeTest.fetch_function(ScopeTestClass2, :cb).should be_nil
         UnitScopeTest.class_eval do
           scope("ScopeTestClass") do
             function(:cb) {}
           end
         end
-        UnitScopeTest.functions(ScopeTestClass.new, :cb).size.should == 1
-        UnitScopeTest.functions(ScopeTestClass2.new, :cb).size.should == 0
+        UnitScopeTest.fetch_function(ScopeTestClass.new, :cb).should be_present
+        UnitScopeTest.fetch_function(ScopeTestClass2.new, :cb).should be_nil
       end
 
       context 'specified class is missing' do
@@ -238,7 +238,7 @@ describe Chanko do
     end
 
     it 'raises missingfunction' do
-      expect { RaiseErrorTest.functions(self, :missing) }.to raise_error(Chanko::Exception::MissingFunction)
+      expect { RaiseErrorTest.fetch_function(self, :missing) }.to raise_error(Chanko::Exception::MissingFunction)
     end
 
     it 'raises missingactiveifdefinition' do

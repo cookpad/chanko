@@ -54,22 +54,12 @@ module Chanko
       end
       private :_has_local_val?
 
-      def requests(_requests)
-        return _requests if _requests.first.is_a?(Array)
-        return [[_requests[0], _requests[1]]] #[[unit_name, label]]
-      end
-      private :requests
-
-      def unit_names(requests)
-        return requests.transpose.first if requests.first.is_a?(Array)
-        return [requests[0]]
-      end
-      private :unit_names
-
       INVOKE_OPTIONS = [:locals, :active_if_options, :capture, :if, :type, :as].freeze
 
       def invoke(*args, &block)
         options = args.extract_options!
+        unit_name = args[0]
+        function_name = args[1]
 
         if options.present? && !options.keys.any? { |option| INVOKE_OPTIONS.include?(option) }
           locals = options
@@ -82,13 +72,15 @@ module Chanko
         depend_on = options.delete(:if)
         unit_locals.push(options.delete(:locals).symbolize_keys)
 
-        Chanko::Loader.requested(unit_names(args))
-        functions = get_functions(requests(args), depend_on, active_if_options, options)
+        Chanko::Loader.requested(unit_name)
+        unit_function = function(unit_name, function_name, depend_on, active_if_options, options)
+
         if default = Chanko::Function.default(&block)
           default.called_from = args.join("#")
         end
-        return nil if functions.blank? && !default
-        render_functions(functions, default, options)
+
+        return nil if unit_function.blank? && !default
+        render_function(unit_function, default, options)
       ensure
         unit_locals.pop
       end
@@ -109,19 +101,16 @@ module Chanko
       end
       private :aborted?
 
-      def get_functions(requests, depend_on, active_if_options, options={})
-        return [] unless validate_depend_on_units(depend_on, active_if_options)
-        requests.each do |unit_name, label|
-          next unless unit = Chanko::Loader.fetch(unit_name)
-          next if aborted?(unit)
-          functions = unit.functions(self, label, active_if_options, options)
-          next if functions.blank?
-          Chanko::Loader.invoked(unit_name)
-          return functions
-        end
-        []
+      def function(unit_name, function_name, depend_on, active_if_options, options={})
+        return nil unless validate_depend_on_units(depend_on, active_if_options)
+        return nil unless unit = Chanko::Loader.fetch(unit_name)
+        return nil if aborted?(unit)
+        unit_function = unit.fetch_function(self, function_name, active_if_options, options)
+        return nil if unit_function.blank?
+        Chanko::Loader.invoked(unit_name)
+        return unit_function
       end
-      private :get_functions
+      private :function
 
       def run_function(function, options)
         if function.unit.default?
@@ -132,31 +121,26 @@ module Chanko
         Rails.logger.debug("Chanko::Run \e[0;32mcall\e[0m #{mes}")
         result = function.invoke!(self, options)
         return str_or_nil(result) unless Chanko::Aborted == result
-        return Chanko::Aborted
+        raise Chanko::Aborted
       end
       private :run_function
 
-      def render_functions(functions, default, options)
-        buffer = ActiveSupport::SafeBuffer.new
-        succeeded_functions = []
-        functions.each do |function|
+      def render_function(function, default, options)
+        begin
+          @__unit_default ||= []
+          @__unit_default.unshift(default)
           begin
-            @__unit_default ||= []
-            @__unit_default.unshift(default)
-            result = run_function(function, options)
-          ensure
-            @__unit_default.shift
+            if function
+              result = run_function(function, options)
+              return result || ''
+            end
+          rescue Chanko::Aborted
           end
-
-          next if Chanko::Aborted == result
-          succeeded_functions << function
-          next unless result
-          buffer.safe_concat(result)
+          return '' unless default
+          return run_function(default, options.merge(:raise_exception => true))
+        ensure 
+          @__unit_default.shift
         end
-
-        return buffer if succeeded_functions.present?
-        return ActiveSupport::SafeBuffer.new unless default
-        run_function(default, options.merge(:raise_exception => true))
       end
 
       def run_default
@@ -164,7 +148,6 @@ module Chanko
         return nil unless default
         result = run_function(default, {:type => :plain, :capture => view?, :raise_exception => true})
       end
-
 
       def str_or_nil(str)
         str.is_a?(String) ? str : nil

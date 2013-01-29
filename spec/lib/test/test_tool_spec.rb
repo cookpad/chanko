@@ -56,14 +56,14 @@ describe Chanko do
       Chanko::Function.new(:hello, MockTest) { raise }
     end
 
-    it 'should raise_exception' do
+    it 'should not raise exception' do
       no_raise_chanko_exception
       expect { function.invoke!(invoker) }.to_not raise_error
     end
 
-    it 'should not raise_exception' do
+    it 'should raise exception' do
       raise_chanko_exception
-      expect { function.invoke!(invoker) }.to raise_error
+      expect { function.invoke!(invoker) }.to raise_error(StandardError)
     end
   end
 

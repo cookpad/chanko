@@ -18,23 +18,21 @@ describe "Chanko" do
     let(:invoker) { Chanko::Test::Invoker.new }
 
     it 'render default block via run_default method' do
-      functions = []
       options = {}
-      functions << Chanko::Function.new(:hello, RunDefaultTestExt) do
+      function = Chanko::Function.new(:hello, RunDefaultTestExt) do
         buffer = 'before_default '
         buffer << run_default
         buffer << ' after_default'
         buffer
       end
       default = Chanko::Function.default { 'default' }
-      result = invoker.render_functions(functions, default, options)
+      result = invoker.render_function(function, default, options)
       result.should == 'before_default default after_default'
     end
 
     it 'raise exception when run_default is aborted' do
-      functions = []
       options = {}
-      functions << Chanko::Function.new(:hello, RunDefaultTestExt) do
+      function = Chanko::Function.new(:hello, RunDefaultTestExt) do
         buffer = 'before_default '
         buffer << run_default
         buffer << ' after_default'
@@ -42,7 +40,7 @@ describe "Chanko" do
       end
       default = Chanko::Function.default { raise }
       expect {
-        invoker.render_functions(functions, default, options)
+        invoker.render_function(function, default, options)
       }.to raise_error(StandardError)
     end
 
@@ -53,11 +51,11 @@ describe "Chanko" do
           nested_function = Chanko::Function.new(:hello, RunNestedDefaultTestExt) do
             run_default 
           end
-          "#{::INVOKER_FOR_NESTED_RUN_DEFAULT_TEST.render_functions([nested_function], default, {})} #{run_default}"
+          "#{::INVOKER_FOR_NESTED_RUN_DEFAULT_TEST.render_function(nested_function, default, {})} #{run_default}"
         end
 
         default = Chanko::Function.default { 'outer' }
-        result = ::INVOKER_FOR_NESTED_RUN_DEFAULT_TEST.render_functions([function], default, {})
+        result = ::INVOKER_FOR_NESTED_RUN_DEFAULT_TEST.render_function(function, default, {})
         result.should == 'inner outer'
       end
     end

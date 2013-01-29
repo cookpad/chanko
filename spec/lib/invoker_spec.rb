@@ -48,34 +48,11 @@ describe Chanko do
         end
       end
 
-
-      it 'run first enabled unit' do
-        mock_unit("FirstTest", Chanko::Test::Invoker, :hello => { :value => Proc.new { run_default; @hello = "hello"} })
-        mock_unit("SecondTest", Chanko::Test::Invoker, :goodbye => { :value => "goodbye" })
-        invoker.invoke([:first_test, :hello], [:second_test, :hello]) { @default1 = 1 }
-        invoker.instance_eval do
-          @hello.should == "hello"
-          @default1.should == 1
-          @hello = nil
-        end
-        Chanko::Unit.clear_cache!
-        FirstTest.class_eval do
-          active_if { |context, options| false }
-        end
-        invoker.invoke([:first_test, :hello], [:second_test, :goodbye]) { @default2 = 2}
-        invoker.instance_eval do
-          @goodbye.should == "goodbye"
-          @hello.should == nil
-          @default2.should == nil
-        end
-      end
-
       it 'run other context function' do
         mock_unit("SecondTest", :controller, :hello => { :value => "hello" })
         invoker.invoke(:second_test, :hello, :as => :controller)
         invoker.instance_eval { @hello.should == "hello" }
       end
-
 
       it 'run function when depend on unit was enabled' do
         raise_chanko_exception
