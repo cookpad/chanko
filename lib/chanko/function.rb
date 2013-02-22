@@ -1,91 +1,84 @@
 module Chanko
   class Function
-    include ActiveSupport::Callbacks
-    define_callbacks :invoke
+    attr_reader :block, :unit, :label
 
-    autoload :ActionView, 'action_view'
+    class << self
+      def units
+        @units ||= []
+      end
 
-    class TagHelper
-      include ActionView::Helpers::TagHelper
-    end
-
-    attr_reader :label, :block, :options, :unit
-    attr_accessor :called_from # for debug
-    attr_accessor :__current_scope
-
-    def self.default(&block)
-      return nil unless block_given?
-      Chanko::Function.new(:__default__, Chanko::Unit::Default, &block)
-    end
-
-    def initialize(label, unit, options={}, &block)
-      @label = label.to_s.to_sym if label
-      @block = block
-      @unit = unit
-      @options = options
-    end
-
-    def tag_helper
-      @tag_helper ||= TagHelper.new
-    end
-
-    def invoke!(scope, options={})
-      begin
-        self.__current_scope = scope
-        scope.__current_function = self
-        run_callbacks :invoke do
-          Chanko::Loader.push_scope(unit.underscore)
-          result = nil
-          self.unit.attach(scope) do
-            if self.unit.default? && scope.view? && options[:capture]
-              if scope.respond_to?("capture_haml") && scope.is_haml? && scope.block_is_haml?(block)
-                result = scope.capture_haml(&block)
-              else
-                result = scope.capture(&block)
-              end
-            else
-              result = scope.instance_eval(&block)
-            end
-            result = result.first if result.kind_of?(Array)
-            if scope.view? && !result.blank?
-              result = view_result(result, options[:type])
-            end
-          end
-          result
-        end
-      rescue ::Exception => e
-        Chanko::Loader.aborted(unit.unit_name)
-        Chanko::ExceptionNotifier.notify("raise exception #{unit.name}##{@label} => #{e.message}", @unit.propagates_errors?,
-                                :exception => e, :backtrace =>  e.backtrace[0..20], :key => "#{unit.name}_exception", :context => scope)
-        raise e if options[:raise_exception]
-        return Chanko::Aborted
-      ensure
-        Chanko::Loader.pop_scope
-        self.__current_scope = nil
-        scope.__current_function = nil
+      def current_unit
+        units.last
       end
     end
 
-    def view_result(result, type)
-      return result if self.unit.default?
+    def initialize(unit, label, &block)
+      @unit  = unit
+      @label = label
+      @block = block
+    end
+
+    def invoke(context, options = {})
+      with_unit_stack(context) do
+        with_unit_view_path(context) do
+          capture_exception(context) do
+            result = context.instance_eval(&block)
+            result = decorate(result, context, options[:type]) if context.view? && result.present?
+            result
+          end
+        end
+      end
+    end
+
+    def css_classes
+      if Config.compatible_css_class
+        %W[
+          extension
+          ext_#{unit.unit_name}
+          ext_#{unit.unit_name}-#{label}
+        ]
+      else
+        %W[
+          unit
+          unit__#{unit.unit_name}
+          unit__#{unit.unit_name}__#{label}
+        ]
+      end
+    end
+
+    private
+
+    def with_unit_stack(context)
+      context.units << @unit
+      self.class.units << @unit
+      yield
+    ensure
+      self.class.units.pop
+      context.units.pop
+    end
+
+    def with_unit_view_path(context)
+      context.view_paths.unshift unit.resolver
+      yield
+    ensure
+      context.view_paths.paths.shift
+    end
+
+    def capture_exception(context)
+      yield
+    rescue Exception => exception
+      ExceptionHandler.handle(exception, unit)
+      context.run_default
+    end
+
+    def decorate(str, context, type)
       case type
       when :plain
-        result
+        str
       when :inline
-        tag_helper.content_tag(:span, result, :class => unit_class)
-      when :block
-        tag_helper.content_tag(:div, result, :class => unit_class)
+        context.content_tag(:span, str, :class => css_classes)
       else
-        view_result(result, Chanko.config.default_view_type)
-      end
-    end
-
-    def unit_class
-      if Chanko.config.compatible_css_class
-        "extension ext_#{self.unit.css_name} ext_#{self.unit.css_name}-#{label.to_s}"
-      else
-        css_class = Chanko.config.css_class
-        "#{css_class} #{css_class}__#{self.unit.css_name} #{css_class}__#{self.unit.css_name}__#{label.to_s}"
+        context.content_tag(:div, str, :class => css_classes)
       end
     end
   end

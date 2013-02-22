@@ -1,93 +1,58 @@
 module Chanko
   class ActiveIf
-    mattr_accessor :blocks, :files, :loaded, :definitions, :expanded_judgements
-    self.files = []
-    self.expanded_judgements = []
-    self.definitions = {}
-
-    def initialize(*names, &block)
-      @options = names.last.is_a?(Hash) ? names.pop : {}
-      @blocks = names.map do |name|
-        case name
-        when Chanko::ActiveIf::Any
-          name.block
-        else
-          self.class.fetch(name, @options[:raise])
-        end
+    class << self
+      def define(label, &block)
+        definitions[label] = block
       end
-      @blocks << block if block
-      @blocks.compact!
-      @blocks
+
+      def find(label)
+        definitions[label]
+      end
+
+      def definitions
+        @definitions ||= {}
+      end
+
+      def clear
+        definitions.clear
+      end
     end
 
-    def active?(context, options={})
-      result = self.class.run_expanded_judgements(context, options)
-      return result unless result.nil?
-      return !!self.class.default.call(context, options) if @blocks.blank?
-      @blocks.each do |active_if_block|
-        return false unless !!active_if_block.call(context, options)
-      end
-      return true
+    attr_reader :conditions, :options
+
+    def initialize(*conditions, &block)
+      @options    = conditions.extract_options!
+      @conditions = conditions
+      @block      = block
     end
-    alias_method :enabled?, :active?
 
+    def active?(context, options = {})
+      blocks.all? {|block| block.call(context, options) }
+    end
 
-    class<<self
-      def default
-        Chanko.config.default_active_if || lambda { :false }
-      end
-
-      def prefix_name(name)
-        "__active_if__#{name}"
-      end
-
-      def define(name, &block)
-        method_name = prefix_name(name)
-        self.definitions[name.to_sym] = block
-      end
-
-      def load_definitions!
-        if Chanko.config.cache_classes
-          return if self.loaded
-          files.each { |file| require file }
-          self.loaded = true
-        else
-          files.each { |file| require_dependency file.to_s }
-        end
-      end
-
-      def fetch(name, raise_error = false)
-        load_definitions!
-        result = self.definitions[name.to_sym]
-        return result if result
-        Chanko::ExceptionNotifier.notify("missing Activeif definition #{name}", raise_error, :exception_klass => Chanko::Exception::MissingActiveIfDefinition)
-        Chanko::ActiveIf.default
-      end
-
-      def run_expanded_judgements(context, options)
-        self.expanded_judgements.each do |judge|
-          result = judge.call(context, options)
-          next if result.nil?
-          return result
-        end
-        return nil
-      end
+    def blocks
+      @blocks ||= begin
+        conditions.map do |condition|
+          condition.is_a?(Any) ? condition.to_block : self.class.find(condition)
+        end << @block
+      end.compact
     end
 
     class Any
-      def initialize(*symbols)
-        @blocks = symbols.map do |sym|
-          Chanko::ActiveIf.fetch(sym)
-        end
-        @blocks.compact!
+      def initialize(*labels)
+        @labels = labels
       end
 
-      def block
-        lambda do |context, options|
-          @blocks.any? do |active_if_block|
-            !!active_if_block.call(context, options)
+      def to_block
+        proc do |context, options|
+          definitions.any? do |definition|
+            definition.call(context, options)
           end
         end
+      end
+
+      def definitions
+        @labels.map {|label| ActiveIf.find(label) }
       end
     end
   end
