@@ -91,7 +91,7 @@ module Chanko
             "test"
           end
         end
-        unit.scopes[ActionView::Base][:test].block.should === "test"
+        unit.scopes[ActionView::Base][:test].block.call.should == "test"
       end
     end
 
