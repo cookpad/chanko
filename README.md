@@ -18,7 +18,7 @@ automatically removed, without impacting your site.
 ### Gemfile
 ```ruby
 # Gemfile
-gem "nyanko"
+gem "chanko"
 ```
 
 ### Invoke
