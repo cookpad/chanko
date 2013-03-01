@@ -16,7 +16,6 @@ module Chanko
       def reset
         self.auto_reload          = Rails.env.development? || Rails.env.test?
         self.backtrace_limit      = 10
-        self.cache_units          = false
         self.compatible_css_class = false
         self.enable_logger        = true
         self.proxy_method_name    = :unit
