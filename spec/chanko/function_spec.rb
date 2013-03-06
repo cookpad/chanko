@@ -24,6 +24,16 @@ module Chanko
       end.new
     end
 
+    let(:context_without_view_paths) do
+      Class.new do
+        include Chanko::Invoker
+
+        def units
+          @units ||= []
+        end
+      end.new
+    end
+
     let(:options) do
       { :type => :plain }
     end
@@ -33,10 +43,16 @@ module Chanko
         described_class.new(unit, :label) { current_unit }.invoke(context, options).should == unit
       end
 
-
       context "when context is a view" do
         it "invokes with unit's view path" do
           described_class.new(unit, :label) { path }.invoke(context, options).should == unit.view_path
+        end
+      end
+
+      context "when context does not have view_paths" do
+        it "invokes successfully" do
+          described_class.new(unit, :label) { "test" }.
+            invoke(context_without_view_paths, options).should == "test"
         end
       end
     end

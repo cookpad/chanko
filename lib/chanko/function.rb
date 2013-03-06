@@ -58,10 +58,10 @@ module Chanko
     end
 
     def with_unit_view_path(context)
-      context.view_paths.unshift unit.resolver
+      context.view_paths.unshift unit.resolver if context.respond_to?(:view_paths)
       yield
     ensure
-      context.view_paths.paths.shift
+      context.view_paths.paths.shift if context.respond_to?(:view_paths)
     end
 
     def capture_exception(context)
