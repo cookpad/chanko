@@ -37,7 +37,7 @@ describe Chanko do
         klass.send(:include, Chanko::Helper)
       end.new
 
-      instance.unit(:helper_test).bar.should == 'bar'
+      instance.ext(:helper_test).bar.should == 'bar'
     end
   end
 
