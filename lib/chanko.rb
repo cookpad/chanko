@@ -1,3 +1,19 @@
-module Chanko
-  require 'chanko/railtie'
-end
+require "action_controller"
+require "action_view"
+require "active_record"
+require "active_support/all"
+require "rails"
+
+require "chanko/active_if"
+require "chanko/config"
+require "chanko/controller"
+require "chanko/exception_handler"
+require "chanko/function"
+require "chanko/helper"
+require "chanko/invoker"
+require "chanko/loader"
+require "chanko/logger"
+require "chanko/railtie"
+require "chanko/unit"
+require "chanko/unit_proxy"
+require "chanko/unit_proxy_provider"

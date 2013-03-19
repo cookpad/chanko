@@ -1,21 +1,28 @@
-#TODO test
 module Chanko
   module Controller
-    def self.included(obj)
-      obj.class_eval do
-        include Chanko::Invoker
-        include Chanko::MethodProxy
-        extend Chanko::Controller::ClassMethods
-      end
-    end
+    extend ActiveSupport::Concern
 
     module ClassMethods
-      def unit_action(unit_name, function_name, options={}, &block)
-        action_name = options.delete(:action) || function_name
-        block ||= Proc.new { head(400) }
+      private
 
-        define_method(action_name) do
-          invoke(unit_name, function_name, options, &block)
+      def inherited(base)
+        if Config.auto_reload && base.name == "ApplicationController"
+          base.class_eval do
+            prepend_before_filter do
+              Chanko::Loader.cache.clear
+            end
+          end
+        end
+        super
+      end
+
+      def unit_action(unit_name, *function_names, &block)
+        options = function_names.extract_options!
+        block ||= Proc.new { head 400 }
+        Array.wrap(function_names).each do |function_name|
+          define_method(function_name) do
+            invoke(unit_name, function_name, options, &block)
+          end
         end
       end
       alias_method :ext_action, :unit_action

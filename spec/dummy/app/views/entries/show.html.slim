@@ -1,0 +1,8 @@
+.entry
+  h3= @entry.title
+
+  .body
+    = @entry.body
+
+  - if @entry.persisted?
+    p= link_to "Edit", edit_entry_path(@entry)

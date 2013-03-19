@@ -1,36 +1,30 @@
 module Chanko
-  def self.configure(&block)
-    yield @config ||= Configuration.new
-  end
+  module Config
+    class << self
+      attr_accessor(
+        :auto_reload,
+        :backtrace_limit,
+        :cache_units,
+        :compatible_css_class,
+        :enable_logger,
+        :proxy_method_name,
+        :raise_error,
+        :resolver,
+        :units_directory_path
+      )
 
-  def self.config
-    @config
-  end
+      def reset
+        self.auto_reload          = Rails.env.development? || Rails.env.test?
+        self.backtrace_limit      = 10
+        self.compatible_css_class = false
+        self.enable_logger        = true
+        self.proxy_method_name    = :unit
+        self.raise_error          = Rails.env.development?
+        self.resolver             = ActionView::OptimizedFileSystemResolver
+        self.units_directory_path = "app/units"
+      end
+    end
 
-  class Configuration
-    include ActiveSupport::Configurable
-
-    config_accessor :raise
-    config_accessor :propagated_errors
-    config_accessor :test
-    config_accessor :cache_classes
-    config_accessor :default_active_if
-    config_accessor :default_view_type
-    config_accessor :view_resolver
-    config_accessor :compatible_css_class
-    config_accessor :css_class
-    config_accessor :directory_name
-  end
-
-  configure do |config|
-    config.raise = false
-    config.propagated_errors = []
-    config.test = Rails.env.test?
-    config.cache_classes = Rails.application.config.cache_classes
-    config.default_active_if = lambda { false }
-    config.default_view_type = :block
-    config.view_resolver = nil
-    config.css_class = 'unit'
-    config.directory_name = 'units'
+    reset
   end
 end

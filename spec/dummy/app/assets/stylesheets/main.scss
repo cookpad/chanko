@@ -1,0 +1,21 @@
+body {
+  width: 920px;
+  margin: 20px auto 100px;
+  padding: 20px;
+}
+
+header {
+  margin-bottom: 100px;
+  overflow: hidden;
+  line-height: 60px;
+
+  .title {
+    float: left;
+    font-size: 40px;
+  }
+
+  .links {
+    float: right;
+    font-size: 20px;
+  }
+}

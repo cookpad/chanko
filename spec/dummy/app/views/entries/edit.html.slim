@@ -1,0 +1,14 @@
+= form_for(@entry) do |f|
+  p
+    = f.label :title
+  p
+    = f.text_field :title
+
+  p
+    = f.label :body
+  p
+    = f.text_area :body
+
+  p= f.submit
+
+  = invoke(:entry_deletion, :delete_link, :entry => @entry)
