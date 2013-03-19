@@ -32,13 +32,17 @@ module Chanko
       private
 
       def create_assets_symlink(type)
-        from = "app/assets/#{type}/units/#{file_name}"
+        from = "app/assets/#{type}/#{directory_name}/#{file_name}"
         to   = "../../../../#{directory}/#{type}"
         create_link(from, to)
       end
 
       def directory
         "#{Chanko::Config.units_directory_path}/#{file_name}"
+      end
+
+      def directory_name
+        Chanko::Config.units_directory_path.split("/").last
       end
     end
   end
