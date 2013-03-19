@@ -1,4 +1,5 @@
-# Chanko
+# Chanko [![Build Status](https://travis-ci.org/cookpad/chanko.png)](https://travis-ci.org/cookpad/chanko) [![Code Climate](https://codeclimate.com/github/cookpad/chanko.png)](https://codeclimate.com/github/cookpad/chanko)
+
 Chanko provides a simple framework for rapidly and safely prototyping new
 features in your production Rails app, and exposing these prototypes to
 specified segments of your user base.
