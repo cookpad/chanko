@@ -2,8 +2,6 @@ require "pathname"
 
 module Chanko
   class Loader
-    UnitNotFound = Class.new(StandardError)
-
     class << self
       def load(unit_name)
         new(unit_name).load
@@ -58,8 +56,6 @@ module Chanko
 
     def constantize
       @name.to_s.camelize.constantize
-    rescue NameError
-      raise UnitNotFound, "The unit for #{@name.inspect} is not found"
     end
 
     def cache
