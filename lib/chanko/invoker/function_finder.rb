@@ -31,7 +31,11 @@ module Chanko
       end
 
       def active?
-        unit.try(:active?, context, active_if_options)
+        if unit
+          unit.active?(context, active_if_options)
+        else
+          false
+        end
       end
     end
   end
