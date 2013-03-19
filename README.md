@@ -14,14 +14,24 @@ automatically removed, without impacting your site.
 
 
 ## Usage
+Add to your Gemfile.
 
-### Gemfile
 ```ruby
-# Gemfile
 gem "chanko"
 ```
 
-### Invoke
+## Files
+Chanko provides a generator to create a template of unit.
+
+```
+$ rails generate chanko:install example_unit
+```
+
+## Invoke
+You can invoke the logics defined in your units via `invoke` and `unit` methods.
+In controller class context, `unit_action` utility is also provided.
+The block passed to `invoke` is a fallback executed if any problem occurs in invoking.
+
 ```ruby
 # app/controllers/users_controller.rb
 class UsersController < ApplicationController
@@ -46,75 +56,101 @@ end
 = foo
 ```
 
-### Unit
+## Unit
+
+### module
+You can define your MVC code here.
+
 ```ruby
 # app/units/example_unit/example_unit.rb
 module ExampleUnit
   include Chanko::Unit
+  ...
+end
+```
 
-  # ## active_if
-  # This block is used to decide if this unit is active or not.
-  # `context` is the receiver object of `invoke`.
-  # `options` is passed via `invoke(:foo, :bar, :active_if_options => { ... })`.
-  # By default, this is set as `active_if { true }`.
-  active_if do |context, options|
-    true
+### active_if
+This block is used to decide if this unit is active or not.
+`context` is the receiver object of `invoke`.
+`options` is passed via `invoke(:foo, :bar, :active_if_options => { ... })`.
+By default, this is set as `active_if { true }`.
+
+```ruby
+active_if do |context, options|
+  true
+end
+```
+
+### raise_error
+By default, any error raised in production env is ignored.
+`raise_error` is used to force an unit to raise up errors occured in invoking.
+You can force all units to raise up errors by `Config.raise_error = true`.
+
+```ruby
+raise_error
+```
+
+### function
+In controller or view context, you can call functions defined by `function`
+via `invoke(:example_unit, :function_name)`.
+
+```ruby
+scope(:controller) do
+  function(:show) do
+    @user = User.find(params[:id])
   end
 
-  # ## raise_error
-  # By default, any error raised in production env is ignored.
-  # `raise_error` is used to force an unit to raise up errors occured in invoking.
-  # You can force to raise up errors also by `Config.raise_error`.
-  raise_error
+  function(:index) do
+    @users = User.active
+  end
+end
+```
 
-  # ## function
-  # In controller or view context, you can call functions defined by `function`
-  # via `invoke(:example_unit, :function_name)`.
-  scope(:controller) do
-    function(:show) do
-      @user = User.find(params[:id])
-    end
+### render
+The view path app/units/example_unit/views is added into view_paths in invoking.
+So you can render app/units/example_unit/views/_example.html.slim in invoking.
 
-    function(:index) do
-      @users = User.active
+```ruby
+scope(:view) do
+  function(:render_example) do
+    render "/example", :foo => hello("world")
+  end
+end
+```
+
+### models
+In models block, you can expand model features by `expand` method.
+The expanded methods are available via unit proxy like `User.unit.active`,
+and `User.find(params[:id]).unit.active?`, and so on.
+
+```ruby
+models do
+  expand(:User) do
+    scope :active, lambda { where(:deleted_at => nil) }
+
+    def active?
+      deleted_at.nil?
     end
   end
+end
+```
 
-  # ## render
-  # The view path app/units/example_unit/views is added into view_paths in invoking.
-  # So you can render app/units/example_unit/views/_example.html.slim in invoking.
-  scope(:view) do
-    function(:render_example) do
-      render "/example", :foo => hello("world")
-    end
-  end
+### shared
+You can call methods defined by `shared` in invoking.
 
-  # ## models
-  # In models block, you can expand model features by `expand` method.
-  # The expanded methods are available via unit proxy like `User.unit.active`,
-  # and `User.find(params[:id]).unit.active?`, and so on.
-  models do
-    expand(:User) do
-      scope :active, lambda { where(:deleted_at => nil) }
+```ruby
+shared(:hello) do |world|
+  "Hello, #{world}"
+end
+```
 
-      def active?
-        deleted_at.nil?
-      end
-    end
-  end
+### helpers
+You can call helpers in view via unit proxy like `unit.helper_method`.
 
-  # ## shared
-  # You can call methods defined by `shared` in invoking.
-  shared(:hello) do |world|
-    "Hello, #{world}"
-  end
-
-  # ## helpers
-  # You can call helpers in view via unit proxy like `unit.helper_method`
-  helpers do
-    def helper_method
-      "helper method"
-    end
+```ruby
+helpers do
+  def helper_method
+    "helper method"
   end
 end
 ```
@@ -122,7 +158,7 @@ end
 
 ## Example
 https://github.com/cookpad/chanko/tree/master/spec/dummy  
-Chanko includes an example rails application.
+Chanko provides an example rails application in spec/dummy directory.
 
 ```
 $ git clone git@github.com:cookpad/chanko.git
