@@ -18,6 +18,7 @@ Gem::Specification.new do |gem|
 
   gem.add_dependency "rails", ">= 3.0.10"
   gem.add_development_dependency "coffee-rails", ">= 3.0.10"
+  gem.add_development_dependency "coveralls"
   gem.add_development_dependency "jquery-rails"
   gem.add_development_dependency "pry"
   gem.add_development_dependency "rspec-rails", "2.12.2"
