@@ -22,10 +22,19 @@ gem "chanko"
 ```
 
 ## Files
-Chanko provides a generator to create a template of unit.
+Chanko provides a generator to create templates of an unit.
 
 ```
-$ rails generate chanko:install example_unit
+$ rails generate chanko:unit example_unit
+      create  app/units/example_unit
+      create  app/units/example_unit/example_unit.rb
+      create  app/units/example_unit/views/.gitkeep
+      create  app/units/example_unit/images/.gitkeep
+      create  app/units/example_unit/javascripts/.gitkeep
+      create  app/units/example_unit/stylesheets/.gitkeep
+      create  app/assets/images/units/example_unit
+      create  app/assets/javascripts/units/example_unit
+      create  app/assets/stylesheets/units/example_unit
 ```
 
 ## Invoke
