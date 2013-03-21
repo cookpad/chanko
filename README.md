@@ -173,6 +173,8 @@ Chanko provides an example rails application in spec/dummy directory.
 ```
 $ git clone git@github.com:cookpad/chanko.git
 $ cd chanko/spec/dummy
+$ bundle install
+$ bundle exec rake db:create db:migrate
 $ rails s
 $ open http://localhost:3000
 ```
