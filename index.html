@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Chanko by cookpad</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Chanko</h1>
+        <h2>Extend rails application</h2>
+        <a href="https://github.com/cookpad/chanko" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>Chanko</h1>
+
+<p>Chanko provides a simple framework for rapidly and safely prototyping new
+features in your production Rails app, and exposing these prototypes to
+specified segments of your user base.</p>
+
+<p>With Chanko, you can release many concurrent features and independently manage
+which users see them. If there are errors with any chanko, it will be
+automatically removed, without impacting your site.</p>
+
+<h2>Usage</h2>
+
+<p>Add to your Gemfile.</p>
+
+<div class="highlight"><pre><span class="n">gem</span> <span class="s2">"chanko"</span>
+</pre></div>
+
+<h2>Files</h2>
+
+<p>Chanko provides a generator to create templates of an unit.</p>
+
+<pre><code>$ rails generate chanko:unit example_unit
+      create  app/units/example_unit
+      create  app/units/example_unit/example_unit.rb
+      create  app/units/example_unit/views/.gitkeep
+      create  app/units/example_unit/images/.gitkeep
+      create  app/units/example_unit/javascripts/.gitkeep
+      create  app/units/example_unit/stylesheets/.gitkeep
+      create  app/assets/images/units/example_unit
+      create  app/assets/javascripts/units/example_unit
+      create  app/assets/stylesheets/units/example_unit
+</code></pre>
+
+<h2>Invoke</h2>
+
+<p>You can invoke the logics defined in your units via <code>invoke</code> and <code>unit</code> methods.
+In controller class context, <code>unit_action</code> utility is also provided.
+The block passed to <code>invoke</code> is a fallback executed if any problem occurs in invoking.</p>
+
+<div class="highlight"><pre><span class="c1"># app/controllers/users_controller.rb</span>
+<span class="k">class</span> <span class="nc">UsersController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+  <span class="n">unit_action</span> <span class="ss">:example_unit</span><span class="p">,</span> <span class="ss">:show</span>
+
+  <span class="k">def</span> <span class="nf">index</span>
+    <span class="n">invoke</span><span class="p">(</span><span class="ss">:example_unit</span><span class="p">,</span> <span class="ss">:index</span><span class="p">)</span> <span class="k">do</span>
+      <span class="vi">@users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">all</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<pre><code>-# app/views/examples/index.html.slim
+= unit.helper_method
+= invoke(:example_unit, :render_example)
+</code></pre>
+
+<pre><code>-# app/units/example_unit/views/_example.html.slim
+= foo
+</code></pre>
+
+<h2>Unit</h2>
+
+<h3>module</h3>
+
+<p>You can define your MVC code here.</p>
+
+<div class="highlight"><pre><span class="c1"># app/units/example_unit/example_unit.rb</span>
+<span class="k">module</span> <span class="nn">ExampleUnit</span>
+  <span class="kp">include</span> <span class="ss">Chanko</span><span class="p">:</span><span class="ss">:Unit</span>
+  <span class="o">.</span><span class="n">.</span><span class="o">.</span>
+<span class="k">end</span>
+</pre></div>
+
+<h3>active_if</h3>
+
+<p>This block is used to decide if this unit is active or not.
+<code>context</code> is the receiver object of <code>invoke</code>.
+<code>options</code> is passed via <code>invoke(:foo, :bar, :active_if_options =&gt; { ... })</code>.
+By default, this is set as <code>active_if { true }</code>.</p>
+
+<div class="highlight"><pre><span class="n">active_if</span> <span class="k">do</span> <span class="o">|</span><span class="n">context</span><span class="p">,</span> <span class="n">options</span><span class="o">|</span>
+  <span class="kp">true</span>
+<span class="k">end</span>
+</pre></div>
+
+<h3>raise_error</h3>
+
+<p>By default, any error raised in production env is ignored.
+<code>raise_error</code> is used to force an unit to raise up errors occured in invoking.
+You can force all units to raise up errors by <code>Config.raise_error = true</code>.</p>
+
+<div class="highlight"><pre><span class="n">raise_error</span>
+</pre></div>
+
+<h3>function</h3>
+
+<p>In controller or view context, you can call functions defined by <code>function</code>
+via <code>invoke(:example_unit, :function_name)</code>.</p>
+
+<div class="highlight"><pre><span class="n">scope</span><span class="p">(</span><span class="ss">:controller</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">function</span><span class="p">(</span><span class="ss">:show</span><span class="p">)</span> <span class="k">do</span>
+    <span class="vi">@user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">)</span>
+  <span class="k">end</span>
+
+  <span class="n">function</span><span class="p">(</span><span class="ss">:index</span><span class="p">)</span> <span class="k">do</span>
+    <span class="vi">@users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">active</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<h3>render</h3>
+
+<p>The view path app/units/example_unit/views is added into view_paths in invoking.
+So you can render app/units/example_unit/views/_example.html.slim in invoking.</p>
+
+<div class="highlight"><pre><span class="n">scope</span><span class="p">(</span><span class="ss">:view</span><span class="p">)</span> <span class="k">do</span>
+  <span class="n">function</span><span class="p">(</span><span class="ss">:render_example</span><span class="p">)</span> <span class="k">do</span>
+    <span class="n">render</span> <span class="s2">"/example"</span><span class="p">,</span> <span class="ss">:foo</span> <span class="o">=&gt;</span> <span class="n">hello</span><span class="p">(</span><span class="s2">"world"</span><span class="p">)</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<h3>models</h3>
+
+<p>In models block, you can expand model features by <code>expand</code> method.
+The expanded methods are available via unit proxy like <code>User.unit.active</code>,
+and <code>User.find(params[:id]).unit.active?</code>, and so on.</p>
+
+<div class="highlight"><pre><span class="n">models</span> <span class="k">do</span>
+  <span class="n">expand</span><span class="p">(</span><span class="ss">:User</span><span class="p">)</span> <span class="k">do</span>
+    <span class="n">scope</span> <span class="ss">:active</span><span class="p">,</span> <span class="nb">lambda</span> <span class="p">{</span> <span class="n">where</span><span class="p">(</span><span class="ss">:deleted_at</span> <span class="o">=&gt;</span> <span class="kp">nil</span><span class="p">)</span> <span class="p">}</span>
+
+    <span class="k">def</span> <span class="nf">active?</span>
+      <span class="n">deleted_at</span><span class="o">.</span><span class="n">nil?</span>
+    <span class="k">end</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<h3>shared</h3>
+
+<p>You can call methods defined by <code>shared</code> in invoking.</p>
+
+<div class="highlight"><pre><span class="n">shared</span><span class="p">(</span><span class="ss">:hello</span><span class="p">)</span> <span class="k">do</span> <span class="o">|</span><span class="n">world</span><span class="o">|</span>
+  <span class="s2">"Hello, </span><span class="si">#{</span><span class="n">world</span><span class="si">}</span><span class="s2">"</span>
+<span class="k">end</span>
+</pre></div>
+
+<h3>helpers</h3>
+
+<p>You can call helpers in view via unit proxy like <code>unit.helper_method</code>.</p>
+
+<div class="highlight"><pre><span class="n">helpers</span> <span class="k">do</span>
+  <span class="k">def</span> <span class="nf">helper_method</span>
+    <span class="s2">"helper method"</span>
+  <span class="k">end</span>
+<span class="k">end</span>
+</pre></div>
+
+<h2>Example</h2>
+
+<p><a href="https://github.com/cookpad/chanko/tree/master/spec/dummy">https://github.com/cookpad/chanko/tree/master/spec/dummy</a><br>
+Chanko provides an example rails application in spec/dummy directory.</p>
+
+<pre><code>$ git clone git@github.com:cookpad/chanko.git
+$ cd chanko/spec/dummy
+$ bundle install
+$ bundle exec rake db:create db:migrate
+$ rails s
+$ open http://localhost:3000
+</code></pre>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/cookpad/chanko/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/cookpad/chanko/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/cookpad/chanko"></a> is maintained by <a href="https://github.com/cookpad">cookpad</a>.</p>
+
+          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
