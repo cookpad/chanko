@@ -1,12 +1,14 @@
 # Chanko [![Build Status](https://travis-ci.org/cookpad/chanko.png)](https://travis-ci.org/cookpad/chanko) [![Code Climate](https://codeclimate.com/github/cookpad/chanko.png)](https://codeclimate.com/github/cookpad/chanko) [![Coverage Status](https://coveralls.io/repos/cookpad/chanko/badge.png?branch=master)](https://coveralls.io/r/cookpad/chanko)
 
+http://cookpad.github.com/chanko/
+
 Chanko provides a simple framework for rapidly and safely prototyping new
 features in your production Rails app, and exposing these prototypes to
 specified segments of your user base.
 
-With Chanko, you can release many concurrent features and independently manage
-which users see them. If there are errors with any chanko, it will be
-automatically removed, without impacting your site.
+With Chanko, you can release many features concurrently and manage target users independently.
+When any errors are raised from chanko's features,
+it will be automatically hidden and fallback to its normal behavior.
 
 
 ## Requirements
@@ -67,6 +69,7 @@ end
 ```
 
 ## Unit
+You can see [the real example of an unit module file](https://github.com/cookpad/chanko/blob/master/spec/dummy/app/units/entry_deletion/entry_deletion.rb).
 
 ### module
 You can define your MVC code here.
