@@ -67,7 +67,7 @@ module Chanko
       end
 
       def view_path
-        "#{Config.units_directory_path}/#{unit_name}/views"
+        Rails.root.join("#{Config.units_directory_path}/#{unit_name}/views").to_s
       end
 
       def find_function(identifier, label)
