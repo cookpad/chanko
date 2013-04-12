@@ -14,6 +14,27 @@ module Chanko
       Exception.new
     end
 
+    context "when Config.propagated_errors includes given error" do
+      before do
+        Config.propagated_errors << Exception
+      end
+
+      it "raises up error without any logging" do
+        Logger.should_not_receive(:debug)
+        expect { described_class.handle(error, insensitive_unit) }.to raise_error
+      end
+    end
+
+    context "when Config.propagated_errors does not include given error" do
+      before do
+        Config.propagated_errors << StandardError
+      end
+
+      it "raises up no error" do
+        expect { described_class.handle(error, insensitive_unit) }.not_to raise_error
+      end
+    end
+
     context "when Config.raise_error is false" do
       it "raises up no error" do
         expect { described_class.handle(error, insensitive_unit) }.not_to raise_error
