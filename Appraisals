@@ -9,4 +9,5 @@ appraise "rails4_0" do
   gem 'activeresource', '>= 4.0.0.beta', '< 5'
   gem 'coffee-rails', '>= 4.0.0.beta', '< 5'
   gem 'sass-rails', '>= 4.0.0.beta', '< 5'
+  gem 'protected_attributes'
 end
