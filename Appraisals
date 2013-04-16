@@ -6,6 +6,7 @@ end
 
 appraise "rails4_0" do
   gem 'rails', '>= 4.0.0.beta', '< 5'
+  gem 'activeresource', '>= 4.0.0.beta', '< 5'
   gem 'coffee-rails', '>= 4.0.0.beta', '< 5'
   gem 'sass-rails', '>= 4.0.0.beta', '< 5'
 end
