@@ -28,4 +28,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "sqlite3"
   gem.add_development_dependency "thin"
   gem.add_development_dependency "uglifier"
+  gem.add_development_dependency "appraisal"
 end
