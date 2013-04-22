@@ -50,14 +50,58 @@ module Chanko
         end
       end
 
-      context "when any is specified" do
+      describe "any" do
         before do
           unit.instance_eval do
             active_if any(:true, :false)
           end
         end
-        specify "any of conditions must pass" do
+        it "returns true if at least one of conditions is true" do
           should be_true
+        end
+      end
+
+      describe "none" do
+        before do
+          unit.instance_eval do
+            active_if none(:false, :false)
+          end
+        end
+        it "returns true if all conditions are false" do
+          should be_true
+        end
+      end
+
+      describe "When using 'any' and 'none'" do
+        context "'any' in 'none'" do
+          before do
+            unit.instance_eval do
+              active_if none(any(:true, :false))
+            end
+          end
+          it "returns negatived result of inner-expression" do
+            should be_false
+          end
+        end
+
+        context "'none' in 'any'" do
+          before do
+            unit.instance_eval do
+              active_if any(none(:true), :false)
+            end
+          end
+          it "uses none(:true) as false" do
+            should be_false
+          end
+        end
+
+        context "more nested" do
+          before do
+            unit.instance_eval do
+              active_if any(any(any(any(none(:false), :false), :false), :false), :false)
+            end
+          end
+          it { should be_true }
         end
       end
     end
