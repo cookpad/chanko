@@ -14,7 +14,7 @@ module Chanko
       Class.new { include Chanko::Helper }.new
     end
 
-    describe ".active_if" do
+    describe "about active_if" do
       before do
         ActiveIf.define(:true) { true }
         ActiveIf.define(:false) { false }
@@ -26,38 +26,102 @@ module Chanko
 
       subject { unit.active?(view) }
 
-      context "in default configuration" do
-        it "is configured to return always true" do
-          should be_true
-        end
-      end
-
-      context "when labels are specified" do
-        before do
-          unit.active_if(:true, :false)
-        end
-        specify "all of defined conditions must pass" do
-          should be_false
-        end
-      end
-
-      context "when block is passed" do
-        before do
-          unit.active_if(:true) { false }
-        end
-        specify "all of defined conditions and block must pass" do
-          should be_false
-        end
-      end
-
-      context "when any is specified" do
-        before do
-          unit.instance_eval do
-            active_if any(:true, :false)
+      describe ".active_if" do
+        context "in default configuration" do
+          it "is configured to return always true" do
+            should be_true
           end
         end
-        specify "any of conditions must pass" do
-          should be_true
+
+        context "when labels are specified" do
+          before do
+            unit.active_if(:true, :false)
+          end
+          specify "all of defined conditions must pass" do
+            should be_false
+          end
+        end
+
+        context "when block is passed" do
+          before do
+            unit.active_if(:true) { false }
+          end
+          specify "all of defined conditions and block must pass" do
+            should be_false
+          end
+        end
+      end
+
+      describe ".any" do
+        context "when conditions returned true and false" do
+          before do
+            unit.instance_eval do
+              active_if any(:true, :false)
+            end
+          end
+          it { should be_true }
+        end
+
+        context "when all conditions returned false" do
+          before do
+            unit.instance_eval do
+              active_if any(:false, :false)
+            end
+          end
+          it { should be_false }
+        end
+      end
+
+      describe ".none" do
+        context "when all conditions returned false" do
+          before do
+            unit.instance_eval do
+              active_if none(:false, :false)
+            end
+          end
+          it { should be_true }
+        end
+
+        context "when conditions returned true and false" do
+          before do
+            unit.instance_eval do
+              active_if none(:true, :false)
+            end
+          end
+          it { should be_false }
+        end
+      end
+
+      context "when using 'any' and 'none'" do
+        context "'any' in 'none'" do
+          before do
+            unit.instance_eval do
+              active_if none(any(:true, :false))
+            end
+          end
+          it "returns negatived result of inner-expression" do
+            should be_false
+          end
+        end
+
+        context "'none' in 'any'" do
+          before do
+            unit.instance_eval do
+              active_if any(none(:true), :false)
+            end
+          end
+          it "uses none(:true) as false" do
+            should be_false
+          end
+        end
+
+        context "more nested" do
+          before do
+            unit.instance_eval do
+              active_if any(any(none(:false), :false), :false)
+            end
+          end
+          it { should be_true }
         end
       end
     end

@@ -49,6 +49,10 @@ module Chanko
         ActiveIf::Any.new(*labels)
       end
 
+      def none(*labels)
+        ActiveIf::None.new(*labels)
+      end
+
       def raise_error
         @raise_error = true
       end
