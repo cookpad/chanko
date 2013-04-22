@@ -33,26 +33,43 @@ module Chanko
     def blocks
       @blocks ||= begin
         conditions.map do |condition|
-          condition.is_a?(Any) ? condition.to_block : self.class.find(condition)
+          Block.new(condition)
         end << @block
       end.compact
     end
 
-    class Any
-      def initialize(*labels)
-        @labels = labels
+    class Block
+      def initialize(*conditions)
+        @conditions = conditions
       end
 
-      def to_block
+      def call(context, options)
+        block.call(context, options)
+      end
+
+      def block
+        condition = @conditions.first
+        condition.is_a?(Block) ? condition : ActiveIf.find(condition)
+      end
+    end
+
+    class Any < Block
+      def block
         proc do |context, options|
-          definitions.any? do |definition|
-            definition.call(context, options)
+          @conditions.any? do |condition|
+            Block.new(condition).call(context, options)
           end
         end
       end
+    end
 
-      def definitions
-        @labels.map {|label| ActiveIf.find(label) }
+    class None < Block
+      def block
+        proc do |context, options|
+          @conditions.none? do |condition|
+            Block.new(condition).call(context, options)
+          end
+        end
       end
     end
   end
