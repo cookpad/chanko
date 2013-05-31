@@ -160,7 +160,7 @@ module Chanko
     end
 
     describe ".shared" do
-      it "stroes given block with given label" do
+      it "stores given block with given label" do
         unit.shared(:test) do
           "test"
         end
