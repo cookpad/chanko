@@ -17,7 +17,7 @@ class EntriesController < ApplicationController
   end
 
   def create
-    @entry = Entry.create(params[:entry])
+    @entry = Entry.create(params[:entry].permit(:title, :body))
     redirect_to @entry
   end
 
@@ -27,7 +27,7 @@ class EntriesController < ApplicationController
 
   def update
     @entry = Entry.find(params[:id])
-    @entry.update_attributes(params[:entry])
+    @entry.update_attributes(params[:entry].permit(:title, :body))
     redirect_to @entry
   end
 end
