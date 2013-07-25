@@ -4,9 +4,15 @@ require "stringio"
 module Chanko
   describe Logger do
     around do |example|
-      origin, Rails.logger = Rails.logger, ::Logger.new(io)
+      origin, Rails.logger = Rails.logger, logger
       example.run
       Rails.logger = origin
+    end
+
+    let(:logger) do
+      logger = ::Logger.new(io)
+      logger.formatter = lambda {|severity, time, progname, message| message }
+      logger
     end
 
     let(:io) do
