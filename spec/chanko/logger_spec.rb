@@ -87,7 +87,7 @@ module Chanko
       end
 
       it "does notihng" do
-        expect { described_class.debug(exception) }.not_to raise_error(NoMethodError)
+        expect { described_class.debug(exception) }.not_to raise_error
       end
     end
   end

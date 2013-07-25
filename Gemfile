@@ -11,7 +11,7 @@ group :development, :test, :production do
 end
 
 group :test do
-  gem "rspec-rails", "2.12.2"
+  gem "rspec-rails", "2.14.0"
 end
 
 group :development, :test do
