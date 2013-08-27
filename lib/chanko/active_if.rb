@@ -18,10 +18,18 @@ module Chanko
       end
     end
 
-    attr_reader :conditions, :options
+    attr_reader :conditions
+
+    def options # remains just for backward compatibility
+      warn 'ActiveIf#options is deprecated and is never used'
+      @options
+    end
 
     def initialize(*conditions, &block)
       @options    = conditions.extract_options!
+      unless @options.empty?
+        warn 'options in ActiveIf#new are deprecated and are never used'
+      end
       @conditions = conditions
       @block      = block
     end
