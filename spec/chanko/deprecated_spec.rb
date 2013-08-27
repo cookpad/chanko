@@ -20,7 +20,7 @@ module Chanko
 
       it "uses #options" do
         o = ActiveIf.new
-        expect(o.options.empty?).to be true
+        expect(o.options).to be_empty
         expect($stderr.string).to match(/\b deprecated \b/xms)
         expect($stderr.string).to match(/#{Regexp.escape __FILE__}/xms)
       end
