@@ -2,27 +2,25 @@ require "spec_helper"
 
 module Chanko
   describe ActiveIf do
-    describe "options" do
-      before do
-        @orig_stderr = $stderr
-        $stderr = StringIO.new
-      end
+    around do |example|
+      origin, $stderr = $stderr, StringIO.new
+      example.run
+      $stderr = origin
+    end
 
-      after do
-        $stderr = @orig_stderr
+    describe ".new" do
+      context "with option arguments" do
+        it "prints warning message on standard error output" do
+          ActiveIf.new(foo: "bar")
+          $stderr.string.should =~ /\Aoptions in ActiveIf#new are deprecated and are never used at #{__FILE__}/
+        end
       end
+    end
 
-      it "uses options in #new" do
-        _ = ActiveIf.new foo: 'bar'
-        expect($stderr.string).to match(/ deprecated /)
-        expect($stderr.string).to match(/#{Regexp.escape __FILE__}/)
-      end
-
-      it "uses #options" do
-        o = ActiveIf.new
-        expect(o.options).to be_empty
-        expect($stderr.string).to match(/ deprecated /)
-        expect($stderr.string).to match(/#{Regexp.escape __FILE__}/)
+    describe "#options" do
+      it "prints warning message on standard error output" do
+        ActiveIf.new.options
+        $stderr.string.should =~ /\AActiveIf#options is deprecated and is never used at #{__FILE__}/
       end
     end
   end
