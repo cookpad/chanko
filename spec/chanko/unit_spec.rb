@@ -50,6 +50,20 @@ module Chanko
             should be_false
           end
         end
+
+        context "when an undefined condition is specified" do
+          before do
+            unit.active_if(:this_is_not_a_condition)
+          end
+
+          specify "an undefined condition must raise NoConditionFound" do
+            begin
+              should be_nil
+            rescue Chanko::ActiveIf::NoConditionFound => e
+              e.message.should =~ /this_is_not_a_condition/
+            end
+          end
+        end
       end
 
       describe ".any" do
