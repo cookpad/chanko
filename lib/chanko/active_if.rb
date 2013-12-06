@@ -1,5 +1,8 @@
 module Chanko
   class ActiveIf
+    class NoConditionFound < StandardError
+    end
+
     class << self
       def define(label, &block)
         definitions[label] = block
@@ -57,7 +60,11 @@ module Chanko
 
       def block
         condition = @conditions.first
-        condition.is_a?(Block) ? condition : ActiveIf.find(condition)
+        if condition.kind_of?(Block)
+          condition
+        else
+          ActiveIf.find(condition) or raise NoConditionFound, condition
+        end
       end
     end
 
