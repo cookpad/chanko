@@ -57,11 +57,7 @@ module Chanko
           end
 
           specify "an undefined condition must raise NoConditionFound" do
-            begin
-              should be_nil
-            rescue Chanko::ActiveIf::NoConditionFound => e
-              e.message.should =~ /this_is_not_a_condition/
-            end
+            expect { subject }.to raise_error Chanko::ActiveIf::NoConditionFound, /this_is_not_a_condition/
           end
         end
       end
