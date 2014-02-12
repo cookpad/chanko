@@ -1,12 +1,6 @@
 module Chanko
   module Unit
     class ScopeFinder
-      LABEL_SCOPE_MAP = {
-        :controller => ActionController::Base,
-        :model      => ActiveRecord::Base,
-        :view       => ActionView::Base,
-      }
-
       def self.find(*args)
         new(*args).find
       end
@@ -34,7 +28,13 @@ module Chanko
       end
 
       def label
-        LABEL_SCOPE_MAP[@identifier]
+        label_scope_map = {
+          :controller => ActionController::Base,
+          :model      => ActiveRecord::Base,
+          :view       => ActionView::Base
+        }
+
+        label_scope_map[@identifier]
       end
     end
   end
