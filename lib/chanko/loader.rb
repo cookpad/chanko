@@ -10,6 +10,12 @@ module Chanko
       def cache
         @cache ||= {}
       end
+
+      def eager_load_units!
+        Pathname.glob("#{Rails.root}/#{Config.units_directory_path}/*").select(&:directory?).each do |path|
+          load(path.to_s.split("/").last.to_sym) rescue nil
+        end
+      end
     end
 
     def initialize(name)

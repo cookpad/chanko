@@ -13,5 +13,15 @@ module Chanko
         ::ActiveRecord::Associations::CollectionAssociation.send(:include, UnitProxyProvider)
       end
     end
+
+    if Chanko::Config.eager_load
+      initializer("chanko.prevent_units_directory_from_eager_loading", before: :set_autoload_paths) do |app|
+        Rails.configuration.eager_load_paths.delete(Rails.root.join(Chanko::Config.units_directory_path).to_s)
+      end
+
+      initializer("chanko.eager_load_units") do |app|
+        Chanko::Loader.eager_load_units!
+      end
+    end
   end
 end
