@@ -14,12 +14,14 @@ module Chanko
       end
     end
 
-    if Chanko::Config.eager_load
-      initializer("chanko.prevent_units_directory_from_eager_loading", before: :set_autoload_paths) do |app|
+    initializer("chanko.prevent_units_directory_from_eager_loading", before: :set_autoload_paths) do |app|
+      if Chanko::Config.eager_load
         Rails.configuration.eager_load_paths.delete(Rails.root.join(Chanko::Config.units_directory_path).to_s)
       end
+    end
 
-      initializer("chanko.eager_load_units") do |app|
+    initializer("chanko.eager_load_units") do |app|
+      if Chanko::Config.eager_load
         Chanko::Loader.eager_load_units!
       end
     end
