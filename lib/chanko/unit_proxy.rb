@@ -26,5 +26,9 @@ module Chanko
     def method_missing(method_name, *args, &block)
       @context.send("#{prefix}#{method_name}", *args, &block)
     end
+
+    def respond_to_missing?(method_name, include_private)
+      @context.respond_to?("#{prefix}#{method_name}")
+    end
   end
 end

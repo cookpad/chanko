@@ -41,6 +41,12 @@ module Chanko
         view.invoke(:example_unit, :helper, :type => :plain).should == "helper"
       end
 
+      context 'when unit is referred from unit function' do
+        it 'responds to method which the context responds to' do
+          expect(view.invoke(:example_unit, :respond_to_helper?, type: :plain)).to eq(true)
+        end
+      end
+
       context "when invoked in view" do
         it "invokes with partial view" do
           view.invoke(:example_unit, :render, :type => :plain).should == "test\n"
