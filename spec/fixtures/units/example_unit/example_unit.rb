@@ -60,6 +60,10 @@ module ExampleUnit
       unit.helper
     end
 
+    function(:respond_to_helper?) do
+      unit.respond_to?(:helper)
+    end
+
     function(:render) do
       render "/test", :local => "test"
     end
