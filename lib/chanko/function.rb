@@ -2,9 +2,11 @@ module Chanko
   class Function
     attr_reader :block, :unit, :label
 
+    THREAD_LOCAL_UNITS_KEY = :chanko_units
+
     class << self
       def units
-        @units ||= []
+        Thread.current[THREAD_LOCAL_UNITS_KEY] ||= []
       end
 
       def current_unit
