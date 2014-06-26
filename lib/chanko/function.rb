@@ -2,7 +2,7 @@ module Chanko
   class Function
     attr_reader :block, :unit, :label
 
-    THREAD_LOCAL_UNITS_KEY = :chanko_units
+    THREAD_LOCAL_UNITS_KEY = 'Chanko::Function.units'
 
     class << self
       def units
