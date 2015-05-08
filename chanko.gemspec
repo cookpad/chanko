@@ -6,7 +6,7 @@ Gem::Specification.new do |gem|
   gem.name          = "chanko"
   gem.version       = Chanko::VERSION
   gem.authors       = ["Ryo Nakamura"]
-  gem.email         = ["r7kamura@gmail.com"]
+  gem.email         = ["tech@cookpad.com"]
   gem.description   = "Chanko is a Rails extension tool"
   gem.summary       = "Rails extension tool"
   gem.homepage      = "https://github.com/cookpad/chanko"
