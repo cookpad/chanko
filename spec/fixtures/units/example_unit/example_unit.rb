@@ -29,6 +29,19 @@ module ExampleUnit
     function(:render) do
       render_to_string :partial => "/test", :locals => { :local => "test" }
     end
+
+    function(:nesting_locals_outer) do
+      result = "#{outer_one}."
+      result += invoke(:example_unit, :nesting_locals_inner, :locals => { :inner_one => "inner_one", :inner_two => "inner_two" }) do
+        "#{outer_two}.#{run_default}"
+      end
+      result += ".#{outer_three}"
+      result
+    end
+
+    function(:nesting_locals_inner) do
+      "#{inner_one}.#{run_default}.#{inner_two}"
+    end
   end
 
   scope(:view) do
