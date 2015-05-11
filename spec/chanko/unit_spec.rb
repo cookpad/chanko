@@ -29,7 +29,7 @@ module Chanko
       describe ".active_if" do
         context "in default configuration" do
           it "is configured to return always true" do
-            is_expected.to be_truthy
+            is_expected.to eq(true)
           end
         end
 
@@ -38,7 +38,7 @@ module Chanko
             unit.active_if(:true, :false)
           end
           specify "all of defined conditions must pass" do
-            is_expected.to be_falsey
+            is_expected.to eq(false)
           end
         end
 
@@ -47,7 +47,7 @@ module Chanko
             unit.active_if(:true) { false }
           end
           specify "all of defined conditions and block must pass" do
-            is_expected.to be_falsey
+            is_expected.to eq(false)
           end
         end
 
@@ -69,7 +69,7 @@ module Chanko
               active_if any(:true, :false)
             end
           end
-          it { is_expected.to be_truthy }
+          it { is_expected.to eq(true) }
         end
 
         context "when all conditions returned false" do
@@ -78,7 +78,7 @@ module Chanko
               active_if any(:false, :false)
             end
           end
-          it { is_expected.to be_falsey }
+          it { is_expected.to eq(false) }
         end
       end
 
@@ -89,7 +89,7 @@ module Chanko
               active_if none(:false, :false)
             end
           end
-          it { is_expected.to be_truthy }
+          it { is_expected.to eq(true) }
         end
 
         context "when conditions returned true and false" do
@@ -98,7 +98,7 @@ module Chanko
               active_if none(:true, :false)
             end
           end
-          it { is_expected.to be_falsey }
+          it { is_expected.to eq(false) }
         end
       end
 
@@ -110,7 +110,7 @@ module Chanko
             end
           end
           it "returns negatived result of inner-expression" do
-            is_expected.to be_falsey
+            is_expected.to eq(false)
           end
         end
 
@@ -121,7 +121,7 @@ module Chanko
             end
           end
           it "uses none(:true) as false" do
-            is_expected.to be_falsey
+            is_expected.to eq(false)
           end
         end
 
@@ -131,7 +131,7 @@ module Chanko
               active_if any(any(none(:false), :false), :false)
             end
           end
-          it { is_expected.to be_truthy }
+          it { is_expected.to eq(true) }
         end
       end
     end
