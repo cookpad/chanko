@@ -1,3 +1,6 @@
+## 2.0.6
+* Fix stack control of run_default.
+
 ## 2.0.5
 * Guarantee thread-safety of unit stack for Rails 4
 
