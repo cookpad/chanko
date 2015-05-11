@@ -130,6 +130,15 @@ module Chanko
             "default"
           end.should eq "outer_one.inner_one.outer_two.default.inner_two.outer_three"
         end
+
+        context 'active_if is false' do
+          it "invokes given block as a fallback " do
+            Chanko::Loader.load("sensitive_inactive_unit")
+            controller.invoke(:sensitive_inactive_unit, :outer) do
+              invoke(:sensitive_inactive_unit, :inner)
+            end.should eq nil
+          end
+        end
       end
 
       context "when run_default is called but no block given" do
