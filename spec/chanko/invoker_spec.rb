@@ -115,6 +115,23 @@ module Chanko
         end
       end
 
+      context "when nested run_default is called in function" do
+        it "invokes given block as a fallback" do
+          Chanko::Loader.load("sensitive_unit")
+          expect(SensitiveUnit).to receive(:ping).once
+
+          controller.invoke(:sensitive_unit, :outer_default) do
+            "default"
+          end.should eq "default"
+        end
+
+        it 'use both locals' do
+          controller.invoke(:example_unit, :nesting_locals_outer, :locals => { :outer_one => "outer_one", :outer_two => "outer_two", :outer_three => "outer_three"}) do
+            "default"
+          end.should eq "outer_one.inner_one.outer_two.default.inner_two.outer_three"
+        end
+      end
+
       context "when run_default is called but no block given" do
         it "invokes given block as a fallback" do
           controller.invoke(:example_unit, :default).should == nil
