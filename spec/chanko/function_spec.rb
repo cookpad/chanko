@@ -40,19 +40,19 @@ module Chanko
 
     describe ".invoke" do
       it "invokes block with given context and stacked unit" do
-        described_class.new(unit, :label) { current_unit }.invoke(context, options).should == unit
+        expect(described_class.new(unit, :label) { current_unit }.invoke(context, options)).to eq(unit)
       end
 
       context "when context is a view" do
         it "invokes with unit's view path" do
-          described_class.new(unit, :label) { path }.invoke(context, options).should == unit.view_path
+          expect(described_class.new(unit, :label) { path }.invoke(context, options)).to eq(unit.view_path)
         end
       end
 
       context "when context does not have view_paths" do
         it "invokes successfully" do
-          described_class.new(unit, :label) { "test" }.
-            invoke(context_without_view_paths, options).should == "test"
+          expect(described_class.new(unit, :label) { "test" }.
+            invoke(context_without_view_paths, options)).to eq("test")
         end
       end
     end

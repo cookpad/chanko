@@ -10,8 +10,8 @@ module Chanko
       context "when given unit name" do
         it "returns proxy for specified unit" do
           proxy = view.unit(:example_unit)
-          proxy.should be_a UnitProxy
-          proxy.unit.should == ExampleUnit
+          expect(proxy).to be_a UnitProxy
+          expect(proxy.unit).to eq(ExampleUnit)
         end
       end
 
@@ -26,7 +26,7 @@ module Chanko
 
         it "returns proxy for the top unit of current unit stack" do
           proxy = view.unit
-          proxy.unit.should == ExampleUnit
+          expect(proxy.unit).to eq(ExampleUnit)
         end
       end
 
@@ -39,10 +39,10 @@ module Chanko
         end
 
         it "change this method name with it" do
-          view.should_not be_respond_to(:proxy)
+          expect(view).not_to be_respond_to(:proxy)
           proxy = view.proxy(:example_unit)
-          proxy.should be_a UnitProxy
-          view.should be_respond_to(:proxy)
+          expect(proxy).to be_a UnitProxy
+          expect(view).to be_respond_to(:proxy)
         end
       end
 
@@ -55,12 +55,12 @@ module Chanko
         end
 
         it "change this method name with it" do
-          view.should_not be_respond_to(:proxy1)
-          view.should_not be_respond_to(:proxy2)
-          view.proxy1(:example_unit).should be_a UnitProxy
-          view.proxy2(:example_unit).should be_a UnitProxy
-          view.should be_respond_to(:proxy1)
-          view.should be_respond_to(:proxy2)
+          expect(view).not_to be_respond_to(:proxy1)
+          expect(view).not_to be_respond_to(:proxy2)
+          expect(view.proxy1(:example_unit)).to be_a UnitProxy
+          expect(view.proxy2(:example_unit)).to be_a UnitProxy
+          expect(view).to be_respond_to(:proxy1)
+          expect(view).to be_respond_to(:proxy2)
         end
       end
     end

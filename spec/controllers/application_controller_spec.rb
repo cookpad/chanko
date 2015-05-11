@@ -8,7 +8,7 @@ describe ApplicationController do
   end
 
   it "clears cache before each request" do
-    Chanko::Loader.cache.should_receive(:clear).exactly(2)
+    expect(Chanko::Loader.cache).to receive(:clear).exactly(2)
     get :index
     get :index
   end

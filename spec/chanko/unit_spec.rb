@@ -29,7 +29,7 @@ module Chanko
       describe ".active_if" do
         context "in default configuration" do
           it "is configured to return always true" do
-            should be_true
+            is_expected.to be_truthy
           end
         end
 
@@ -38,7 +38,7 @@ module Chanko
             unit.active_if(:true, :false)
           end
           specify "all of defined conditions must pass" do
-            should be_false
+            is_expected.to be_falsey
           end
         end
 
@@ -47,7 +47,7 @@ module Chanko
             unit.active_if(:true) { false }
           end
           specify "all of defined conditions and block must pass" do
-            should be_false
+            is_expected.to be_falsey
           end
         end
 
@@ -69,7 +69,7 @@ module Chanko
               active_if any(:true, :false)
             end
           end
-          it { should be_true }
+          it { is_expected.to be_truthy }
         end
 
         context "when all conditions returned false" do
@@ -78,7 +78,7 @@ module Chanko
               active_if any(:false, :false)
             end
           end
-          it { should be_false }
+          it { is_expected.to be_falsey }
         end
       end
 
@@ -89,7 +89,7 @@ module Chanko
               active_if none(:false, :false)
             end
           end
-          it { should be_true }
+          it { is_expected.to be_truthy }
         end
 
         context "when conditions returned true and false" do
@@ -98,7 +98,7 @@ module Chanko
               active_if none(:true, :false)
             end
           end
-          it { should be_false }
+          it { is_expected.to be_falsey }
         end
       end
 
@@ -110,7 +110,7 @@ module Chanko
             end
           end
           it "returns negatived result of inner-expression" do
-            should be_false
+            is_expected.to be_falsey
           end
         end
 
@@ -121,7 +121,7 @@ module Chanko
             end
           end
           it "uses none(:true) as false" do
-            should be_false
+            is_expected.to be_falsey
           end
         end
 
@@ -131,7 +131,7 @@ module Chanko
               active_if any(any(none(:false), :false), :false)
             end
           end
-          it { should be_true }
+          it { is_expected.to be_truthy }
         end
       end
     end
@@ -139,13 +139,13 @@ module Chanko
     describe ".scope" do
       specify "given scope is recorded to used scope list" do
         unit.scope(:view) { }
-        unit.scopes.keys.should == [ActionView::Base]
+        expect(unit.scopes.keys).to eq([ActionView::Base])
       end
 
       context "in the scoped block" do
         specify "current_scope returns given scope" do
           unit.scope(:view) do
-            unit.current_scope.should == ActionView::Base
+            expect(unit.current_scope).to eq(ActionView::Base)
           end
         end
       end
@@ -153,7 +153,7 @@ module Chanko
       context "out of the scoped block" do
         specify "current_scope returns nil" do
           unit.scope(:view) { }
-          unit.current_scope.should == nil
+          expect(unit.current_scope).to eq(nil)
         end
       end
     end
@@ -165,7 +165,7 @@ module Chanko
             "test"
           end
         end
-        unit.scopes[ActionView::Base][:test].block.call.should == "test"
+        expect(unit.scopes[ActionView::Base][:test].block.call).to eq("test")
       end
     end
 
@@ -174,7 +174,7 @@ module Chanko
         unit.shared(:test) do
           "test"
         end
-        unit.shared_methods[:test].call.should == "test"
+        expect(unit.shared_methods[:test].call).to eq("test")
       end
     end
 
@@ -185,7 +185,7 @@ module Chanko
             "test"
           end
         end
-        view.__example_unit_test.should == "test"
+        expect(view.__example_unit_test).to eq("test")
       end
     end
 
@@ -230,25 +230,25 @@ module Chanko
       end
 
       it "defines instance methods with prefix" do
-        ExampleModel.new.__example_unit_test.should == "test"
+        expect(ExampleModel.new.__example_unit_test).to eq("test")
       end
 
       it "defines class methods with prefix" do
-        ExampleModel.__example_unit_test.should == "test"
+        expect(ExampleModel.__example_unit_test).to eq("test")
       end
 
       it "defines scope method with prefix" do
-        ExampleModel.__example_unit_active.should == "scoped"
+        expect(ExampleModel.__example_unit_active).to eq("scoped")
       end
 
       it "defines has_one association method with prefix" do
-        ExampleModel.__example_unit_user.should == [:class_name => "User"]
+        expect(ExampleModel.__example_unit_user).to eq([:class_name => "User"])
       end
     end
 
     describe ".view_path" do
       it "returns path for its view directory" do
-        unit.view_path.should == "#{Config.units_directory_path}/example_unit/views"
+        expect(unit.view_path).to eq("#{Config.units_directory_path}/example_unit/views")
       end
     end
   end

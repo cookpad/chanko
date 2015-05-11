@@ -22,21 +22,21 @@ module Chanko
       end
 
       it "defines an action to invoke unit function" do
-        controller.test.should == "test"
+        expect(controller.test).to eq("test")
       end
 
       it "defines 2 actions at one line" do
-        controller.foo.should == "foo"
-        controller.bar.should == "bar"
+        expect(controller.foo).to eq("foo")
+        expect(controller.bar).to eq("bar")
       end
 
       it "is aliased with `ext_action`" do
-        controller.alias.should == "alias"
+        expect(controller.alias).to eq("alias")
       end
 
       context "when invoke is fallen back" do
         it "halts with 400 status code" do
-          controller.error.should == "Bad Request 400"
+          expect(controller.error).to eq("Bad Request 400")
         end
       end
     end

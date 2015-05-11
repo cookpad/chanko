@@ -20,7 +20,7 @@ module Chanko
       end
 
       it "raises up error without any logging" do
-        Logger.should_not_receive(:debug)
+        expect(Logger).not_to receive(:debug)
         expect { described_class.handle(error, insensitive_unit) }.to raise_error
       end
     end
