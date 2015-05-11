@@ -3,7 +3,7 @@ require "spec_helper"
 module Chanko
   describe Unit do
     before do
-      unit.stub(:name => "ExampleUnit")
+      allow(unit).to receive_messages(:name => "ExampleUnit")
     end
 
     let(:unit) do
