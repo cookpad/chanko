@@ -19,6 +19,10 @@ RSpec.configure do |config|
   config.run_all_when_everything_filtered = true
   config.filter_run :focus
 
+  config.expect_with :rspec do |expectations|
+    expectations.syntax = :expect
+  end
+
   config.after do
     Chanko::Config.reset
     Chanko::Config.units_directory_path = File.expand_path("../fixtures/units", __FILE__)

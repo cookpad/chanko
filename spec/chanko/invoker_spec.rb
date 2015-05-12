@@ -138,9 +138,7 @@ module Chanko
         context 'active_if is false' do
           it "invokes given block as a fallback " do
             Chanko::Loader.load("sensitive_inactive_unit")
-            controller.invoke(:sensitive_inactive_unit, :outer) do
-              invoke(:sensitive_inactive_unit, :inner)
-            end.should eq nil
+            expect(controller.invoke(:sensitive_inactive_unit, :outer) { invoke(:sensitive_inactive_unit, :inner) }).to eq(nil)
           end
         end
       end
