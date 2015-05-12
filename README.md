@@ -1,4 +1,4 @@
-# Chanko [![Build Status](https://travis-ci.org/cookpad/chanko.png)](https://travis-ci.org/cookpad/chanko) [![Code Climate](https://codeclimate.com/github/cookpad/chanko.png)](https://codeclimate.com/github/cookpad/chanko) [![Coverage Status](https://coveralls.io/repos/cookpad/chanko/badge.png?branch=master)](https://coveralls.io/r/cookpad/chanko)
+# Chanko [![Build Status](https://travis-ci.org/cookpad/chanko.svg?branch=master)](https://travis-ci.org/cookpad/chanko) [![Code Climate](https://codeclimate.com/github/cookpad/chanko/badges/gpa.svg)](https://codeclimate.com/github/cookpad/chanko) [![Coverage Status](https://coveralls.io/repos/cookpad/chanko/badge.svg?branch=master)](https://coveralls.io/r/cookpad/chanko?branch=master)
 
 http://cookpad.github.io/chanko/
 
