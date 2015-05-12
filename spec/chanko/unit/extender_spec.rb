@@ -13,7 +13,7 @@ module Chanko
             "test"
           end
         end
-        ExampleClass.new.test.should == "test"
+        expect(ExampleClass.new.test).to eq("test")
       end
 
       it "extends class methods" do
@@ -24,7 +24,7 @@ module Chanko
             end
           end
         end
-        ExampleClass.test.should == "test"
+        expect(ExampleClass.test).to eq("test")
       end
 
       it "extends instance methods with prefix" do
@@ -33,7 +33,7 @@ module Chanko
             "test"
           end
         end
-        ExampleClass.new.__prefix_test.should == "test"
+        expect(ExampleClass.new.__prefix_test).to eq("test")
       end
     end
   end

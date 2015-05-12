@@ -19,7 +19,7 @@ module Chanko
             "test"
           end
         end
-        view.__example_unit_test.should == "test"
+        expect(view.__example_unit_test).to eq("test")
       end
     end
   end

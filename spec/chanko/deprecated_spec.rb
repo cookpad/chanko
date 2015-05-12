@@ -12,7 +12,7 @@ module Chanko
       context "with option arguments" do
         it "prints warning message on standard error output" do
           ActiveIf.new(foo: "bar")
-          $stderr.string.should =~ /\Aoptions in ActiveIf#new are deprecated and are never used at #{__FILE__}/
+          expect($stderr.string).to match(/\Aoptions in ActiveIf#new are deprecated and are never used at #{__FILE__}/)
         end
       end
     end
@@ -20,7 +20,7 @@ module Chanko
     describe "#options" do
       it "prints warning message on standard error output" do
         ActiveIf.new.options
-        $stderr.string.should =~ /\AActiveIf#options is deprecated and is never used at #{__FILE__}/
+        expect($stderr.string).to match(/\AActiveIf#options is deprecated and is never used at #{__FILE__}/)
       end
     end
   end

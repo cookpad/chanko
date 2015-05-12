@@ -14,14 +14,14 @@ module Chanko
     describe "#enable_unit" do
       it "forces to enable specified unit" do
         enable_unit(:inactive_unit)
-        view.invoke(:inactive_unit, :inactive, :type => :plain).should == "inactive"
+        expect(view.invoke(:inactive_unit, :inactive, :type => :plain)).to eq("inactive")
       end
     end
 
     describe "#disable_unit" do
       it "forces to disable specified unit" do
         disable_unit(:example_unit)
-        view.invoke(:example_unit, :test).should == nil
+        expect(view.invoke(:example_unit, :test)).to eq(nil)
       end
     end
   end

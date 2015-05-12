@@ -53,7 +53,7 @@ module Chanko
       context "when given Exception" do
         it "parses and logs it" do
           described_class.debug(exception)
-          log.should == lines.join("\n")
+          expect(log).to eq(lines.join("\n"))
         end
 
         context "when Config.backtrace_limit is configured" do
@@ -63,7 +63,7 @@ module Chanko
 
           it "prints backtrace up to configured depth" do
             described_class.debug(exception)
-            log.should == lines[0..5].join("\n")
+            expect(log).to eq(lines[0..5].join("\n"))
           end
         end
       end
@@ -71,7 +71,7 @@ module Chanko
       context "when given String" do
         it "adds prefix" do
           described_class.debug("test")
-          log.should == "  [Chanko] test"
+          expect(log).to eq("  [Chanko] test")
         end
       end
     end
@@ -83,13 +83,13 @@ module Chanko
 
       it "logs nothing" do
         described_class.debug("test")
-        log.should == ""
+        expect(log).to eq("")
       end
     end
 
     context "when Rails.logger is nil" do
       before do
-        Rails.stub(:logger)
+        allow(Rails).to receive(:logger)
       end
 
       it "does notihng" do
