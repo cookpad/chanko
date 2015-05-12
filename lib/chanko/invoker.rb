@@ -40,18 +40,6 @@ module Chanko
       end
     end
 
-    def __current_run_default_depth
-      @__run_default_depth ||= 0
-    end
-
-    def __increment_run_default_depth
-      @__run_default_depth = __current_run_default_depth + 1
-    end
-
-    def __decrement_run_default_depth
-      @__run_default_depth = __current_run_default_depth - 1
-    end
-
     def __find_unit_local(method_name)
       __current_unit_locals.has_key?(method_name)
     end
@@ -61,7 +49,7 @@ module Chanko
     end
 
     def __current_unit_locals
-      __unit_locals_stack[-1 - __current_run_default_depth] || {}
+      __unit_locals_stack.last || {}
     end
 
     def __unit_locals_stack
@@ -85,7 +73,7 @@ module Chanko
     end
 
     def __default_block
-      __defaults_stack[-1 - __current_run_default_depth]
+      __defaults_stack.last
     end
 
     def __has_default_block?
@@ -95,14 +83,15 @@ module Chanko
     def __invoke_default_block
       current_default_block = __default_block
       begin
-        __increment_run_default_depth
-        if view?
-          capture(&current_default_block)
-        else
-          instance_exec(&current_default_block)
+        __without_default_stack do
+          __without_locals_stack do
+            if view?
+              capture(&current_default_block)
+            else
+              instance_exec(&current_default_block)
+            end
+          end
         end
-      ensure
-        __decrement_run_default_depth
       end
     end
 
@@ -118,6 +107,20 @@ module Chanko
       yield
     ensure
       __unit_locals_stack.pop
+    end
+
+    def __without_default_stack
+      default = __defaults_stack.pop
+      yield
+    ensure
+      __defaults_stack << default
+    end
+
+    def __without_locals_stack
+      locals = __unit_locals_stack.pop
+      yield
+    ensure
+      __unit_locals_stack << locals
     end
   end
 end
