@@ -134,7 +134,7 @@ end
 ### models
 In models block, you can expand model features by `expand` method.
 The expanded methods are available via unit proxy like `User.unit.active`,
-and `User.find(params[:id]).unit.active?`, and so on.
+`User.find(params[:id]).unit.active?` or `User.unit.gc_all_soft_deleted_users`.
 
 ```ruby
 models do
@@ -143,6 +143,12 @@ models do
 
     def active?
       deleted_at.nil?
+    end
+
+    class_methods do
+      def gc_all_soft_deleted_users
+        where.not(deleted_at: nil).delete_all
+      end
     end
   end
 end
