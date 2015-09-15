@@ -26,6 +26,12 @@ module EntryDeletion
       def soft_delete
         update_attributes(:deleted_at => Time.now)
       end
+
+      class_methods do
+        def gc_all_soft_deleted_users
+          where.not(deleted_at: nil).delete_all
+        end
+      end
     end
   end
 
