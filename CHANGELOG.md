@@ -1,3 +1,6 @@
+## 2.0.8
+* Improve documentation about expanding class methods.
+
 ## 2.0.7
 * Fix run_default again. 2.0.6 still has run_default bug. Use unstack block instad of depth counting.
   
