@@ -21,7 +21,7 @@ module Chanko
 
       it "raises up error without any logging" do
         expect(Logger).not_to receive(:debug)
-        expect { described_class.handle(error, insensitive_unit) }.to raise_error
+        expect { described_class.handle(error, insensitive_unit) }.to raise_error(error)
       end
     end
 
@@ -47,13 +47,13 @@ module Chanko
       end
 
       it "raises up error" do
-        expect { described_class.handle(error, insensitive_unit) }.to raise_error
+        expect { described_class.handle(error, insensitive_unit) }.to raise_error(error)
       end
     end
 
     context "when unit.raise_error is configured" do
       it "raises up error" do
-        expect { described_class.handle(error, sensitive_unit) }.to raise_error
+        expect { described_class.handle(error, sensitive_unit) }.to raise_error(error)
       end
     end
   end
