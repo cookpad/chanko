@@ -5,7 +5,7 @@ require "chanko/version"
 Gem::Specification.new do |gem|
   gem.name          = "chanko"
   gem.version       = Chanko::VERSION
-  gem.authors       = ["Ryo Nakamura"]
+  gem.authors       = ["MORITA shingo", "Ryo Nakamura"]
   gem.email         = ["tech@cookpad.com"]
   gem.description   = "Chanko is a Rails extension tool"
   gem.summary       = "Rails extension tool"
