@@ -12,7 +12,7 @@ it will be automatically hidden and fallback to its normal behavior.
 
 
 ## Requirements
-* Ruby >= 1.8.7
+* Ruby >= 2.1.0
 * Rails >= 3.0.10 (and Rails4!)
 
 
