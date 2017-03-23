@@ -8,7 +8,7 @@ module Chanko
       def inherited(base)
         if Config.auto_reload && base.name == "ApplicationController"
           base.class_eval do
-            prepend_before_filter do
+            prepend_before_action do
               Chanko::Loader.cache.clear
             end
           end
