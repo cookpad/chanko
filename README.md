@@ -13,7 +13,7 @@ it will be automatically hidden and fallback to its normal behavior.
 
 ## Requirements
 * Ruby >= 2.1.0
-* Rails >= 3.0.10 (and Rails4!)
+* Rails >= 4.0.0
 
 
 ## Usage
