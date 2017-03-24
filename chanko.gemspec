@@ -17,7 +17,7 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.required_ruby_version = '>= 2.1.0'
 
-  gem.add_dependency "rails", ">= 3.0.10"
+  gem.add_dependency "rails", ">= 4.0.0"
   gem.add_development_dependency "coffee-rails", ">= 3.0.10"
   gem.add_development_dependency "coveralls"
   gem.add_development_dependency "jquery-rails"
