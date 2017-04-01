@@ -76,7 +76,7 @@ module Chanko
 
       def find_function(identifier, label)
         scope     = ScopeFinder.find(identifier)
-        target    = scope.ancestors.find {|klass| scopes[klass] }
+        target    = scopes.keys.find {|klass| scope <= klass }
         functions = scopes[target]
         functions[label] if functions
       end
