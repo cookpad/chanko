@@ -1,6 +1,7 @@
-## (Unreleased)
-* Drop support of ruby `1.9.x` and `2.0.0`.
-* Drop support of rails `3.x`.
+## 2.1.0
+* Support Rails 5.
+* Drop support of ruby 1.9.x and 2.0.0.
+* Drop support of Rails 3.x.
 
 ## 2.0.8
 * Improve documentation about expanding class methods.
