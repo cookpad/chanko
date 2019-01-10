@@ -1,3 +1,7 @@
+## 2.1.1
+* Delete circular symlink in gem package
+  * No changes in library code
+
 ## 2.1.0
 * Support Rails 5.
 * Drop support of ruby 1.9.x and 2.0.0.
