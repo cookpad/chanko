@@ -14,6 +14,12 @@ module Chanko
       end
     end
 
+    initializer("chanko.support_zeitwerk") do |app|
+      if Rails.autoloaders.zeitwerk_enabled?
+        Rails.autoloaders.main.collapse(Rails.root.join(Chanko::Config.units_directory_path, '*'))
+      end
+    end
+
     initializer("chanko.prevent_units_directory_from_eager_loading", before: :set_autoload_paths) do |app|
       if Chanko::Config.eager_load
         Rails.configuration.eager_load_paths.delete(Rails.root.join(Chanko::Config.units_directory_path).to_s)
