@@ -48,8 +48,10 @@ module Chanko
     end
 
     def add_autoload_path
-      ActiveSupport::Dependencies.autoload_paths << autoload_path
-      ActiveSupport::Dependencies.autoload_paths.uniq!
+      unless Rails.autoloaders.zeitwerk_enabled?
+        ActiveSupport::Dependencies.autoload_paths << autoload_path
+        ActiveSupport::Dependencies.autoload_paths.uniq!
+      end
     end
 
     def autoload_path
