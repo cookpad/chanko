@@ -33,7 +33,8 @@ module Chanko
           active_without_activations?(*args)
         end
       end
-      alias_method_chain :active?, :activations
+      alias_method :active_without_activations?, :active?
+      alias_method :active?, :active_with_activations?
     end
   end
 end
