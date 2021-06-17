@@ -48,7 +48,7 @@ module Chanko
     end
 
     def add_autoload_path
-      unless Rails.autoloaders.zeitwerk_enabled?
+      unless Rails.respond_to?(:autoloaders) && Rails.autoloaders.zeitwerk_enabled?
         ActiveSupport::Dependencies.autoload_paths << autoload_path
         ActiveSupport::Dependencies.autoload_paths.uniq!
       end

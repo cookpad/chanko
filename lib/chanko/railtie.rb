@@ -15,7 +15,7 @@ module Chanko
     end
 
     initializer("chanko.support_zeitwerk") do |app|
-      if Rails.autoloaders.zeitwerk_enabled?
+      if Rails.respond_to?(:autoloaders) && Rails.autoloaders.zeitwerk_enabled?
         Rails.autoloaders.main.collapse(Rails.root.join(Chanko::Config.units_directory_path, '*'))
       end
     end
