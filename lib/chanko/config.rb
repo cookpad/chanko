@@ -24,7 +24,7 @@ module Chanko
         self.propagated_errors    = []
         self.proxy_method_name    = :unit
         self.raise_error          = Rails.env.development?
-        self.resolver             = ActionView::OptimizedFileSystemResolver
+        self.resolver             = Gem::Version.new(Rails::VERSION::STRING) >= Gem::Version.new('7') ? ActionView::FileSystemResolver : ActionView::OptimizedFileSystemResolver
         self.units_directory_path = "app/units"
       end
     end
