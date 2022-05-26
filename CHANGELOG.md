@@ -1,3 +1,6 @@
+## Unreleased
+* Support Rails 7.0.
+
 ## 2.2.0
 * Drop support for old Ruby versions.
 * Support Rails 5.1.
