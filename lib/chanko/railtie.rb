@@ -1,6 +1,6 @@
 module Chanko
   class Railtie < Rails::Railtie
-    initializer "chanko" do |app|
+    initializer "chanko.include", before: "eager_load!" do |app|
       ActiveSupport.on_load :action_view do
         ::ActionView::Base.send(:include, Helper, Invoker, UnitProxyProvider)
       end
@@ -14,20 +14,20 @@ module Chanko
       end
     end
 
-    initializer("chanko.support_zeitwerk") do |app|
+    initializer("chanko.support_zeitwerk", before: "chanko.include") do |app|
       if Rails.respond_to?(:autoloaders) && Rails.autoloaders.zeitwerk_enabled?
-        Rails.autoloaders.main.collapse(Rails.root.join(Chanko::Config.units_directory_path, '*'))
+        Chanko::Loader::ZeitwerkLoader.initialize_zeitwerk_settings
       end
     end
 
-    initializer("chanko.prevent_units_directory_from_eager_loading", before: :set_autoload_paths) do |app|
-      if Chanko::Config.eager_load
-        Rails.configuration.eager_load_paths.delete(Rails.root.join(Chanko::Config.units_directory_path).to_s)
-      end
+    initializer("chanko.prepare_eager_load", before: :set_autoload_paths) do |app|
+      Chanko::Loader.prepare_eager_load
     end
 
-    initializer("chanko.eager_load_units") do |app|
-      if Chanko::Config.eager_load
+    initializer("chanko.eager_load_units", after: :set_autoload_paths) do |app|
+      if Rails.configuration.eager_load
+        # This is why we need handmade eager-loading
+        # https://github.com/cookpad/chanko/pull/38
         Chanko::Loader.eager_load_units!
       end
     end
