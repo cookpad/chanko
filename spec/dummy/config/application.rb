@@ -48,6 +48,7 @@ module Dummy
 
     # Version of your assets, change this if you want to expire all your assets
     config.assets.version = '1.0'
+    config.assets.quiet = true if ::Rails::VERSION::MAJOR >= 5
   end
 end
 
