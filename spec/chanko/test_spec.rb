@@ -3,12 +3,22 @@ require "chanko/test"
 
 module Chanko
   describe Test do
+    def rails5_action_view_instance
+      Class.new(ActionView::Base).new
+    end
+
+    def rails6_action_view_instance
+      klass = Class.new(ActionView::Base.with_empty_template_cache)
+      klass.with_view_paths(nil, {}, nil)
+    end
+
     let(:view) do
-      Class.new(ActionView::Base) do
-        include Chanko::Invoker
-        include Chanko::Helper
-        include Chanko::UnitProxyProvider
-      end.new
+      case Rails::VERSION::MAJOR
+      when 5
+        rails5_action_view_instance
+      when 6
+        rails6_action_view_instance
+      end
     end
 
     describe "#enable_unit" do

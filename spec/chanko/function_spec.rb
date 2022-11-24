@@ -6,10 +6,8 @@ module Chanko
       Loader.load(:example_unit)
     end
 
-    let(:context) do
-      Class.new(ActionView::Base) do
-        include Chanko::Invoker
-
+    def rails5_action_view_instance
+      klass = Class.new(ActionView::Base) do
         def current_unit
           units.last
         end
@@ -21,7 +19,35 @@ module Chanko
         def path
           view_paths.first.to_s
         end
-      end.new
+      end
+      klass.new
+    end
+
+    def rails6_action_view_instance
+      klass = Class.new(ActionView::Base.with_empty_template_cache) do
+        def current_unit
+          units.last
+        end
+
+        def units
+          @units ||= []
+        end
+
+        def path
+          view_paths.first.to_s
+        end
+      end
+
+      klass.with_view_paths([], {}, nil)
+    end
+
+    let(:context) do
+      case Rails::VERSION::MAJOR
+      when 5
+        rails5_action_view_instance
+      when 6
+        rails6_action_view_instance
+      end
     end
 
     let(:context_without_view_paths) do
