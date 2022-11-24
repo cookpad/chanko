@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+set -euo pipefail
+IFS=$'\n\t'
+set -vx
+
+for path in gemfiles/Gemfile_*.rb; do
+  BUNDLE_GEMFILE="${path}" bundle install
+done
