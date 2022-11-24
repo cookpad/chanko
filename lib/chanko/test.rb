@@ -8,6 +8,10 @@ module Chanko
       def included(base)
         base.send :include, UnitProxyProvider
       end
+
+      def logger
+        @logger = ::Logger.new(STDOUT)
+      end
     end
 
     def enable_unit(unit_name)
