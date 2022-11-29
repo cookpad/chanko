@@ -54,7 +54,7 @@ module Dummy
         Chanko::Test.logger.info("Autoloader: zeitwerk")
         config.autoloader = :zeitwerk
       else
-        Chanko::Test.logger.info("Autoloader: zeitwerk ")
+        Chanko::Test.logger.info("Autoloader: classic")
         config.autoloader = :classic
       end
     end
