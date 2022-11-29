@@ -1,6 +1,6 @@
 module Chanko
   class Railtie < Rails::Railtie
-    initializer "chanko.include", before: "eager_load!" do |app|
+    initializer "chanko.include", before: :eager_load! do |app|
       ActiveSupport.on_load :action_view do
         ::ActionView::Base.send(:include, Helper, Invoker, UnitProxyProvider)
       end
