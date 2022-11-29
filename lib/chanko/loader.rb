@@ -66,7 +66,7 @@ module Chanko
 
       def self.eager_load_units!
         Pathname.glob("#{Chanko::Config.units_directory_path}/*").select(&:directory?).each do |path|
-          Chanko::Loader::ClassicLoader.load(path.basename.to_sym)
+          Chanko::Loader::ClassicLoader.load(path.basename.to_s.to_sym)
         end
       end
 
