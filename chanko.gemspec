@@ -18,9 +18,11 @@ Gem::Specification.new do |gem|
   gem.required_ruby_version = '>= 2.6.0'
 
   gem.add_dependency "rails", ">= 4.0.0"
+  gem.add_development_dependency "byebug"
   gem.add_development_dependency "coffee-rails", ">= 3.0.10"
   gem.add_development_dependency "jquery-rails"
   gem.add_development_dependency "pry"
+  gem.add_development_dependency "pry-rails"
   gem.add_development_dependency "rspec-rails", ">= 3.0.0"
   gem.add_development_dependency "sass-rails", ">= 3.0.10"
   gem.add_development_dependency "simplecov"
@@ -29,6 +31,4 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency "sqlite3"
   gem.add_development_dependency "thin"
   gem.add_development_dependency "uglifier"
-  gem.add_development_dependency "byebug"
-  gem.add_development_dependency "pry-rails"
 end
