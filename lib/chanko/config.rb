@@ -30,14 +30,7 @@ module Chanko
       end
 
       def units_directory_path
-        @resolved_units_directory_path ||= begin
-          pathname = Pathname(@units_directory_path)
-          if pathname.absolute?
-            @units_directory_path
-          else
-            Rails.root.join(@units_directory_path).to_s
-          end
-        end
+        @resolved_units_directory_path ||= Rails.root.join(@units_directory_path).to_s
       end
     end
 
