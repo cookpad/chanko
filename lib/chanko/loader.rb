@@ -1,16 +1,30 @@
 require "pathname"
 module Chanko
   module Loader
+    class MissingEagarLoadEsettingError < StandardError; end
+
     class << self
-      delegate :load, :cache, :prepare_eager_load, :eager_load_units!, to: "loader"
+      delegate :load, :cache, :eager_load_units!, to: "loader"
     end
 
     def self.loader
-     zeitwerk? ? ZeitwerkLoader : ClassicLoader
+      zeitwerk? ? ZeitwerkLoader : ClassicLoader
     end
 
     def self.zeitwerk?
       Rails.respond_to?(:autoloaders) && Rails.autoloaders.zeitwerk_enabled?
+    end
+
+    def self.classic?
+      !zeitwerk?
+    end
+
+    def self.prepare_eager_load(mode: )
+      if mode == :zeitwerk && zeitwerk?
+        self.loader.prepare_eager_load
+      elsif mode == :classic && classic?
+        self.loader.prepare_eager_load
+      end
     end
 
     class ZeitwerkLoader
@@ -71,6 +85,8 @@ module Chanko
       end
 
       def self.prepare_eager_load
+        raise MissingEagarLoadEsettingError if Rails.configuration.eager_load.nil?
+
         if Rails.configuration.eager_load
           ruleout_unit_files_from_rails_eager_loading
         end
