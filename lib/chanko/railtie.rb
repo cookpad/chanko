@@ -14,11 +14,6 @@ module Chanko
       end
     end
 
-    initializer("chanko.support_zeitwerk", before: "chanko.include") do |app|
-      if Rails.respond_to?(:autoloaders) && Rails.autoloaders.zeitwerk_enabled?
-        Chanko::Loader::ZeitwerkLoader.initialize_zeitwerk_settings
-      end
-    end
 
     initializer("chanko.zeitwerk.prepare_eager_load", before: :set_autoload_paths) do |app|
       # zeitwerk freezes autoload_paths after :set_autoload_paths.

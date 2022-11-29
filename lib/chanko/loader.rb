@@ -43,18 +43,16 @@ module Chanko
 
       def self.prepare_eager_load
         add_unit_directory_to_eager_load_paths
+        Rails.autoloaders.main.collapse(Chanko::Config.units_directory_path + '/*')
+        Rails.autoloaders.main.ignore(Chanko::Config.units_directory_path + '/*/spec*')
       end
 
       def self.add_unit_directory_to_eager_load_paths
         path = Chanko::Config.units_directory_path
+
         unless Rails.configuration.eager_load_paths.include?(path)
           Rails.configuration.eager_load_paths << path
         end
-      end
-
-      def self.initialize_zeitwerk_settings
-        Rails.autoloaders.main.collapse(Chanko::Config.units_directory_path + '/*')
-        Rails.autoloaders.main.ignore(Chanko::Config.units_directory_path + '/*/spec*')
       end
 
       def initialize(name)
