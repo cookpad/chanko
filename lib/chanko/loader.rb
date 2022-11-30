@@ -1,7 +1,7 @@
 require "pathname"
 module Chanko
   module Loader
-    class MissingEagarLoadEsettingError < StandardError; end
+    class MissingEagarLoadSettingError < StandardError; end
 
     class << self
       delegate :load, :cache, :eager_load_units!, to: "loader"
@@ -83,7 +83,7 @@ module Chanko
       end
 
       def self.prepare_eager_load
-        raise MissingEagarLoadEsettingError if Rails.configuration.eager_load.nil?
+        raise MissingEagarLoadSettingError if Rails.configuration.eager_load.nil?
 
         if Rails.configuration.eager_load
           ruleout_unit_files_from_rails_eager_loading
