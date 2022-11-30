@@ -3,19 +3,11 @@ require "spec_helper"
 module Chanko
   describe Invoker do
     let(:view) do
-      Class.new(ActionView::Base) do
-        include Chanko::Invoker
-        include Chanko::Helper
-        include Chanko::UnitProxyProvider
-      end.new
+      controller.helpers
     end
 
     let(:controller) do
-      Class.new(ActionController::Base) do
-        include Chanko::Invoker
-        include Chanko::Helper
-        include Chanko::UnitProxyProvider
-      end.new
+      Class.new(ActionController::Base).new
     end
 
     describe "#invoke" do

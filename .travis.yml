@@ -1,8 +1,0 @@
-rvm:
-  - 2.6
-  - 2.7
-  - 3.0
-branches:
-  only:
-    - master
-sudo: false

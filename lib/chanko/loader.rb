@@ -1,73 +1,148 @@
 require "pathname"
-
 module Chanko
-  class Loader
+  module Loader
+    class MissingEagarLoadSettingError < StandardError; end
+
     class << self
-      def load(unit_name)
-        new(unit_name).load
+      delegate :load, :cache, :eager_load_units!, to: "loader"
+    end
+
+    def self.loader
+      zeitwerk? ? ZeitwerkLoader : ClassicLoader
+    end
+
+    def self.zeitwerk?
+      Rails.respond_to?(:autoloaders) && Rails.autoloaders.zeitwerk_enabled?
+    end
+
+    def self.classic?
+      !zeitwerk?
+    end
+
+    def self.prepare_eager_load(mode: )
+      if mode == :zeitwerk && zeitwerk?
+        self.loader.prepare_eager_load
+      elsif mode == :classic && classic?
+        self.loader.prepare_eager_load
+      end
+    end
+
+    class ZeitwerkLoader
+      def self.load(name)
+        self.new(name).load
       end
 
-      def cache
+      def self.cache
+        # backward compatibility
+        { }
+      end
+
+      def self.eager_load_units!
+        # Zeitwerk load chanko units as default
+      end
+
+      def self.prepare_eager_load
+        add_unit_directory_to_eager_load_paths
+        Rails.autoloaders.main.collapse(Chanko::Config.units_directory_path + '/*')
+        Rails.autoloaders.main.ignore(Chanko::Config.units_directory_path + '/*/spec*')
+      end
+
+      def self.add_unit_directory_to_eager_load_paths
+        path = Chanko::Config.units_directory_path
+
+        unless Rails.configuration.eager_load_paths.include?(path)
+          Rails.configuration.eager_load_paths << path
+        end
+      end
+
+      def initialize(name)
+        @name = name
+      end
+
+      def load
+        constantize
+      rescue NameError
+        # Chanko never raise error even if the constant fails to reference
+        nil
+      end
+
+      def constantize
+        @name.to_s.camelize.constantize
+      end
+    end
+
+    class ClassicLoader
+      def self.cache
         @cache ||= {}
       end
 
-      def eager_load_units!
-        Pathname.glob("#{Rails.root}/#{Config.units_directory_path}/*").select(&:directory?).each do |path|
-          load(path.to_s.split("/").last.to_sym) rescue nil
+      def self.eager_load_units!
+        Pathname.glob("#{Chanko::Config.units_directory_path}/*").select(&:directory?).each do |path|
+          Chanko::Loader::ClassicLoader.load(path.basename.to_s.to_sym)
         end
       end
-    end
 
-    def initialize(name)
-      @name = name
-    end
+      def self.prepare_eager_load
+        raise MissingEagarLoadSettingError if Rails.configuration.eager_load.nil?
 
-    def load
-      if loaded?
-        load_from_cache
-      else
-        load_from_file
+        if Rails.configuration.eager_load
+          ruleout_unit_files_from_rails_eager_loading
+        end
       end
-    end
 
-    def loaded?
-      cache[@name] != nil
-    end
+      def self.ruleout_unit_files_from_rails_eager_loading
+        Rails.configuration.eager_load_paths.delete(Chanko::Config.units_directory_path)
+      end
 
-    def load_from_cache
-      cache[@name]
-    end
+      def self.load(name)
+        self.new(name).load
+      end
 
-    def load_from_file
-      add_autoload_path
-      cache[@name] = constantize
-    rescue Exception => exception
-      ExceptionHandler.handle(exception)
-      cache[@name] = false
-      nil
-    end
+      def initialize(name)
+        @name = name
+      end
 
-    def add_autoload_path
-      unless Rails.respond_to?(:autoloaders) && Rails.autoloaders.zeitwerk_enabled?
+      def load
+        if loaded?
+          load_from_cache
+        else
+          load_from_file
+        end
+      end
+
+      def loaded?
+        cache[@name] != nil
+      end
+
+      def load_from_cache
+        cache[@name]
+      end
+
+      def load_from_file
+        add_autoload_path
+        cache[@name] = constantize
+      rescue Exception => exception
+        ExceptionHandler.handle(exception)
+        cache[@name] = false
+        nil
+      end
+
+      def add_autoload_path
         ActiveSupport::Dependencies.autoload_paths << autoload_path
         ActiveSupport::Dependencies.autoload_paths.uniq!
       end
-    end
 
-    def autoload_path
-      Rails.root.join("#{directory_path}/#@name").to_s
-    end
+      def autoload_path
+        "#{Config.units_directory_path }/#{@name}"
+      end
 
-    def directory_path
-      Config.units_directory_path
-    end
+      def constantize
+        @name.to_s.camelize.constantize
+      end
 
-    def constantize
-      @name.to_s.camelize.constantize
-    end
-
-    def cache
-      self.class.cache
+      def cache
+        self.class.cache
+      end
     end
   end
 end
