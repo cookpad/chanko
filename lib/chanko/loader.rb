@@ -63,7 +63,7 @@ module Chanko
         constantize
       rescue NameError
         # Chanko never raise error even if the constant fails to reference
-        nil
+        false
       end
 
       def constantize
@@ -125,7 +125,7 @@ module Chanko
       rescue Exception => exception
         ExceptionHandler.handle(exception)
         self.class.save_to_cache(@name, false)
-        nil
+        false
       end
 
       def load_from_cache
