@@ -98,33 +98,38 @@ module Chanko
         self.new(name).load
       end
 
+      def self.load_from_cache(name)
+        self.cache[name]
+      end
+
+      def self.save_to_cache(name, unit)
+        self.cache[name] = unit
+      end
+
       def initialize(name)
         @name = name
       end
 
       def load
-        if loaded?
-          load_from_cache
-        else
-          load_from_file
+        load_from_cache.then do |unit|
+          next unit unless unit.nil?
+          load_from_file_and_store_to_cache
         end
       end
 
-      def loaded?
-        cache[@name] != nil
+      def load_from_file_and_store_to_cache
+        add_autoload_path
+        constantize.tap do |unit|
+          self.class.save_to_cache(@name, unit)
+        end
+      rescue Exception => exception
+        ExceptionHandler.handle(exception)
+        self.class.save_to_cache(@name, false)
+        nil
       end
 
       def load_from_cache
-        cache[@name]
-      end
-
-      def load_from_file
-        add_autoload_path
-        cache[@name] = constantize
-      rescue Exception => exception
-        ExceptionHandler.handle(exception)
-        cache[@name] = false
-        nil
+        self.class.load_from_cache(@name)
       end
 
       def add_autoload_path
@@ -138,10 +143,6 @@ module Chanko
 
       def constantize
         @name.to_s.camelize.constantize
-      end
-
-      def cache
-        self.class.cache
       end
     end
   end

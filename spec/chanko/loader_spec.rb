@@ -21,7 +21,8 @@ module Chanko
 
       context "when loader has ever loaded specified unit" do
         it "load unit from cache", classic: true do
-          expect_any_instance_of(Chanko::Loader::ClassicLoader).to receive(:load_from_file).and_call_original
+          expect(Chanko::Loader::ClassicLoader).to receive(:load_from_cache).twice.and_call_original
+          expect(Chanko::Loader::ClassicLoader).to receive(:save_to_cache).with(anything, ExampleUnit).and_call_original
           Chanko::Loader.load(:example_unit)
           Chanko::Loader.load(:example_unit)
         end
@@ -33,7 +34,8 @@ module Chanko
         end
 
         it "load unit from cache", classic: true do
-          expect_any_instance_of(Chanko::Loader::ClassicLoader).to receive(:load_from_file).and_call_original
+          expect(Chanko::Loader::ClassicLoader).to receive(:load_from_cache).twice.and_call_original
+          expect(Chanko::Loader::ClassicLoader).to receive(:save_to_cache).with(anything, false).and_call_original
           Chanko::Loader.load(:non_existent_unit)
           Chanko::Loader.load(:non_existent_unit)
         end
