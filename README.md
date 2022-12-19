@@ -12,8 +12,8 @@ it will be automatically hidden and fallback to its normal behavior.
 
 
 ## Requirements
-* Ruby >= 2.1.0
-* Rails >= 4.0.0
+* Ruby >= 2.6.0
+* Rails >= 5.0.0
 
 
 ## Usage
