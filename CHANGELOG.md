@@ -1,5 +1,12 @@
 ## Unreleased
 
+## 2.3.0
+* Support Rails 5.0, 5.1, 5,2, 6.0, 6,1.
+* Drop support of Rails 4.x.
+* Rails7 not supported yet.
+* Chanko::Config.eager_load has been replaced by a direct reference to Rails.configuration.eager_load.
+* Fix cache resolver error on Rails 6.
+
 ## 2.2.1
 * Support Rails 7.0.
 
