@@ -1,4 +1,12 @@
+require "chanko/resolver/no_cache_file_system_resolver"
+
 module Chanko
+  class NoCacheFileSystemResolver < ActionView::FileSystemResolver
+    def query(path, details, formats, locals, cache:)
+      super(path, details, formats, locals, cache: false)
+    end
+  end
+
   module Config
     class << self
       attr_accessor(
@@ -21,7 +29,16 @@ module Chanko
         self.propagated_errors    = []
         self.proxy_method_name    = :unit
         self.raise_error          = Rails.env.development?
-        self.resolver             = Gem::Version.new(Rails::VERSION::STRING) >= Gem::Version.new('7') ? ActionView::FileSystemResolver : ActionView::OptimizedFileSystemResolver
+
+        if Gem::Version.new(Rails::VERSION::STRING) >= Gem::Version.new('7')
+          self.resolver = ActionView::FileSystemResolver
+        else
+          if Rails.env.development?
+            self.resolver = Chanko::Resolver::NoCacheFileSystemResolver
+          else
+            self.resolver = ActionView::OptimizedFileSystemResolver
+          end
+        end
         self.units_directory_path = "app/units"
       end
 
