@@ -23,7 +23,7 @@ module Chanko
         self.propagated_errors    = []
         self.proxy_method_name    = :unit
         self.raise_error          = Rails.env.development?
-        self.resolver = file_resolver_for_using_version_of_rails
+        self.resolver = resolver_for_using_rails_and_env
         self.units_directory_path = "app/units"
       end
 
@@ -35,12 +35,12 @@ module Chanko
         @resolved_units_directory_path ||= Rails.root.join(@units_directory_path).to_s
       end
 
-      def file_resolver_for_using_version_of_rails
+      def resolver_for_using_rails_and_env
         return ActionView::FileSystemResolver if Rails::VERSION::MAJOR >= 7
         return Chanko::Resolver::NoCacheFileSystemResolver if Rails.env.development?
         return ActionView::OptimizedFileSystemResolver
       end
-      private :file_resolver_for_using_version_of_rails
+      private :resolver_for_using_rails_and_env
     end
 
     reset
