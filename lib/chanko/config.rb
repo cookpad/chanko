@@ -1,3 +1,5 @@
+require 'chanko/resolver/no_cache_file_system_resolver'
+
 module Chanko
   module Config
     class << self
@@ -21,7 +23,7 @@ module Chanko
         self.propagated_errors    = []
         self.proxy_method_name    = :unit
         self.raise_error          = Rails.env.development?
-        self.resolver             = Gem::Version.new(Rails::VERSION::STRING) >= Gem::Version.new('7') ? ActionView::FileSystemResolver : ActionView::OptimizedFileSystemResolver
+        self.resolver = resolver_for_using_rails_and_env
         self.units_directory_path = "app/units"
       end
 
@@ -32,6 +34,13 @@ module Chanko
       def units_directory_path
         @resolved_units_directory_path ||= Rails.root.join(@units_directory_path).to_s
       end
+
+      def resolver_for_using_rails_and_env
+        return ActionView::FileSystemResolver if Rails::VERSION::MAJOR >= 7
+        return Chanko::Resolver::NoCacheFileSystemResolver if Rails.env.development?
+        return ActionView::OptimizedFileSystemResolver
+      end
+      private :resolver_for_using_rails_and_env
     end
 
     reset
