@@ -1,8 +1,8 @@
 PATH
   remote: ..
   specs:
-    chanko (2.2.1)
-      rails (>= 4.0.0)
+    chanko (2.3.0)
+      rails (>= 5.0.0)
 
 GEM
   remote: https://rubygems.org/
