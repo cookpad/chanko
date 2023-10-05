@@ -46,11 +46,9 @@ module Dummy
     # like if you have constraints or database-specific column types
     # config.active_record.schema_format = :sql
 
-    # In Rails 7, Sprockets has become optional.
-    if config.respond_to?("assets")
-      config.assets.version = '1.0'
-      config.assets.quiet = true if ::Rails::VERSION::MAJOR >= 5
-    end
+    # Version of your assets, change this if you want to expire all your assets
+    config.assets.version = '1.0'
+    config.assets.quiet = true if ::Rails::VERSION::MAJOR >= 5
     if Rails::VERSION::MAJOR >= 6
       if ENV['AUTOLOADER'] == 'zeitwerk'
         Chanko::Test.logger.info("Autoloader: zeitwerk")

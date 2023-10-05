@@ -23,7 +23,7 @@ module Chanko
       klass.new
     end
 
-    def rails_action_view_instance
+    def rails6_action_view_instance
       klass = Class.new(ActionView::Base.with_empty_template_cache) do
         def current_unit
           units.last
@@ -45,8 +45,8 @@ module Chanko
       case Rails::VERSION::MAJOR
       when 5
         rails5_action_view_instance
-      else
-        rails_action_view_instance
+      when 6
+        rails6_action_view_instance
       end
     end
 
