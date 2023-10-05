@@ -8,7 +8,7 @@ spec/dummy/.sass-cache
 .bundle
 .config
 .yardoc
-Gemfile.lock
+gemfiles/Gemfile_rails_*.rb.lock
 InstalledFiles
 _yardoc
 coverage
