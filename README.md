@@ -63,11 +63,6 @@ end
 = invoke(:example_unit, :render_example)
 ```
 
-```
--# app/units/example_unit/views/_example.html.slim
-= foo
-```
-
 ## Unit
 You can see [the real example of an unit module file](https://github.com/cookpad/chanko/blob/master/spec/dummy/app/units/entry_deletion/entry_deletion.rb).
 
@@ -120,16 +115,7 @@ end
 ```
 
 ### render
-The view path app/units/example_unit/views is added into view_paths in invoking.
-So you can render app/units/example_unit/views/_example.html.slim in invoking.
-
-```ruby
-scope(:view) do
-  function(:render_example) do
-    render "/example", :foo => hello("world")
-  end
-end
-```
+In its previous version, Chanko added the views path of the unit to Rails' view file search. However, it no longer does that. If you still want to place the views path under the unit, please create a symbolic link under app/views/units and refer to it.
 
 ### models
 In models block, you can expand model features by `expand` method.

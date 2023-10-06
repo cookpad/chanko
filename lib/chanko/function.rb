@@ -22,12 +22,10 @@ module Chanko
 
     def invoke(context, options = {})
       with_unit_stack(context) do
-        with_unit_view_path(context) do
-          capture_exception(context) do
-            result = context.instance_eval(&block)
-            result = decorate(result, context, options[:type]) if context.view? && result.present?
-            result
-          end
+        capture_exception(context) do
+          result = context.instance_eval(&block)
+          result = decorate(result, context, options[:type]) if context.view? && result.present?
+          result
         end
       end
     end
@@ -57,13 +55,6 @@ module Chanko
     ensure
       self.class.units.pop
       context.units.pop
-    end
-
-    def with_unit_view_path(context)
-      context.view_paths.unshift unit.resolver if context.respond_to?(:view_paths)
-      yield
-    ensure
-      context.view_paths.paths.shift if context.respond_to?(:view_paths)
     end
 
     def capture_exception(context)

@@ -27,7 +27,7 @@ module ExampleUnit
     end
 
     function(:render) do
-      render_to_string :partial => "/test", :locals => { :local => "test" }
+      render_to_string :partial => "/units/example_unit/test", :locals => { :local => "test" }
     end
 
     function(:nesting_locals_outer) do
@@ -78,7 +78,7 @@ module ExampleUnit
     end
 
     function(:render) do
-      render "/test", :local => "test"
+      render "/units/example_unit/test", :local => "test"
     end
 
     function(:blank) do
