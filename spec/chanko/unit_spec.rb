@@ -245,11 +245,5 @@ module Chanko
         expect(ExampleModel.__example_unit_user).to eq([:class_name => "User"])
       end
     end
-
-    describe ".view_path" do
-      it "returns path for its view directory" do
-        expect(unit.view_path).to eq("#{Config.units_directory_path}/example_unit/views")
-      end
-    end
   end
 end

@@ -70,10 +70,6 @@ module Chanko
         UnitProxy.generate_prefix(unit_name)
       end
 
-      def view_path
-        Rails.root.join("#{Config.units_directory_path}/#{unit_name}/views").to_s
-      end
-
       def find_function(identifier, label)
         scope     = ScopeFinder.find(identifier)
         target    = scope.ancestors.find {|klass| scopes[klass] }
@@ -91,10 +87,6 @@ module Chanko
 
       def shared_methods
         @shared_methods ||= {}
-      end
-
-      def resolver
-        @resolver ||= Config.resolver.new(view_path)
       end
 
       def extender

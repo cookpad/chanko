@@ -34,13 +34,11 @@ module <%= class_name %>
   # ```
 
   # ## render
-  # In addition, the view path "<%= "#{directory}/views" %>" is added into view_paths.
-  # So you can render <%= "#{directory}/views/_example.html.erb" %> in invoking.
-  #
+  # If you want to place the views path under the unit, create a symbolic link under app/views/units and refer to it.
   # ```
   # scope(:view) do
   #   function(:function_name) do
-  #     render "/example", :foo => "bar"
+  #     render "/units/<%= your_unit_name.underscore %>/example", :foo => "bar"
   #   end
   # end
   # ```
