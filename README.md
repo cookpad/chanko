@@ -115,7 +115,7 @@ end
 ```
 
 ### render
-In its previous version, Chanko added the views path of the unit to Rails' view file search. However, it no longer does that. If you still want to place the views path under the unit, please create a symbolic link under app/views/units and refer to it.
+In version 2 and earlier, Chanko extended Rails' search path to include the views path of the unit. This functionality has been discontinued. To maintain the views path under the unit, you will need to manually create a symbolic link in app/views/units to access it.
 
 ### models
 In models block, you can expand model features by `expand` method.
