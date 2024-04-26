@@ -10,11 +10,9 @@ With Chanko, you can release many features concurrently and manage target users 
 When any errors are raised from chanko's features,
 it will be automatically hidden and fallback to its normal behavior.
 
-
 ## Requirements
 * Ruby >= 2.6.0
 * Rails >= 5.0.0
-
 
 ## Usage
 Add to your Gemfile.
@@ -117,29 +115,6 @@ end
 ### render
 In version 2 and earlier, Chanko extended Rails' search path to include the views path of the unit. This functionality has been discontinued. To maintain the views path under the unit, you will need to manually create a symbolic link in app/views/units to access it.
 
-### models
-In models block, you can expand model features by `expand` method.
-The expanded methods are available via unit proxy like `User.unit.active`,
-`User.find(params[:id]).unit.active?` or `User.unit.gc_all_soft_deleted_users`.
-
-```ruby
-models do
-  expand(:User) do
-    scope :active, lambda { where(:deleted_at => nil) }
-
-    def active?
-      deleted_at.nil?
-    end
-
-    class_methods do
-      def gc_all_soft_deleted_users
-        where.not(deleted_at: nil).delete_all
-      end
-    end
-  end
-end
-```
-
 ### shared
 You can call methods defined by `shared` in invoking.
 
@@ -159,7 +134,6 @@ helpers do
   end
 end
 ```
-
 
 ## Example
 https://github.com/cookpad/chanko/tree/master/spec/dummy  

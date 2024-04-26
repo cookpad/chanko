@@ -33,10 +33,6 @@ module Chanko
         Helper.define(unit_name, &block)
       end
 
-      def models(&block)
-        extender.instance_eval(&block)
-      end
-
       def active_if(*conditions, &block)
         @active_if = ActiveIf.new(*conditions, &block)
       end

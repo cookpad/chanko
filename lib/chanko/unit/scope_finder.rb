@@ -30,7 +30,6 @@ module Chanko
       def label
         label_scope_map = {
           :controller => ActionController::Base,
-          :model      => ActiveRecord::Base,
           :view       => ActionView::Base
         }
 
