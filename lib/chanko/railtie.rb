@@ -21,14 +21,6 @@ module Chanko
       Chanko::Loader.prepare_eager_load(mode: :zeitwerk)
     end
 
-    initializer("chanko.classic.prepare_eager_load", after: :load_environment_config) do |app|
-      # Rails5 doens't load environments/*.rb files before :set_autoload_paths.
-      # In other words, at this stage, config.eager_load cannot be determined to be true or false.
-      # But classic loader does not freeze paths on :set_autoload_paths.
-      # After all, It's ok if it is executed after :set_autoload_paths on Rails5 and Rails6(classic).
-      Chanko::Loader.prepare_eager_load(mode: :classic)
-    end
-
     initializer("chanko.eager_load_units", before: :eager_load!) do |app|
       # This is why we need handmade eager-loading
       # https://github.com/cookpad/chanko/pull/38
