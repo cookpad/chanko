@@ -1,4 +1,9 @@
 ## Unreleased
+* Support Rails 6,1. 7.0, 7.1.
+* Drop support for Raiils below 6.0
+* Drop support for Ruby 2
+* Drop support for classic loader
+* The functionality to extend the view_paths has been discontinued.
 
 ## 2.3.0
 * Support Rails 5.0, 5.1, 5,2, 6.0, 6,1.

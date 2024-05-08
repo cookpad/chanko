@@ -47,20 +47,15 @@ module Dummy
     # config.active_record.schema_format = :sql
 
     # Version of your assets, change this if you want to expire all your assets
-    config.assets.version = '1.0'
-    config.assets.quiet = true if ::Rails::VERSION::MAJOR >= 5
-    if Rails::VERSION::MAJOR >= 6
-      if ENV['AUTOLOADER'] == 'zeitwerk'
-        Chanko::Test.logger.info("Autoloader: zeitwerk")
-        config.autoloader = :zeitwerk
-      else
-        Chanko::Test.logger.info("Autoloader: classic")
-        config.autoloader = :classic
-      end
+
+    # for Rails 6.1
+    if config.respond_to?("assets")
+      config.assets.version = '1.0'
+      config.assets.quiet = true
     end
+
+    config.autoloader = :zeitwerk
   end
 end
 
-if Rails::VERSION::MAJOR >= 6 && Rails.autoloaders.zeitwerk_enabled?
-  Rails.autoloaders.main.collapse(Rails.root.join('app', 'units', '*'))
-end
+Rails.autoloaders.main.collapse(Rails.root.join('app', 'units', '*'))
