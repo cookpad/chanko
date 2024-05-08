@@ -1,4 +1,3 @@
-require "chanko/unit/extender/active_record_class_methods"
 require "chanko/unit/extender/extension"
 
 module Chanko
