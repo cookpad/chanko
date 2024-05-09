@@ -2,8 +2,6 @@ module Chanko
   module Unit
     class Extender
       class Extension < Module
-        include ActiveRecordClassMethods
-
         def initialize(mod, prefix = nil, &block)
           @mod    = mod
           @prefix = prefix

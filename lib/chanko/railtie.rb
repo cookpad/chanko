@@ -7,11 +7,6 @@ module Chanko
       ActiveSupport.on_load :action_controller do
         ::ActionController::Base.send(:include, Controller, Invoker, UnitProxyProvider)
       end
-      ActiveSupport.on_load :active_record do
-        ::ActiveRecord::Base.send(:include, UnitProxyProvider)
-        ::ActiveRecord::Relation.send(:include, UnitProxyProvider)
-        ::ActiveRecord::Associations::CollectionAssociation.send(:include, UnitProxyProvider)
-      end
     end
 
 

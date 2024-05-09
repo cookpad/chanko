@@ -19,22 +19,6 @@ module EntryDeletion
     end
   end
 
-  models do
-    expand(:Entry) do
-      scope :active, lambda { where(:deleted_at => nil) }
-
-      def soft_delete
-        update_attributes(:deleted_at => Time.now)
-      end
-
-      class_methods do
-        def gc_all_soft_deleted_users
-          where.not(deleted_at: nil).delete_all
-        end
-      end
-    end
-  end
-
   helpers do
     def link_to_deletion(entry)
       link_to "Delete", entry, :method => :delete

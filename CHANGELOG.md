@@ -4,6 +4,7 @@
 * Drop support for Ruby 2
 * Drop support for classic loader
 * The functionality to extend the view_paths has been discontinued.
+* The functionality to extend the models has been discontinued.
 
 ## 2.3.0
 * Support Rails 5.0, 5.1, 5,2, 6.0, 6,1.
